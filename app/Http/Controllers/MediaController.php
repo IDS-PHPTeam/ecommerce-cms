@@ -27,7 +27,10 @@ class MediaController extends Controller
                 if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
                     // Get relative path from storage/app/public
                     $fullPath = $file->getPathname();
-                    $relativePath = str_replace($storagePath . DIRECTORY_SEPARATOR, '', str_replace('\\', '/', $fullPath));
+                    // Normalize path separators and get relative path
+                    $normalizedStoragePath = str_replace('\\', '/', $storagePath);
+                    $normalizedFullPath = str_replace('\\', '/', $fullPath);
+                    $relativePath = str_replace($normalizedStoragePath . '/', '', $normalizedFullPath);
                     
                     // Skip system/hidden files and directories
                     $pathParts = explode('/', $relativePath);
@@ -159,7 +162,10 @@ class MediaController extends Controller
                 if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
                     // Get relative path from storage/app/public
                     $fullPath = $file->getPathname();
-                    $relativePath = str_replace($storagePath . DIRECTORY_SEPARATOR, '', str_replace('\\', '/', $fullPath));
+                    // Normalize path separators and get relative path
+                    $normalizedStoragePath = str_replace('\\', '/', $storagePath);
+                    $normalizedFullPath = str_replace('\\', '/', $fullPath);
+                    $relativePath = str_replace($normalizedStoragePath . '/', '', $normalizedFullPath);
                     
                     // Skip system/hidden files and directories
                     $pathParts = explode('/', $relativePath);

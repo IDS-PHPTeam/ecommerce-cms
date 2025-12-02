@@ -732,6 +732,91 @@ select.form-input {
     min-height: 200px;
 }
 
+/* Image Modal Styles */
+.image-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 2rem;
+}
+
+.image-modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.image-modal-close {
+    position: absolute;
+    top: -2.5rem;
+    right: 0;
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10001;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s;
+}
+
+.image-modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.image-modal-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.image-modal-img {
+    max-width: 100%;
+    max-height: calc(90vh - 100px);
+    object-fit: contain;
+    border-radius: 0.5rem;
+    display: block;
+}
+
+.image-modal-footer {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.image-modal-footer p {
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin: 0;
+    word-break: break-word;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
     /* Header adjustments */

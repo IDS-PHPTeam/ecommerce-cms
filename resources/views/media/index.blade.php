@@ -104,15 +104,19 @@
 </div>
 
 <!-- Image Modal -->
-<div id="imageModal" class="modal-overlay" style="display: none;" onclick="closeImageModal()">
-    <div class="modal-content" style="max-width: 90vw; max-height: 90vh; padding: 0; background: transparent; box-shadow: none;" onclick="event.stopPropagation();">
-        <button type="button" class="modal-close" id="closeImageModal" style="position: absolute; top: -2.5rem; right: 0; color: white; background: rgba(0,0,0,0.5); border-radius: 50%; width: 40px; height: 40px;">
+<div id="imageModal" class="image-modal-overlay" style="display: none;" onclick="closeImageModal()">
+    <div class="image-modal-content" onclick="event.stopPropagation();">
+        <button type="button" class="image-modal-close" id="closeImageModal">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
-        <img id="modalImage" src="" alt="" style="max-width: 100%; max-height: 90vh; object-fit: contain; border-radius: 0.5rem;">
-        <p id="modalImageName" style="color: white; text-align: center; margin-top: 1rem; font-weight: 600;"></p>
+        <div class="image-modal-body">
+            <img id="modalImage" src="" alt="" class="image-modal-img">
+        </div>
+        <div class="image-modal-footer">
+            <p id="modalImageName"></p>
+        </div>
     </div>
 </div>
 
