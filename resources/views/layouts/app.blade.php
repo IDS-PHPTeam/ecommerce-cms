@@ -7,6 +7,10 @@
 
     <title>@yield('title', 'Admin Panel') - {{ config('app.name', 'Laravel') }}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-colored.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/logo-colored.png') }}">
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -18,7 +22,7 @@
     <div class="header">
         <div class="header-content">
             <div class="logo-container">
-                <img src="{{ asset('images/logo.png') }}" alt="تنور العصر" class="logo">
+                <img src="{{ asset('images/logo.svg') }}" alt="تنور العصر" class="logo">
             </div>
             <div class="header-actions">
                 <div class="user-dropdown">
@@ -107,6 +111,26 @@
                                 </svg>
                             </span>
                             <span class="sidebar-text">Media</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('drivers.index') }}" class="sidebar-link {{ request()->routeIs('drivers.*') ? 'active' : '' }}">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">Drivers</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('customers.index') }}" class="sidebar-link {{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">Customers</span>
                         </a>
                     </li>
                 </ul>

@@ -7,6 +7,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\DriverController;
+use App\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,3 +54,9 @@ Route::resource('orders', OrderController::class)->middleware('auth')->only(['in
 Route::get('/media', [MediaController::class, 'index'])->middleware('auth')->name('media.index');
 Route::get('/media/json', [MediaController::class, 'getMediaJson'])->middleware('auth')->name('media.json');
 Route::delete('/media', [MediaController::class, 'destroy'])->middleware('auth')->name('media.destroy');
+
+// Drivers Routes
+Route::resource('drivers', DriverController::class)->middleware('auth')->only(['index', 'show']);
+
+// Customers Routes
+Route::resource('customers', CustomerController::class)->middleware('auth')->only(['index', 'show']);

@@ -15,11 +15,24 @@ class AdminUserSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
+        // Create admin user
+        User::updateOrCreate(
+            ['email' => 'admin@admin.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+
+        // Create s.merhi@ids.com.lb user
+        User::updateOrCreate(
+            ['email' => 's.merhi@ids.com.lb'],
+            [
+                'name' => 'S. Merhi',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
