@@ -53,6 +53,6 @@ class ProfileController extends Controller
         $user->save();
 
         return redirect()->route('profile.edit')
-            ->with('success', 'Profile updated successfully.');
+            ->with('success', __('cms.profile_updated_successfully'));
     }
 }

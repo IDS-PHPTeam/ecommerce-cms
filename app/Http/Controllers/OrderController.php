@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\User;
+use App\Traits\LogsAudit;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    use LogsAudit;
     /**
      * Display a listing of the resource.
      *
@@ -115,7 +117,11 @@ class OrderController extends Controller
             'concurrency' => 'required|integer|min:1',
         ]);
 
+        $oldValues = $this->getOldValues($order, ['driver_id', 'status', 'priority', 'concurrency']);
         $order->update($validated);
+        $newValues = $this->getNewValues($validated, ['driver_id', 'status', 'priority', 'concurrency']);
+
+        $this->logAudit('updated', $order, "Order updated: Order #{$order->id}", $oldValues, $newValues);
 
         return redirect()->route('orders.show', $order)
             ->with('success', 'Order updated successfully.');

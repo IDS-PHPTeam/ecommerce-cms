@@ -18,13 +18,13 @@ class MediaController extends Controller
         $images = [];
         $storagePath = storage_path('app/public');
         
-        // Get all image files from storage root (recursively)
-        // Display all images regardless of folder structure
+        // Get all image and video files from storage root (recursively)
+        // Display all media files regardless of folder structure
         if (File::exists($storagePath)) {
             $files = File::allFiles($storagePath);
             foreach ($files as $file) {
                 $extension = strtolower($file->getExtension());
-                if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
+                if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'ogg', 'mov', 'avi'])) {
                     // Get relative path from storage/app/public
                     $fullPath = $file->getPathname();
                     // Normalize path separators and get relative path
@@ -46,6 +46,7 @@ class MediaController extends Controller
                     if (!$shouldSkip) {
                         $modified = filemtime($file->getPathname());
                         $imageDate = date('Y-m-d', $modified);
+                        $isVideo = in_array($extension, ['mp4', 'webm', 'ogg', 'mov', 'avi']);
                         
                         // Determine directory for display
                         $directory = '';
@@ -67,6 +68,7 @@ class MediaController extends Controller
                             'modified' => $modified,
                             'date' => $imageDate,
                             'directory' => $directory,
+                            'type' => $isVideo ? 'video' : 'image',
                         ];
                     }
                 }
@@ -124,6 +126,31 @@ class MediaController extends Controller
     }
     
     /**
+     * Store a newly uploaded media file.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:jpg,jpeg,png,gif,webp,svg,mp4,webm,ogg,mov,avi|max:10240', // 10MB max
+        ]);
+
+        $file = $request->file('file');
+        $year = date('Y');
+        $month = date('m');
+        $path = $file->store("{$year}/{$month}", 'public');
+
+        return response()->json([
+            'success' => true,
+            'path' => $path,
+            'url' => asset('storage/' . $path),
+            'name' => $file->getClientOriginalName(),
+        ]);
+    }
+    
+    /**
      * Delete a media file.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -153,13 +180,13 @@ class MediaController extends Controller
         $images = [];
         $storagePath = storage_path('app/public');
         
-        // Get all image files from storage root (recursively)
-        // Display all images regardless of folder structure
+        // Get all image and video files from storage root (recursively)
+        // Display all media files regardless of folder structure
         if (File::exists($storagePath)) {
             $files = File::allFiles($storagePath);
             foreach ($files as $file) {
                 $extension = strtolower($file->getExtension());
-                if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
+                if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'ogg', 'mov', 'avi'])) {
                     // Get relative path from storage/app/public
                     $fullPath = $file->getPathname();
                     // Normalize path separators and get relative path
@@ -179,10 +206,12 @@ class MediaController extends Controller
                     }
                     
                     if (!$shouldSkip) {
+                        $isVideo = in_array($extension, ['mp4', 'webm', 'ogg', 'mov', 'avi']);
                         $images[] = [
                             'path' => $relativePath,
                             'url' => asset('storage/' . $relativePath),
                             'name' => $file->getFilename(),
+                            'type' => $isVideo ? 'video' : 'image',
                         ];
                     }
                 }

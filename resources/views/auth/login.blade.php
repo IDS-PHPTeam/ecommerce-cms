@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
-@section('title', 'Login')
+@section('title', __('cms.login'))
 
 @section('content')
 <div class="login-container">
     <div class="login-card">
-        <div class="login-logo-container">
-            <img src="{{ asset('images/logo.svg') }}" alt="تنور العصر" class="login-logo">
+        <div class="login-header">
+            <div class="login-logo-container">
+                <img src="{{ asset('images/logo.svg') }}" alt="تنور العصر" class="login-logo">
+            </div>
+            @include('components.language-switcher')
         </div>
         
         <form method="POST" action="{{ route('login') }}">
@@ -25,7 +28,7 @@
                         required 
                         autofocus
                         class="form-input"
-                        placeholder="Email Address"
+                        placeholder="{{ __('cms.email_address') }}"
                     >
                 </div>
                 @error('email')
@@ -44,7 +47,7 @@
                         name="password" 
                         required
                         class="form-input"
-                        placeholder="Password"
+                        placeholder="{{ __('cms.password') }}"
                     >
                     <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
                         <svg class="eye-icon eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
@@ -62,7 +65,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary btn-full-width">
-                Login
+                {{ __('cms.login') }}
             </button>
         </form>
     </div>

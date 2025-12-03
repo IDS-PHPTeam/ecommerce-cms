@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Traits\LogsAudit;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    use LogsAudit;
     /**
      * Display a listing of the resource.
      *
@@ -55,7 +57,9 @@ class CategoryController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Category::create($validated);
+        $category = Category::create($validated);
+
+        $this->logAudit('created', $category, "Category created: {$category->name}");
 
         return redirect()->route('categories.index')
             ->with('success', 'Category created successfully.');
@@ -98,7 +102,11 @@ class CategoryController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
+        $oldValues = $this->getOldValues($category, ['name', 'status']);
         $category->update($validated);
+        $newValues = $this->getNewValues($validated, ['name', 'status']);
+
+        $this->logAudit('updated', $category, "Category updated: {$category->name}", $oldValues, $newValues);
 
         return redirect()->route('categories.index')
             ->with('success', 'Category updated successfully.');
@@ -112,6 +120,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $categoryName = $category->name;
+
+        $this->logAudit('deleted', $category, "Category deleted: {$categoryName}");
+
         $category->delete();
 
         return redirect()->route('categories.index')

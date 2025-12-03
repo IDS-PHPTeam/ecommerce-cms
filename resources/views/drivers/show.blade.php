@@ -11,31 +11,44 @@
 
     <!-- Driver Info -->
     <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Driver Information</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-            <div>
-                <label class="form-label">ID</label>
-                <p style="margin-top: 0.25rem;">{{ $driver->id }}</p>
+        <div style="display: flex; gap: 2rem; align-items: start;">
+            @if($driver->profile_image)
+            <div style="flex-shrink: 0;">
+                <img src="{{ asset('storage/' . $driver->profile_image) }}" alt="Driver Profile" style="width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--primary-blue); object-fit: cover;">
             </div>
-            <div>
-                <label class="form-label">Name</label>
-                <p style="margin-top: 0.25rem;">{{ $driver->first_name && $driver->last_name ? $driver->first_name . ' ' . $driver->last_name : $driver->name }}</p>
+            @else
+            <div style="flex-shrink: 0; width: 150px; height: 150px; border-radius: 50%; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary-blue);">
+                <span style="font-size: 3rem; color: #9ca3af;">{{ strtoupper(substr($driver->first_name ?? $driver->name, 0, 1)) }}</span>
             </div>
-            <div>
-                <label class="form-label">Email</label>
-                <p style="margin-top: 0.25rem;">{{ $driver->email }}</p>
-            </div>
-            <div>
-                <label class="form-label">Status</label>
-                <p style="margin-top: 0.25rem;">
-                    <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $driver->driver_status == 'active' ? 'background-color: #d1fae5; color: #065f46;' : 'background-color: #fee2e2; color: #991b1b;' }}">
-                        {{ ucfirst($driver->driver_status ?? 'N/A') }}
-                    </span>
-                </p>
-            </div>
-            <div>
-                <label class="form-label">Load Capacity</label>
-                <p style="margin-top: 0.25rem;">{{ $driver->load_capacity ?? 'N/A' }} kg</p>
+            @endif
+            <div style="flex: 1;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Driver Information</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label class="form-label">ID</label>
+                        <p style="margin-top: 0.25rem;">{{ $driver->id }}</p>
+                    </div>
+                    <div>
+                        <label class="form-label">Name</label>
+                        <p style="margin-top: 0.25rem;">{{ $driver->first_name && $driver->last_name ? $driver->first_name . ' ' . $driver->last_name : $driver->name }}</p>
+                    </div>
+                    <div>
+                        <label class="form-label">Email</label>
+                        <p style="margin-top: 0.25rem;">{{ $driver->email }}</p>
+                    </div>
+                    <div>
+                        <label class="form-label">Status</label>
+                        <p style="margin-top: 0.25rem;">
+                            <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $driver->driver_status == 'active' ? 'background-color: #d1fae5; color: #065f46;' : 'background-color: #fee2e2; color: #991b1b;' }}">
+                                {{ ucfirst($driver->driver_status ?? 'N/A') }}
+                            </span>
+                        </p>
+                    </div>
+                    <div>
+                        <label class="form-label">Load Capacity</label>
+                        <p style="margin-top: 0.25rem;">{{ $driver->load_capacity ?? 'N/A' }} kg</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -120,49 +133,6 @@
         </div>
     </div>
 
-    <!-- COD Log -->
-    <div class="card" style="margin-bottom: 1.5rem; padding: 1.5rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem;">Cash-On-Delivery (COD) Log</h3>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background-color: #f3f4f6; border-bottom: 2px solid #e5e7eb;">
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Order ID</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Customer</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Amount</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Status</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($codLogs as $log)
-                    <tr style="border-bottom: 1px solid #e5e7eb;">
-                        <td style="padding: 0.75rem;">{{ $log->order_id }}</td>
-                        <td style="padding: 0.75rem;">{{ $log->customer_name }}</td>
-                        <td style="padding: 0.75rem;">${{ number_format($log->amount, 2) }}</td>
-                        <td style="padding: 0.75rem;">
-                            <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; 
-                                {{ $log->status == 'delivered' ? 'background-color: #d1fae5; color: #065f46;' : 
-                                   ($log->status == 'collected' ? 'background-color: #dbeafe; color: #1e40af;' : 
-                                   'background-color: #fef3c7; color: #92400e;') }}">
-                                {{ ucfirst($log->status) }}
-                            </span>
-                        </td>
-                        <td style="padding: 0.75rem;">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y') }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" style="padding: 2rem; text-align: center; color: #6b7280;">No COD logs found.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div style="margin-top: 1rem;">
-            {{ $codLogs->links() }}
-        </div>
-    </div>
-
     <!-- Feedback & Ratings -->
     @if($feedback->count() > 0)
     <div class="card" style="padding: 1.5rem;">
@@ -189,4 +159,5 @@
     @endif
 </div>
 @endsection
+
 

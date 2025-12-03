@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Admin Panel') - {{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('title', __('cms.dashboard')) - {{ config('app.name', 'Laravel') }}</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo-colored.png') }}">
@@ -13,9 +13,10 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin.css') }}?v={{ time() }}" rel="stylesheet">
 </head>
 <body>
     @auth
@@ -25,6 +26,7 @@
                 <img src="{{ asset('images/logo.svg') }}" alt="تنور العصر" class="logo">
             </div>
             <div class="header-actions">
+                @include('components.language-switcher')
                 <div class="user-dropdown">
                     <button class="user-menu-toggle" id="userMenuToggle" aria-label="User menu">
                         <div class="user-avatar">
@@ -39,18 +41,18 @@
                     </button>
                     <div class="user-dropdown-menu" id="userDropdownMenu">
                         <a href="{{ route('profile.edit') }}" class="dropdown-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="18" height="18" style="stroke: #099ecb;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="#099ecb" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
-                            <span>Edit Profile</span>
+                            <span>{{ __('cms.edit_profile') }}</span>
                         </a>
                         <form method="POST" action="{{ route('logout') }}" class="dropdown-item-form">
                             @csrf
                             <button type="submit" class="dropdown-item logout-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="18" height="18" style="stroke: #099ecb;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="#099ecb" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                 </svg>
-                                <span>Logout</span>
+                                <span>{{ __('cms.logout') }}</span>
                             </button>
                         </form>
                     </div>
@@ -70,28 +72,40 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Dashboard</span>
+                            <span class="sidebar-text">{{ __('cms.dashboard') }}</span>
                         </a>
                     </li>
-                    <li class="sidebar-item">
-                        <a href="{{ route('products.index') }}" class="sidebar-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                    <li class="sidebar-item has-submenu {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('attributes.*') ? 'active' : '' }}">
+                        <a href="{{ route('products.index') }}" class="sidebar-link {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('attributes.*') ? 'active' : '' }}" onclick="event.preventDefault(); toggleSubmenu(this); window.location.href='{{ route('products.index') }}';">
                             <span class="sidebar-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Products</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a href="{{ route('categories.index') }}" class="sidebar-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
-                            <span class="sidebar-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                            <span class="sidebar-text">{{ __('cms.products') }}</span>
+                            <span class="sidebar-expand-icon">
+                                <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Categories</span>
                         </a>
+                        <ul class="sidebar-submenu {{ request()->routeIs('products.*') || request()->routeIs('categories.*') || request()->routeIs('attributes.*') ? 'active' : '' }}">
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('products.index') }}" class="sidebar-submenu-link {{ request()->routeIs('products.*') && !request()->routeIs('categories.*') && !request()->routeIs('attributes.*') ? 'active' : '' }}">
+                                    {{ __('cms.all_products') }}
+                                </a>
+                            </li>
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('categories.index') }}" class="sidebar-submenu-link {{ request()->routeIs('categories.*') ? 'active' : '' }}">
+                                    {{ __('cms.categories') }}
+                                </a>
+                            </li>
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('attributes.index') }}" class="sidebar-submenu-link {{ request()->routeIs('attributes.*') ? 'active' : '' }}">
+                                    {{ __('cms.attributes') }}
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="sidebar-item">
                         <a href="{{ route('orders.index') }}" class="sidebar-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
@@ -100,7 +114,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Orders</span>
+                            <span class="sidebar-text">{{ __('cms.orders') }}</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -110,7 +124,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Media</span>
+                            <span class="sidebar-text">{{ __('cms.media') }}</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -120,7 +134,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Drivers</span>
+                            <span class="sidebar-text">{{ __('cms.drivers') }}</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
@@ -130,7 +144,87 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Customers</span>
+                            <span class="sidebar-text">{{ __('cms.customers') }}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item has-submenu {{ request()->routeIs('settlements.*') ? 'active' : '' }}">
+                        <a href="{{ route('settlements.history') }}" class="sidebar-link {{ request()->routeIs('settlements.*') ? 'active' : '' }}" onclick="event.preventDefault(); toggleSubmenu(this); window.location.href='{{ route('settlements.history') }}';">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">Settlements & Finance</span>
+                            <span class="sidebar-expand-icon">
+                                <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </span>
+                        </a>
+                        <ul class="sidebar-submenu {{ request()->routeIs('settlements.*') ? 'active' : '' }}">
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('settlements.history') }}" class="sidebar-submenu-link {{ request()->routeIs('settlements.history') ? 'active' : '' }}">
+                                    Settlement History
+                                </a>
+                            </li>
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('settlements.request') }}" class="sidebar-submenu-link {{ request()->routeIs('settlements.request') ? 'active' : '' }}">
+                                    Settlement Request
+                                </a>
+                            </li>
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('settlements.discrepancy-reports') }}" class="sidebar-submenu-link {{ request()->routeIs('settlements.discrepancy-reports') || request()->routeIs('settlements.payout-summary') || request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}">
+                                    Other
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item has-submenu {{ request()->routeIs('admins.*') || request()->routeIs('roles-permissions.*') ? 'active' : '' }}">
+                        <a href="{{ route('admins.index') }}" class="sidebar-link {{ request()->routeIs('admins.*') || request()->routeIs('roles-permissions.*') ? 'active' : '' }}" onclick="event.preventDefault(); toggleSubmenu(this); window.location.href='{{ route('admins.index') }}';">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">{{ __('cms.admins') }}</span>
+                            <span class="sidebar-expand-icon">
+                                <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </span>
+                        </a>
+                        <ul class="sidebar-submenu {{ request()->routeIs('admins.*') || request()->routeIs('roles-permissions.*') ? 'active' : '' }}">
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('admins.index') }}" class="sidebar-submenu-link {{ request()->routeIs('admins.*') ? 'active' : '' }}">
+                                    {{ __('cms.all_admins') }}
+                                </a>
+                            </li>
+                            <li class="sidebar-submenu-item">
+                                <a href="{{ route('roles-permissions.index') }}" class="sidebar-submenu-link {{ request()->routeIs('roles-permissions.*') ? 'active' : '' }}">
+                                    {{ __('cms.roles_permissions') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('audit-logs.index') }}" class="sidebar-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">{{ __('cms.audit_logs') }}</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ route('settings.index') }}" class="sidebar-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                            <span class="sidebar-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </span>
+                            <span class="sidebar-text">{{ __('cms.settings') }}</span>
                         </a>
                     </li>
                 </ul>
@@ -184,7 +278,7 @@
     <div id="deleteModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">Confirm Delete</h3>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">{{ __('cms.confirm_delete') }}</h3>
                 <button type="button" class="modal-close" id="closeModal">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -195,8 +289,8 @@
                 <p id="deleteModalMessage" style="color: #374151; font-size: 1rem; line-height: 1.6;"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" id="cancelDelete" style="background-color: #6b7280; color: white;">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                <button type="button" class="btn" id="cancelDelete" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">{{ __('cms.delete') }}</button>
             </div>
         </div>
     </div>
@@ -204,6 +298,56 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/confirm-delete.js') }}"></script>
+    <script>
+        function toggleSubmenu(element) {
+            const sidebarItem = element.closest('.sidebar-item');
+            const submenu = sidebarItem.querySelector('.sidebar-submenu');
+            
+            if (submenu) {
+                // Only open, don't close if already open
+                if (!sidebarItem.classList.contains('active')) {
+                    sidebarItem.classList.add('active');
+                    submenu.classList.add('active');
+                }
+            }
+        }
+
+        // Ensure submenus are open when on related pages
+        document.addEventListener('DOMContentLoaded', function() {
+            const productsSubmenu = document.querySelector('.sidebar-item.has-submenu:has(.sidebar-submenu)');
+            if (productsSubmenu) {
+                const isProductsActive = window.location.pathname.includes('/products') || 
+                                        window.location.pathname.includes('/categories') || 
+                                        window.location.pathname.includes('/attributes');
+                if (isProductsActive) {
+                    productsSubmenu.classList.add('active');
+                    const submenu = productsSubmenu.querySelector('.sidebar-submenu');
+                    if (submenu) submenu.classList.add('active');
+                }
+            }
+
+            const settlementsSubmenu = document.querySelectorAll('.sidebar-item.has-submenu')[1];
+            if (settlementsSubmenu) {
+                const isSettlementsActive = window.location.pathname.includes('/settlements');
+                if (isSettlementsActive) {
+                    settlementsSubmenu.classList.add('active');
+                    const submenu = settlementsSubmenu.querySelector('.sidebar-submenu');
+                    if (submenu) submenu.classList.add('active');
+                }
+            }
+
+            const adminsSubmenu = document.querySelectorAll('.sidebar-item.has-submenu')[2];
+            if (adminsSubmenu) {
+                const isAdminsActive = window.location.pathname.includes('/admins') || 
+                                      window.location.pathname.includes('/roles-permissions');
+                if (isAdminsActive) {
+                    adminsSubmenu.classList.add('active');
+                    const submenu = adminsSubmenu.querySelector('.sidebar-submenu');
+                    if (submenu) submenu.classList.add('active');
+                }
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

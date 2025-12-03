@@ -2,27 +2,57 @@
 
 namespace App\Models;
 
+use App\Traits\HasAuditFields;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, HasAuditFields;
 
     protected $fillable = [
         'name',
         'description',
         'featured_image',
+        'product_type',
         'price',
         'sale_price',
-        'category',
-        'in_stock',
+        'track_stock',
+        'stock_quantity',
+        'stock_status',
         'status',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
-        'in_stock' => 'integer',
+        'track_stock' => 'boolean',
+        'stock_quantity' => 'integer',
     ];
+
+    /**
+     * Get the categories for the product.
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'product_categories');
+    }
+
+    /**
+     * Get the gallery items for the product.
+     */
+    public function gallery()
+    {
+        return $this->hasMany(ProductGallery::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Get the variants for the product (if variable product).
+     */
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class)->orderBy('sort_order');
+    }
 }

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasAuditFields;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
-    use HasFactory;
+    use HasFactory, HasAuditFields;
 
     protected $fillable = [
         'order_id',
@@ -16,6 +17,8 @@ class OrderItem extends Model
         'quantity',
         'price',
         'subtotal',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [

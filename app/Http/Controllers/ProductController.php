@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\ProductGallery;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantAttribute;
+use App\Traits\LogsAudit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
+    use LogsAudit;
+    
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +26,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('categories');
 
         // Filter by name
         if ($request->filled('name')) {
@@ -28,31 +38,32 @@ class ProductController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Filter by category
+        // Filter by category (many-to-many)
         if ($request->filled('category')) {
-            $query->where('category', $request->category);
+            $query->whereHas('categories', function($q) use ($request) {
+                $q->where('categories.id', $request->category);
+            });
         }
 
-        // Filter by stock
-        if ($request->filled('in_stock')) {
-            $query->where('in_stock', $request->in_stock);
+        // Filter by product type
+        if ($request->filled('product_type')) {
+            $query->where('product_type', $request->product_type);
         }
 
         // Filter by on sale
         if ($request->filled('on_sale')) {
             if ($request->on_sale == '1') {
-                // Products on sale (have sale_price and it's greater than 0)
-                $query->whereNotNull('sale_price')->where('sale_price', '>', 0);
-            } else {
-                // Products not on sale (no sale_price or sale_price is 0 or null)
                 $query->where(function($q) {
-                    $q->whereNull('sale_price')->orWhere('sale_price', '<=', 0);
+                    $q->whereNotNull('sale_price')->where('sale_price', '>', 0)
+                      ->orWhereHas('variants', function($vq) {
+                          $vq->whereNotNull('sale_price')->where('sale_price', '>', 0);
+                      });
                 });
             }
         }
 
         $products = $query->latest()->paginate(15);
-        $categories = Category::where('status', 'active')->orderBy('name')->pluck('name');
+        $categories = Category::where('status', 'active')->orderBy('name')->get();
 
         return view('products.index', compact('products', 'categories'));
     }
@@ -64,8 +75,9 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::where('status', 'active')->orderBy('name')->pluck('name');
-        return view('products.create', compact('categories'));
+        $categories = Category::where('status', 'active')->orderBy('name')->get();
+        $attributes = Attribute::where('status', 'active')->with('values')->orderBy('name')->get();
+        return view('products.create', compact('categories', 'attributes'));
     }
 
     /**
@@ -79,33 +91,153 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'product_type' => 'required|in:simple,variable',
             'featured_image' => 'nullable|image|max:2048',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lt:price',
-            'category' => 'nullable|string|max:255',
-            'in_stock' => 'required|in:0,1',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
+            'gallery' => 'nullable|array',
+            'gallery.*.media_path' => 'nullable|string',
+            'gallery.*.media_type' => 'nullable|in:image,video',
+            // Simple product fields
+            'price' => 'required_if:product_type,simple|nullable|numeric|min:0',
+            'sale_price' => 'nullable|numeric|min:0',
+            'track_stock' => 'nullable|boolean',
+            'stock_quantity' => 'nullable|integer|min:0',
+            'stock_status' => 'nullable|in:in_stock,out_of_stock,on_backorder',
+            // Variable product fields
+            'variants' => 'required_if:product_type,variable|nullable|array',
+            'variants.*.description' => 'nullable|string',
+            'variants.*.price' => 'required|numeric|min:0',
+            'variants.*.sale_price' => 'nullable|numeric|min:0',
+            'variants.*.track_stock' => 'nullable|boolean',
+            'variants.*.stock_quantity' => 'nullable|integer|min:0',
+            'variants.*.stock_status' => 'nullable|in:in_stock,out_of_stock,on_backorder',
+            'variants.*.image' => 'nullable|string',
+            'variants.*.attributes' => 'nullable|array',
+            'variants.*.attributes.*.name' => 'required_with:variants.*.attributes|string',
+            'variants.*.attributes.*.value' => 'required_with:variants.*.attributes|string',
             'status' => 'required|in:active,inactive',
         ], [
             'sale_price.lt' => 'The sale price must be less than the regular price.',
+            'variants.*.sale_price.lt' => 'The variant sale price must be less than the variant regular price.',
         ]);
 
-        if ($request->hasFile('featured_image')) {
-            // Store in year/month folder structure (directly in storage, not in products subfolder)
-            $year = date('Y');
-            $month = date('m');
-            $validated['featured_image'] = $request->file('featured_image')->store("{$year}/{$month}", 'public');
-        } elseif ($request->filled('selected_media_path')) {
-            // Use selected image from media library
-            $validated['featured_image'] = $request->selected_media_path;
+        // Validate sale price is less than price
+        if ($validated['product_type'] === 'simple') {
+            if (isset($validated['sale_price']) && $validated['sale_price'] > 0 && 
+                isset($validated['price']) && $validated['sale_price'] >= $validated['price']) {
+                return back()->withErrors(['sale_price' => 'The sale price must be less than the regular price.'])->withInput();
+            }
         }
 
-        // Convert in_stock to integer
-        $validated['in_stock'] = (int) $validated['in_stock'];
+        DB::beginTransaction();
+        try {
+            // Handle featured image
+            if ($request->hasFile('featured_image')) {
+                $year = date('Y');
+                $month = date('m');
+                $validated['featured_image'] = $request->file('featured_image')->store("{$year}/{$month}", 'public');
+            } elseif ($request->filled('selected_media_path')) {
+                $validated['featured_image'] = $request->selected_media_path;
+            }
 
-        Product::create($validated);
+            // Set created_by
+            $validated['created_by'] = Auth::id();
+            $validated['updated_by'] = Auth::id();
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product created successfully.');
+            // Create product
+            $product = Product::create($validated);
+
+            // Attach categories
+            if (isset($validated['categories'])) {
+                $product->categories()->sync($validated['categories']);
+            }
+
+            // Handle gallery
+            if (isset($validated['gallery']) && is_array($validated['gallery'])) {
+                foreach ($validated['gallery'] as $index => $galleryItem) {
+                    if (!empty($galleryItem['media_path'])) {
+                        ProductGallery::create([
+                            'product_id' => $product->id,
+                            'media_path' => $galleryItem['media_path'],
+                            'media_type' => $galleryItem['media_type'] ?? 'image',
+                            'sort_order' => $index,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ]);
+                    }
+                }
+            }
+
+            // Handle variants for variable products
+            if ($validated['product_type'] === 'variable' && isset($validated['variants'])) {
+                foreach ($validated['variants'] as $variantIndex => $variantData) {
+                    // Validate variant sale price
+                    if (isset($variantData['sale_price']) && $variantData['sale_price'] > 0 && 
+                        isset($variantData['price']) && $variantData['sale_price'] >= $variantData['price']) {
+                        DB::rollBack();
+                        return back()->withErrors(["variants.{$variantIndex}.sale_price" => 'The variant sale price must be less than the variant regular price.'])->withInput();
+                    }
+
+                    $variant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'description' => $variantData['description'] ?? null,
+                        'price' => $variantData['price'],
+                        'sale_price' => $variantData['sale_price'] ?? null,
+                        'track_stock' => isset($variantData['track_stock']) ? (bool)$variantData['track_stock'] : true,
+                        'stock_quantity' => (isset($variantData['track_stock']) && $variantData['track_stock']) ? ($variantData['stock_quantity'] ?? null) : null,
+                        'stock_status' => (isset($variantData['track_stock']) && $variantData['track_stock']) ? null : ($variantData['stock_status'] ?? 'in_stock'),
+                        'image' => $variantData['image'] ?? null,
+                        'sort_order' => $variantIndex,
+                        'created_by' => Auth::id(),
+                        'updated_by' => Auth::id(),
+                    ]);
+
+                    // Handle variant attributes
+                    if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+                        foreach ($variantData['attributes'] as $attr) {
+                            if (isset($attr['attribute_id']) && isset($attr['value_id'])) {
+                                // Get attribute and value names
+                                $attribute = Attribute::find($attr['attribute_id']);
+                                $attributeValue = AttributeValue::find($attr['value_id']);
+                                
+                                if ($attribute && $attributeValue) {
+                                    ProductVariantAttribute::create([
+                                        'variant_id' => $variant->id,
+                                        'attribute_name' => $attribute->name,
+                                        'attribute_value' => $attributeValue->value,
+                                        'created_by' => Auth::id(),
+                                        'updated_by' => Auth::id(),
+                                    ]);
+                                }
+                            } elseif (isset($attr['attribute_name']) && isset($attr['value_id'])) {
+                                // Fallback: if attribute_name is provided directly
+                                $attributeValue = AttributeValue::find($attr['value_id']);
+                                if ($attributeValue) {
+                                    ProductVariantAttribute::create([
+                                        'variant_id' => $variant->id,
+                                        'attribute_name' => $attr['attribute_name'],
+                                        'attribute_value' => $attributeValue->value,
+                                        'created_by' => Auth::id(),
+                                        'updated_by' => Auth::id(),
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            $this->logAudit('created', $product, "Product created: {$product->name}");
+
+            return redirect()->route('products.index')
+                ->with('success', 'Product created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'An error occurred while creating the product.'])->withInput();
+        }
     }
 
     /**
@@ -116,6 +248,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        $product->load(['categories', 'gallery', 'variants.attributes']);
         return view('products.show', compact('product'));
     }
 
@@ -127,8 +260,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::where('status', 'active')->orderBy('name')->pluck('name');
-        return view('products.edit', compact('product', 'categories'));
+        $product->load(['categories', 'gallery', 'variants.attributes']);
+        $categories = Category::where('status', 'active')->orderBy('name')->get();
+        $attributes = Attribute::where('status', 'active')->with('values')->orderBy('name')->get();
+        return view('products.edit', compact('product', 'categories', 'attributes'));
     }
 
     /**
@@ -143,47 +278,247 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'product_type' => 'required|in:simple,variable',
             'featured_image' => 'nullable|image|max:2048',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lt:price',
-            'category' => 'nullable|string|max:255',
-            'in_stock' => 'required|in:0,1',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
+            'gallery' => 'nullable|array',
+            'gallery.*.media_path' => 'nullable|string',
+            'gallery.*.media_type' => 'nullable|in:image,video',
+            'gallery.*.id' => 'nullable|exists:product_gallery,id',
+            // Simple product fields
+            'price' => 'required_if:product_type,simple|nullable|numeric|min:0',
+            'sale_price' => 'nullable|numeric|min:0',
+            'track_stock' => 'nullable|boolean',
+            'stock_quantity' => 'nullable|integer|min:0',
+            'stock_status' => 'nullable|in:in_stock,out_of_stock,on_backorder',
+            // Variable product fields
+            'variants' => 'required_if:product_type,variable|nullable|array',
+            'variants.*.id' => 'nullable|exists:product_variants,id',
+            'variants.*.description' => 'nullable|string',
+            'variants.*.price' => 'required|numeric|min:0',
+            'variants.*.sale_price' => 'nullable|numeric|min:0',
+            'variants.*.track_stock' => 'nullable|boolean',
+            'variants.*.stock_quantity' => 'nullable|integer|min:0',
+            'variants.*.stock_status' => 'nullable|in:in_stock,out_of_stock,on_backorder',
+            'variants.*.image' => 'nullable|string',
+            'variants.*.attributes' => 'nullable|array',
+            'variants.*.attributes.*.id' => 'nullable|exists:product_variant_attributes,id',
+            'variants.*.attributes.*.name' => 'required_with:variants.*.attributes|string',
+            'variants.*.attributes.*.value' => 'required_with:variants.*.attributes|string',
             'status' => 'required|in:active,inactive',
+            'delete_gallery' => 'nullable|array',
+            'delete_gallery.*' => 'exists:product_gallery,id',
+            'delete_variants' => 'nullable|array',
+            'delete_variants.*' => 'exists:product_variants,id',
         ], [
             'sale_price.lt' => 'The sale price must be less than the regular price.',
+            'variants.*.sale_price.lt' => 'The variant sale price must be less than the variant regular price.',
         ]);
 
-        if ($request->hasFile('featured_image')) {
-            // Delete old image
-            if ($product->featured_image) {
-                Storage::disk('public')->delete($product->featured_image);
+        // Validate sale price
+        if ($validated['product_type'] === 'simple') {
+            if (isset($validated['sale_price']) && $validated['sale_price'] > 0 && 
+                isset($validated['price']) && $validated['sale_price'] >= $validated['price']) {
+                return back()->withErrors(['sale_price' => 'The sale price must be less than the regular price.'])->withInput();
             }
-            // Store in year/month folder structure (directly in storage, not in products subfolder)
-            $year = date('Y');
-            $month = date('m');
-            $validated['featured_image'] = $request->file('featured_image')->store("{$year}/{$month}", 'public');
-        } elseif ($request->filled('selected_media_path')) {
-            // Use selected image from media library
-            // Only delete old image if it's different from the selected one
-            if ($product->featured_image && $product->featured_image !== $request->selected_media_path) {
-                Storage::disk('public')->delete($product->featured_image);
-            }
-            $validated['featured_image'] = $request->selected_media_path;
-        } elseif ($request->input('delete_current_image') == '1') {
-            // Delete current image if delete flag is set
-            if ($product->featured_image) {
-                Storage::disk('public')->delete($product->featured_image);
-            }
-            $validated['featured_image'] = null;
         }
 
-        // Convert in_stock to integer
-        $validated['in_stock'] = (int) $validated['in_stock'];
+        DB::beginTransaction();
+        try {
+            // Handle featured image
+            if ($request->hasFile('featured_image')) {
+                if ($product->featured_image) {
+                    Storage::disk('public')->delete($product->featured_image);
+                }
+                $year = date('Y');
+                $month = date('m');
+                $validated['featured_image'] = $request->file('featured_image')->store("{$year}/{$month}", 'public');
+            } elseif ($request->filled('selected_media_path')) {
+                if ($product->featured_image && $product->featured_image !== $request->selected_media_path) {
+                    Storage::disk('public')->delete($product->featured_image);
+                }
+                $validated['featured_image'] = $request->selected_media_path;
+            } elseif ($request->input('delete_current_image') == '1') {
+                if ($product->featured_image) {
+                    Storage::disk('public')->delete($product->featured_image);
+                }
+                $validated['featured_image'] = null;
+            }
 
-        $product->update($validated);
+            $validated['updated_by'] = Auth::id();
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully.');
+            // Update product
+            $oldValues = $this->getOldValues($product, ['name', 'description', 'product_type', 'price', 'sale_price', 'status']);
+            $product->update($validated);
+            $newValues = $this->getNewValues($validated, ['name', 'description', 'product_type', 'price', 'sale_price', 'status']);
+
+            // Sync categories
+            if (isset($validated['categories'])) {
+                $product->categories()->sync($validated['categories']);
+            } else {
+                $product->categories()->detach();
+            }
+
+            // Handle gallery deletions
+            if (isset($validated['delete_gallery'])) {
+                $galleryItems = ProductGallery::whereIn('id', $validated['delete_gallery'])->get();
+                foreach ($galleryItems as $item) {
+                    Storage::disk('public')->delete($item->media_path);
+                }
+                ProductGallery::whereIn('id', $validated['delete_gallery'])->delete();
+            }
+
+            // Handle gallery updates/additions
+            if (isset($validated['gallery']) && is_array($validated['gallery'])) {
+                $existingGalleryIds = [];
+                foreach ($validated['gallery'] as $index => $galleryItem) {
+                    if (!empty($galleryItem['media_path'])) {
+                        if (isset($galleryItem['id'])) {
+                            // Update existing
+                            ProductGallery::where('id', $galleryItem['id'])
+                                ->update([
+                                    'media_path' => $galleryItem['media_path'],
+                                    'media_type' => $galleryItem['media_type'] ?? 'image',
+                                    'sort_order' => $index,
+                                    'updated_by' => Auth::id(),
+                                ]);
+                            $existingGalleryIds[] = $galleryItem['id'];
+                        } else {
+                            // Create new
+                            ProductGallery::create([
+                                'product_id' => $product->id,
+                                'media_path' => $galleryItem['media_path'],
+                                'media_type' => $galleryItem['media_type'] ?? 'image',
+                                'sort_order' => $index,
+                                'created_by' => Auth::id(),
+                                'updated_by' => Auth::id(),
+                            ]);
+                        }
+                    }
+                }
+                // Delete gallery items not in the update list
+                ProductGallery::where('product_id', $product->id)
+                    ->whereNotIn('id', $existingGalleryIds)
+                    ->delete();
+            }
+
+            // Handle variants for variable products
+            if ($validated['product_type'] === 'variable' && isset($validated['variants'])) {
+                // Delete removed variants
+                if (isset($validated['delete_variants'])) {
+                    $variantsToDelete = ProductVariant::whereIn('id', $validated['delete_variants'])->get();
+                    foreach ($variantsToDelete as $variant) {
+                        if ($variant->image) {
+                            Storage::disk('public')->delete($variant->image);
+                        }
+                    }
+                    ProductVariant::whereIn('id', $validated['delete_variants'])->delete();
+                }
+
+                $existingVariantIds = [];
+                foreach ($validated['variants'] as $variantIndex => $variantData) {
+                    // Validate variant sale price
+                    if (isset($variantData['sale_price']) && $variantData['sale_price'] > 0 && 
+                        isset($variantData['price']) && $variantData['sale_price'] >= $variantData['price']) {
+                        DB::rollBack();
+                        return back()->withErrors(["variants.{$variantIndex}.sale_price" => 'The variant sale price must be less than the variant regular price.'])->withInput();
+                    }
+
+                    $variantData['updated_by'] = Auth::id();
+                    $variantData['stock_quantity'] = $variantData['track_stock'] ? ($variantData['stock_quantity'] ?? null) : null;
+                    $variantData['stock_status'] = $variantData['track_stock'] ? null : ($variantData['stock_status'] ?? 'in_stock');
+
+                    if (isset($variantData['id'])) {
+                        // Update existing variant
+                        $variant = ProductVariant::find($variantData['id']);
+                        $variant->update($variantData);
+                        $existingVariantIds[] = $variantData['id'];
+                    } else {
+                        // Create new variant
+                        $variantData['product_id'] = $product->id;
+                        $variantData['created_by'] = Auth::id();
+                        $variantData['sort_order'] = $variantIndex;
+                        $variant = ProductVariant::create($variantData);
+                    }
+
+                    // Handle variant attributes
+                    $existingAttrIds = [];
+                    
+                    if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+                        // Delete all existing attributes for this variant (we'll recreate them)
+                        ProductVariantAttribute::where('variant_id', $variant->id)->delete();
+                        
+                        foreach ($variantData['attributes'] as $attr) {
+                            if (isset($attr['attribute_id']) && isset($attr['value_id'])) {
+                                // Get attribute and value names
+                                $attribute = Attribute::find($attr['attribute_id']);
+                                $attributeValue = AttributeValue::find($attr['value_id']);
+                                
+                                if ($attribute && $attributeValue) {
+                                    $newAttr = ProductVariantAttribute::create([
+                                        'variant_id' => $variant->id,
+                                        'attribute_name' => $attribute->name,
+                                        'attribute_value' => $attributeValue->value,
+                                        'created_by' => Auth::id(),
+                                        'updated_by' => Auth::id(),
+                                    ]);
+                                    $existingAttrIds[] = $newAttr->id;
+                                }
+                            } elseif (isset($attr['attribute_name']) && isset($attr['value_id'])) {
+                                // Fallback: if attribute_name is provided directly
+                                $attributeValue = AttributeValue::find($attr['value_id']);
+                                if ($attributeValue) {
+                                    $newAttr = ProductVariantAttribute::create([
+                                        'variant_id' => $variant->id,
+                                        'attribute_name' => $attr['attribute_name'],
+                                        'attribute_value' => $attributeValue->value,
+                                        'created_by' => Auth::id(),
+                                        'updated_by' => Auth::id(),
+                                    ]);
+                                    $existingAttrIds[] = $newAttr->id;
+                                }
+                            } elseif (isset($attr['id'])) {
+                                // Update existing attribute (old structure support)
+                                if (!empty($attr['name']) && !empty($attr['value'])) {
+                                    ProductVariantAttribute::where('id', $attr['id'])->update([
+                                        'attribute_name' => $attr['name'],
+                                        'attribute_value' => $attr['value'],
+                                        'updated_by' => Auth::id(),
+                                    ]);
+                                    $existingAttrIds[] = $attr['id'];
+                                }
+                            }
+                        }
+                    }
+                }
+                // Delete variants not in the update list
+                ProductVariant::where('product_id', $product->id)
+                    ->whereNotIn('id', $existingVariantIds)
+                    ->delete();
+            } else {
+                // If switching from variable to simple, delete all variants
+                if ($product->product_type === 'variable') {
+                    $variants = ProductVariant::where('product_id', $product->id)->get();
+                    foreach ($variants as $variant) {
+                        if ($variant->image) {
+                            Storage::disk('public')->delete($variant->image);
+                        }
+                    }
+                    ProductVariant::where('product_id', $product->id)->delete();
+                }
+            }
+
+            DB::commit();
+
+            $this->logAudit('updated', $product, "Product updated: {$product->name}", $oldValues, $newValues);
+
+            return redirect()->route('products.index')
+                ->with('success', 'Product updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'An error occurred while updating the product.'])->withInput();
+        }
     }
 
     /**
@@ -194,10 +529,26 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Delete image if exists
+        $productName = $product->name;
+
+        // Delete featured image
         if ($product->featured_image) {
             Storage::disk('public')->delete($product->featured_image);
         }
+
+        // Delete gallery images
+        foreach ($product->gallery as $galleryItem) {
+            Storage::disk('public')->delete($galleryItem->media_path);
+        }
+
+        // Delete variant images
+        foreach ($product->variants as $variant) {
+            if ($variant->image) {
+                Storage::disk('public')->delete($variant->image);
+            }
+        }
+
+        $this->logAudit('deleted', $product, "Product deleted: {$productName}");
 
         $product->delete();
 

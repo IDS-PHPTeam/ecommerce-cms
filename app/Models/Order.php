@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasAuditFields;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, HasAuditFields;
 
     protected $fillable = [
         'customer_name',
@@ -24,6 +25,8 @@ class Order extends Model
         'feedback',
         'rating',
         'order_date',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
