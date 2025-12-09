@@ -37,3 +37,6 @@ class CreateAttributesTable extends Migration
     }
 }
 
+
+
+

@@ -25,3 +25,6 @@
 @yield('other-content')
 @endsection
 
+
+
+

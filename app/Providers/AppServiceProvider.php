@@ -26,22 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Set locale from session or default language setting
-        $locale = Session::get('locale');
-        
-        if (!$locale) {
-            // Check if multilingual is enabled
-            $multilingual = Setting::get('multilingual', '0');
-            if ($multilingual === '1') {
-                $locale = Setting::get('default_language', 'en');
-            } else {
-                $locale = 'en';
-            }
-        }
-        
-        // Only set if it's a valid locale
-        if (in_array($locale, ['en', 'ar'])) {
-            App::setLocale($locale);
-        }
+        // Locale is now set via SetLocale middleware after session is available
+        // This ensures the session is properly initialized before reading locale
     }
 }

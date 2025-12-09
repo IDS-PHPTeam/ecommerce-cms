@@ -10,6 +10,7 @@
                 <img src="{{ asset('images/logo.svg') }}" alt="تنور العصر" class="login-logo">
             </div>
             @include('components.language-switcher')
+            <p class="login-slogan">{{ __('cms.login_to') }} IDS {{ __('cms.ecommerce_cms') }}</p>
         </div>
         
         <form method="POST" action="{{ route('login') }}">

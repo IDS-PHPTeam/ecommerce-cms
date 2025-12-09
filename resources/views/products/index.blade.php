@@ -93,8 +93,23 @@
                         @endif
                     </td>
                     <td style="padding: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $product->in_stock == 1 ? 'background-color: #d1fae5; color: #065f46;' : 'background-color: #fee2e2; color: #991b1b;' }}">
-                            {{ $product->in_stock == 1 ? 'In Stock' : 'Out of Stock' }}
+                        @php
+                            // Determine stock status based on track_stock setting
+                            $isInStock = false;
+                            $stockLabel = 'Out of Stock';
+                            
+                            if ($product->track_stock) {
+                                // If tracking stock, check stock_quantity
+                                $isInStock = ($product->stock_quantity ?? 0) > 0;
+                                $stockLabel = $isInStock ? 'In Stock' : 'Out of Stock';
+                            } else {
+                                // If not tracking stock, use stock_status
+                                $isInStock = $product->stock_status === 'in_stock';
+                                $stockLabel = $product->stock_status === 'in_stock' ? 'In Stock' : ($product->stock_status === 'on_backorder' ? 'On Backorder' : 'Out of Stock');
+                            }
+                        @endphp
+                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $isInStock ? 'background-color: #d1fae5; color: #065f46;' : ($product->stock_status === 'on_backorder' ? 'background-color: #fef3c7; color: #92400e;' : 'background-color: #fee2e2; color: #991b1b;') }}">
+                            {{ $stockLabel }}
                         </span>
                     </td>
                     <td style="padding: 0.75rem;">

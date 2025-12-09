@@ -50,6 +50,31 @@ class ProductController extends Controller
             $query->where('product_type', $request->product_type);
         }
 
+        // Filter by stock status
+        if ($request->filled('in_stock')) {
+            if ($request->in_stock == '1') {
+                // In stock: either track_stock with quantity > 0, or stock_status = 'in_stock'
+                $query->where(function($q) {
+                    $q->where(function($sq) {
+                        $sq->where('track_stock', true)->where('stock_quantity', '>', 0);
+                    })->orWhere(function($sq) {
+                        $sq->where('track_stock', false)->where('stock_status', 'in_stock');
+                    });
+                });
+            } else {
+                // Out of stock: either track_stock with quantity = 0, or stock_status != 'in_stock'
+                $query->where(function($q) {
+                    $q->where(function($sq) {
+                        $sq->where('track_stock', true)->where(function($qsq) {
+                            $qsq->whereNull('stock_quantity')->orWhere('stock_quantity', '<=', 0);
+                        });
+                    })->orWhere(function($sq) {
+                        $sq->where('track_stock', false)->where('stock_status', '!=', 'in_stock');
+                    });
+                });
+            }
+        }
+
         // Filter by on sale
         if ($request->filled('on_sale')) {
             if ($request->on_sale == '1') {
@@ -232,7 +257,7 @@ class ProductController extends Controller
 
             $this->logAudit('created', $product, "Product created: {$product->name}");
 
-            return redirect()->route('products.index')
+            return redirect()->route('products.edit', $product)
                 ->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -285,7 +310,7 @@ class ProductController extends Controller
             'gallery' => 'nullable|array',
             'gallery.*.media_path' => 'nullable|string',
             'gallery.*.media_type' => 'nullable|in:image,video',
-            'gallery.*.id' => 'nullable|exists:product_gallery,id',
+            'gallery.*.id' => 'nullable|sometimes|exists:product_galleries,id',
             // Simple product fields
             'price' => 'required_if:product_type,simple|nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
@@ -308,7 +333,7 @@ class ProductController extends Controller
             'variants.*.attributes.*.value' => 'required_with:variants.*.attributes|string',
             'status' => 'required|in:active,inactive',
             'delete_gallery' => 'nullable|array',
-            'delete_gallery.*' => 'exists:product_gallery,id',
+            'delete_gallery.*' => 'exists:product_galleries,id',
             'delete_variants' => 'nullable|array',
             'delete_variants.*' => 'exists:product_variants,id',
         ], [
@@ -335,14 +360,12 @@ class ProductController extends Controller
                 $month = date('m');
                 $validated['featured_image'] = $request->file('featured_image')->store("{$year}/{$month}", 'public');
             } elseif ($request->filled('selected_media_path')) {
-                if ($product->featured_image && $product->featured_image !== $request->selected_media_path) {
-                    Storage::disk('public')->delete($product->featured_image);
-                }
+                // Don't delete the old featured image file - keep it in storage for reuse
+                // Only update the database reference
                 $validated['featured_image'] = $request->selected_media_path;
             } elseif ($request->input('delete_current_image') == '1') {
-                if ($product->featured_image) {
-                    Storage::disk('public')->delete($product->featured_image);
-                }
+                // Don't delete the featured image file - keep it in storage for reuse
+                // Only remove the database reference
                 $validated['featured_image'] = null;
             }
 
@@ -361,21 +384,35 @@ class ProductController extends Controller
             }
 
             // Handle gallery deletions
+            // Note: We only delete the database record, not the actual file from storage
+            // This allows the media to be reused for other products
             if (isset($validated['delete_gallery'])) {
-                $galleryItems = ProductGallery::whereIn('id', $validated['delete_gallery'])->get();
-                foreach ($galleryItems as $item) {
-                    Storage::disk('public')->delete($item->media_path);
-                }
                 ProductGallery::whereIn('id', $validated['delete_gallery'])->delete();
             }
 
             // Handle gallery updates/additions
             if (isset($validated['gallery']) && is_array($validated['gallery'])) {
                 $existingGalleryIds = [];
+                $newGalleryIds = [];
+                $deletedGalleryIds = isset($validated['delete_gallery']) ? $validated['delete_gallery'] : [];
+                
+                \Log::info('Processing gallery', [
+                    'gallery_count' => count($validated['gallery']),
+                    'gallery_data' => $validated['gallery'],
+                    'deleted_ids' => $deletedGalleryIds
+                ]);
+                
                 foreach ($validated['gallery'] as $index => $galleryItem) {
-                    if (!empty($galleryItem['media_path'])) {
-                        if (isset($galleryItem['id'])) {
-                            // Update existing
+                    // Check if media_path exists and is not empty
+                    if (isset($galleryItem['media_path']) && !empty(trim($galleryItem['media_path']))) {
+                        // Check if this is an existing item (has valid ID and not marked for deletion)
+                        $hasValidId = isset($galleryItem['id']) && 
+                                     !empty($galleryItem['id']) && 
+                                     is_numeric($galleryItem['id']) && 
+                                     !in_array($galleryItem['id'], $deletedGalleryIds);
+                        
+                        if ($hasValidId) {
+                            // Update existing (only if not marked for deletion)
                             ProductGallery::where('id', $galleryItem['id'])
                                 ->update([
                                     'media_path' => $galleryItem['media_path'],
@@ -384,9 +421,10 @@ class ProductController extends Controller
                                     'updated_by' => Auth::id(),
                                 ]);
                             $existingGalleryIds[] = $galleryItem['id'];
+                            \Log::info('Updated existing gallery item', ['id' => $galleryItem['id'], 'index' => $index]);
                         } else {
-                            // Create new
-                            ProductGallery::create([
+                            // Create new - no ID, empty ID, or invalid ID means it's a new item
+                            $newGalleryItem = ProductGallery::create([
                                 'product_id' => $product->id,
                                 'media_path' => $galleryItem['media_path'],
                                 'media_type' => $galleryItem['media_type'] ?? 'image',
@@ -394,13 +432,39 @@ class ProductController extends Controller
                                 'created_by' => Auth::id(),
                                 'updated_by' => Auth::id(),
                             ]);
+                            $newGalleryIds[] = $newGalleryItem->id;
+                            \Log::info('Created new gallery item', [
+                                'id' => $newGalleryItem->id, 
+                                'index' => $index, 
+                                'path' => $galleryItem['media_path'],
+                                'product_id' => $product->id
+                            ]);
                         }
+                    } else {
+                        \Log::warning('Skipping gallery item - empty media_path', ['index' => $index, 'item' => $galleryItem]);
                     }
                 }
-                // Delete gallery items not in the update list
-                ProductGallery::where('product_id', $product->id)
-                    ->whereNotIn('id', $existingGalleryIds)
-                    ->delete();
+                
+                // Combine existing and new IDs to protect them from deletion
+                $allKeptGalleryIds = array_merge($existingGalleryIds, $newGalleryIds);
+                
+                // Delete gallery items not in the submitted form (but not those already deleted via delete_gallery)
+                // Only delete items that were NOT in the submitted form at all
+                if (!empty($allKeptGalleryIds)) {
+                    ProductGallery::where('product_id', $product->id)
+                        ->whereNotIn('id', $allKeptGalleryIds)
+                        ->whereNotIn('id', $deletedGalleryIds)
+                        ->delete();
+                } elseif (empty($validated['gallery']) || count($validated['gallery']) === 0) {
+                    // If no gallery items were submitted, delete all except those explicitly marked for deletion
+                    // But only if the gallery array was actually provided (empty array)
+                    ProductGallery::where('product_id', $product->id)
+                        ->whereNotIn('id', $deletedGalleryIds)
+                        ->delete();
+                }
+            } else {
+                // If gallery array is not provided, only delete items explicitly marked for deletion
+                // Don't delete all items - this allows the gallery to remain unchanged if not in the form
             }
 
             // Handle variants for variable products
@@ -513,7 +577,7 @@ class ProductController extends Controller
 
             $this->logAudit('updated', $product, "Product updated: {$product->name}", $oldValues, $newValues);
 
-            return redirect()->route('products.index')
+            return redirect()->route('products.edit', $product)
                 ->with('success', 'Product updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();

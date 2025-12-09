@@ -4,6 +4,8 @@ return [
     // Common
     'dashboard' => 'Dashboard',
     'login' => 'Login',
+    'login_to' => 'Login to',
+    'ecommerce_cms' => 'Ecommerce CMS',
     'logout' => 'Logout',
     'email' => 'Email',
     'password' => 'Password',

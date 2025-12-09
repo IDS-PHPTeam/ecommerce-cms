@@ -24,22 +24,32 @@ class LanguageController extends Controller
 
         // Set locale in session
         Session::put('locale', $locale);
-        Session::save();
         
         // Set locale for current request
         App::setLocale($locale);
 
-        // Get the previous URL or default to login page
+        // Get the previous URL
         $previousUrl = $request->headers->get('referer');
+        $currentUrl = url()->current();
         
-        // If no previous URL or if it's the same language switch URL, redirect to login or dashboard
-        if (!$previousUrl || strpos($previousUrl, '/language/') !== false) {
+        // Check if previous URL is a language switch URL or same as current
+        $isLanguageSwitchUrl = $previousUrl && (strpos($previousUrl, '/language/') !== false);
+        $isSameUrl = $previousUrl === $currentUrl;
+        
+        // If previous URL is invalid, language switch URL, or same as current, determine redirect target
+        if (!$previousUrl || $isLanguageSwitchUrl || $isSameUrl) {
             // Check if user is authenticated
             if (auth()->check()) {
                 return redirect()->route('dashboard')->with('locale_changed', $locale);
             } else {
                 return redirect()->route('login')->with('locale_changed', $locale);
             }
+        }
+        
+        // Check if previous URL was the login page
+        $isLoginPage = strpos($previousUrl, '/login') !== false;
+        if ($isLoginPage && !auth()->check()) {
+            return redirect()->route('login')->with('locale_changed', $locale);
         }
 
         // Redirect back to the previous page

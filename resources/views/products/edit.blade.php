@@ -14,7 +14,7 @@
         <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
             <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">General Information</button>
             <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">Media</button>
-            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'simple' ? 'block' : 'none' }};">Stock & Pricing</button>
+            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'simple' ? 'block' : 'none' }};">Stock & Pricing</button>
             <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">Attributes</button>
             <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">Variations</button>
         </div>
@@ -146,12 +146,20 @@
                         @if($galleryItem->media_type === 'video')
                             <div style="position: relative; padding-top: 100%; background: #000;">
                                 <video src="{{ asset('storage/' . $galleryItem->media_path) }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></video>
-                                <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">×</button>
+                                <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove from gallery">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
                         @else
                             <div style="position: relative; padding-top: 100%; background: #f3f4f6;">
                                 <img src="{{ asset('storage/' . $galleryItem->media_path) }}" alt="Gallery item" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                                <button type="button" class="remove-gallery-item-btn" data-gallery-id="{{ $galleryItem->id }}" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">×</button>
+                                <button type="button" class="remove-gallery-item-btn" data-gallery-id="{{ $galleryItem->id }}" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove from gallery">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
                         @endif
                     </div>
@@ -161,9 +169,10 @@
                 <span class="form-error">{{ $message }}</span>
             @enderror
         </div>
+        </div>
 
         <!-- Tab 3: Stock & Pricing (Simple Products Only) -->
-        <div id="simpleFieldsTab" class="tab-content" style="display: {{ old('product_type', $product->product_type) == 'simple' ? 'block' : 'none' }};">
+        <div id="simpleFieldsTab" class="tab-content" style="display: none;">
             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Pricing</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                 <div class="form-group">
@@ -411,14 +420,20 @@
 
             <div id="modalUploadTab" class="tab-content" style="display: none;">
                 <div style="text-align: center; padding: 2rem;">
-                    <input type="file" id="modalFileInput" accept="image/*,video/*" class="form-input" style="max-width: 400px; margin: 0 auto;">
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">Select an image or video file from your computer</p>
+                    <input type="file" id="modalFileInput" accept="image/*,video/*" multiple class="form-input" style="max-width: 400px; margin: 0 auto;">
+                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">Select one or more image or video files from your computer</p>
                 </div>
             </div>
         </div>
 
-        <div class="modal-footer">
-            <button type="button" class="btn" id="cancelImageSelection" style="background-color: #6b7280; color: white;">Cancel</button>
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-top: 1px solid #e5e7eb;">
+            <div id="selectedCount" style="color: #6b7280; font-size: 0.875rem; font-weight: 500;">
+                <span id="selectedCountText">0 selected</span>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="button" class="btn" id="cancelImageSelection" style="background-color: #6b7280; color: white;">Cancel</button>
+                <button type="button" class="btn" id="addSelectedToGallery" style="background-color: var(--primary-blue); color: white; display: none;">Add Selected (<span id="addSelectedCount">0</span>)</button>
+            </div>
         </div>
     </div>
 </div>
@@ -430,6 +445,14 @@
 <script>
 // Initialize existing variants and gallery for edit page
 document.addEventListener('DOMContentLoaded', function() {
+    // Debug: Check if tab content exists
+    const simpleFieldsTabContent = document.getElementById('simpleFieldsTab');
+    console.log('simpleFieldsTab element:', simpleFieldsTabContent);
+    if (simpleFieldsTabContent) {
+        console.log('simpleFieldsTab innerHTML length:', simpleFieldsTabContent.innerHTML.length);
+        console.log('simpleFieldsTab children:', simpleFieldsTabContent.children.length);
+    }
+    
     // Tab switching functionality
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -443,8 +466,46 @@ document.addEventListener('DOMContentLoaded', function() {
         'variations': 'variationsTab'
     };
     
+    // Function to switch tabs
+    function switchTab(targetTabId) {
+        // Hide all tab contents
+        const mainTabContents = ['generalTab', 'mediaTab', 'simpleFieldsTab', 'attributesTab', 'variationsTab'];
+        mainTabContents.forEach(tabId => {
+            const tabContent = document.getElementById(tabId);
+            if (tabContent) {
+                tabContent.style.display = 'none';
+                tabContent.classList.remove('active');
+            }
+        });
+        
+        // Show target tab content
+        const targetContent = document.getElementById(targetTabId);
+        if (targetContent) {
+            // Force show with multiple methods
+            targetContent.style.removeProperty('display');
+            targetContent.style.removeProperty('visibility');
+            targetContent.style.display = 'block';
+            targetContent.style.visibility = 'visible';
+            targetContent.style.opacity = '1';
+            targetContent.style.height = 'auto';
+            targetContent.classList.add('active');
+            
+            // Double check it's visible
+            setTimeout(() => {
+                if (targetContent.style.display !== 'block') {
+                    targetContent.style.setProperty('display', 'block', 'important');
+                }
+                console.log('Tab switched to:', targetTabId, 'Display:', targetContent.style.display, 'Visible:', targetContent.offsetHeight > 0);
+            }, 10);
+        } else {
+            console.error('Tab content not found:', targetTabId);
+        }
+    }
+    
     tabButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const targetTab = this.getAttribute('data-tab');
             const targetTabId = tabIdMap[targetTab] || (targetTab + 'Tab');
             
@@ -458,22 +519,14 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.borderBottomColor = 'var(--primary-blue)';
             this.style.color = 'var(--primary-blue)';
             
-            // Update content
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                content.style.display = 'none';
-            });
-            const targetContent = document.getElementById(targetTabId);
-            if (targetContent) {
-                targetContent.classList.add('active');
-                targetContent.style.display = 'block';
-            }
+            // Switch tab content
+            switchTab(targetTabId);
         });
     });
 
     // Product type toggle - show/hide tabs
     const productTypeSelect = document.getElementById('product_type');
-    const simpleFieldsTabBtn = document.getElementById('simpleFieldsTab');
+    const simpleFieldsTabBtn = document.getElementById('simpleFieldsTabBtn');
     const attributesTabBtn = document.getElementById('attributesTab');
     const variationsTabBtn = document.getElementById('variationsTab');
     const simpleFieldsTab = document.getElementById('simpleFieldsTab');
@@ -483,14 +536,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (productTypeSelect) {
         productTypeSelect.addEventListener('change', function() {
             if (this.value === 'simple') {
-                // Show simple fields tab, hide variable tabs
+                // Show simple fields tab button, hide variable tabs
                 simpleFieldsTabBtn.style.display = 'block';
                 attributesTabBtn.style.display = 'none';
                 variationsTabBtn.style.display = 'none';
                 
-                // If currently on variable tabs, switch to simple
+                // Hide variable tab contents
+                attributesTab.style.display = 'none';
+                attributesTab.classList.remove('active');
+                variationsTab.style.display = 'none';
+                variationsTab.classList.remove('active');
+                
+                // If currently on variable tabs, switch to general tab
                 if (attributesTab.classList.contains('active') || variationsTab.classList.contains('active')) {
-                    simpleFieldsTabBtn.click();
+                    // Switch to general tab instead of automatically showing stock & pricing
+                    document.querySelector('[data-tab="general"]').click();
                 }
             } else if (this.value === 'variable') {
                 // Hide simple fields tab, show variable tabs
@@ -498,7 +558,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 attributesTabBtn.style.display = 'block';
                 variationsTabBtn.style.display = 'block';
                 
-                // If currently on simple tab, switch to attributes
+                // Hide simple fields tab content
+                simpleFieldsTab.style.display = 'none';
+                simpleFieldsTab.classList.remove('active');
+                
+                // If currently on simple fields tab, switch to attributes
                 if (simpleFieldsTab.classList.contains('active')) {
                     attributesTabBtn.click();
                 }
@@ -515,27 +579,243 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalFileInput = document.getElementById('modalFileInput');
     let galleryIndex = {{ $product->gallery ? $product->gallery->count() : 0 }};
     let currentSelectionMode = 'gallery'; // 'featured' or 'gallery'
+    window.currentSelectionMode = currentSelectionMode; // Make it globally accessible for media-selector.js
+    let selectedMediaItems = []; // Array to track selected media items
+    let itemsToRemoveFromGallery = []; // Array to track items to remove from gallery
 
+    // Store original gallery items when modal opens
+    let originalGalleryItems = []; // Array of {id, path, type, url}
+    
     // Open gallery selection modal
     if (addGalleryItemBtn) {
         addGalleryItemBtn.addEventListener('click', function() {
             currentSelectionMode = 'gallery';
+            window.currentSelectionMode = 'gallery';
+            // Get current gallery items to mark them as selected
+            const currentGalleryPaths = getCurrentGalleryPaths();
+            
+            // Store original gallery items with their IDs
+            originalGalleryItems = [];
+            const galleryItems = galleryContainer.querySelectorAll('.gallery-item');
+            galleryItems.forEach(item => {
+                const pathInput = item.querySelector('input[name*="[media_path]"]');
+                const idInput = item.querySelector('input[name*="[id]"]');
+                const typeInput = item.querySelector('input[name*="[media_type]"]');
+                const img = item.querySelector('img');
+                const video = item.querySelector('video');
+                if (pathInput) {
+                    originalGalleryItems.push({
+                        id: idInput ? idInput.value : null,
+                        path: pathInput.value,
+                        type: typeInput ? typeInput.value : 'image',
+                        url: img ? img.src : (video ? video.src : '{{ asset("storage") }}/' + pathInput.value)
+                    });
+                }
+            });
+            
+            selectedMediaItems = []; // Reset selection array, will be populated by loadMediaGrid
+            itemsToRemoveFromGallery = []; // Reset removal list
+            updateSelectedCount();
             imageSelectionModal.style.display = 'flex';
-            loadMediaGrid();
+            loadMediaGrid(currentGalleryPaths);
         });
     }
 
     // Close modal
     if (closeImageSelectionModal) {
         closeImageSelectionModal.addEventListener('click', function() {
+            selectedMediaItems = []; // Reset selection
+            updateSelectedCount();
             imageSelectionModal.style.display = 'none';
         });
     }
 
     if (cancelImageSelection) {
         cancelImageSelection.addEventListener('click', function() {
+            selectedMediaItems = []; // Reset selection
+            updateSelectedCount();
             imageSelectionModal.style.display = 'none';
         });
+    }
+    
+    // Get current gallery items paths
+    function getCurrentGalleryPaths() {
+        const galleryItems = galleryContainer.querySelectorAll('.gallery-item');
+        const paths = [];
+        galleryItems.forEach(item => {
+            const pathInput = item.querySelector('input[name*="[media_path]"]');
+            if (pathInput) {
+                paths.push(pathInput.value);
+            }
+        });
+        return paths;
+    }
+    
+    // Add selected items to gallery
+    const addSelectedToGalleryBtn = document.getElementById('addSelectedToGallery');
+    if (addSelectedToGalleryBtn) {
+        addSelectedToGalleryBtn.addEventListener('click', function() {
+            selectedMediaItems.forEach(item => {
+                addToGallery(item.path, item.type, item.url);
+            });
+            selectedMediaItems = []; // Reset selection
+            updateSelectedCount();
+            // Close modal after adding
+            imageSelectionModal.style.display = 'none';
+        });
+    }
+    
+    // Remove item from gallery
+    function removeFromGallery(mediaPath) {
+        const galleryItems = galleryContainer.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            const pathInput = item.querySelector('input[name*="[media_path]"]');
+            if (pathInput && pathInput.value === mediaPath) {
+                // Check if it has an ID (existing item from database)
+                const idInput = item.querySelector('input[name*="[id]"]');
+                if (idInput && idInput.value) {
+                    // Add to removal list
+                    if (!itemsToRemoveFromGallery.includes(idInput.value)) {
+                        itemsToRemoveFromGallery.push(idInput.value);
+                    }
+                    // Add hidden input for deletion
+                    let deleteInput = document.querySelector(`input[name="delete_gallery[]"][value="${idInput.value}"]`);
+                    if (!deleteInput) {
+                        deleteInput = document.createElement('input');
+                        deleteInput.type = 'hidden';
+                        deleteInput.name = 'delete_gallery[]';
+                        deleteInput.value = idInput.value;
+                        document.getElementById('productForm').appendChild(deleteInput);
+                    }
+                }
+                item.remove();
+            }
+        });
+    }
+    
+    // Toggle media selection
+    function toggleMediaSelection(mediaItem, media) {
+        const currentGalleryPaths = getCurrentGalleryPaths();
+        const isInGallery = currentGalleryPaths.includes(media.path);
+        const index = selectedMediaItems.findIndex(item => item.path === media.path);
+        const isSelected = mediaItem.classList.contains('selected');
+        
+        if (isInGallery && isSelected) {
+            // Item is already in gallery and selected - remove it
+            removeFromGallery(media.path);
+            
+            // Remove from selectedMediaItems array as well
+            const selectedIndex = selectedMediaItems.findIndex(item => item.path === media.path);
+            if (selectedIndex > -1) {
+                selectedMediaItems.splice(selectedIndex, 1);
+            }
+            
+            // Remove visual selection
+            mediaItem.classList.remove('selected');
+            mediaItem.style.borderColor = 'transparent';
+            mediaItem.style.borderWidth = '2px';
+            mediaItem.style.opacity = '1';
+            mediaItem.title = '';
+            
+            // Remove overlay
+            const overlay = mediaItem.querySelector('.selection-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        } else if (index > -1) {
+            // Remove from selection (not in gallery yet)
+            selectedMediaItems.splice(index, 1);
+            mediaItem.classList.remove('selected');
+            mediaItem.style.borderColor = 'transparent';
+            mediaItem.style.borderWidth = '2px';
+            
+            // Remove overlay
+            const overlay = mediaItem.querySelector('.selection-overlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        } else {
+            // Add to selection (either new item or re-adding removed item)
+            const currentGalleryPaths = getCurrentGalleryPaths();
+            const isCurrentlyInGallery = currentGalleryPaths.includes(media.path);
+            
+            // Check if it was originally in gallery (has an ID in originalGalleryItems)
+            const originalItem = originalGalleryItems.find(item => item.path === media.path);
+            
+            if (originalItem && originalItem.id && !isCurrentlyInGallery) {
+                // It was in gallery but was removed - re-add it to gallery with original ID
+                addToGalleryWithId(media.path, media.type, media.url, originalItem.id);
+                
+                // Remove from delete list
+                const removeIndex = itemsToRemoveFromGallery.indexOf(originalItem.id);
+                if (removeIndex > -1) {
+                    itemsToRemoveFromGallery.splice(removeIndex, 1);
+                }
+                // Remove delete input
+                const deleteInput = document.querySelector(`input[name="delete_gallery[]"][value="${originalItem.id}"]`);
+                if (deleteInput) {
+                    deleteInput.remove();
+                }
+            } else if (!originalItem && !isCurrentlyInGallery) {
+                // New item - add to selectedMediaItems but don't add to gallery yet
+                // It will be added when user clicks "Add Selected"
+                selectedMediaItems.push({
+                    path: media.path,
+                    type: media.type,
+                    url: media.url
+                });
+            } else if (isCurrentlyInGallery) {
+                // Already in gallery, don't add to selectedMediaItems
+                // Just update visual state
+            }
+            
+            // Update visual selection state
+            mediaItem.classList.add('selected');
+            mediaItem.style.borderColor = 'var(--primary-blue)';
+            mediaItem.style.borderWidth = '3px';
+            mediaItem.style.opacity = '1';
+            mediaItem.title = '';
+            
+            // Add overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'selection-overlay';
+            overlay.style.cssText = 'position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9, 158, 203, 0.3); display: flex; align-items: center; justify-content: center; z-index: 5;';
+            overlay.innerHTML = '<div style="background: var(--primary-blue); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">✓</div>';
+            mediaItem.appendChild(overlay);
+        }
+        
+        updateSelectedCount();
+    }
+    
+    // Update selected count display
+    function updateSelectedCount() {
+        const selectedCountText = document.getElementById('selectedCountText');
+        const addSelectedCount = document.getElementById('addSelectedCount');
+        const addSelectedBtn = document.getElementById('addSelectedToGallery');
+        
+        // Count items currently in gallery (visible in the gallery container)
+        const currentGalleryPaths = getCurrentGalleryPaths();
+        const totalCount = currentGalleryPaths.length;
+        
+        // Count only new selections (items in selectedMediaItems that are not yet in gallery)
+        // These are items the user selected but haven't been added yet
+        const newSelections = selectedMediaItems.filter(item => !currentGalleryPaths.includes(item.path)).length;
+        
+        if (selectedCountText) {
+            selectedCountText.textContent = totalCount + (totalCount === 1 ? ' item selected' : ' items selected');
+        }
+        if (addSelectedCount) {
+            addSelectedCount.textContent = newSelections;
+        }
+        if (addSelectedBtn) {
+            if (newSelections > 0) {
+                addSelectedBtn.style.display = 'block';
+                addSelectedBtn.style.visibility = 'visible';
+            } else {
+                addSelectedBtn.style.display = 'none';
+                addSelectedBtn.style.visibility = 'hidden';
+            }
+        }
     }
 
     // Close modal when clicking outside
@@ -548,7 +828,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Load media grid
-    function loadMediaGrid() {
+    function loadMediaGrid(existingGalleryPaths = []) {
         if (!mediaGrid) return;
         
         mediaGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">Loading images...</div>';
@@ -562,6 +842,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
+                // Reset selectedMediaItems - only track new selections, not items already in gallery
+                selectedMediaItems = [];
+                updateSelectedCount();
+                
                 data.forEach(media => {
                     const mediaItem = document.createElement('div');
                     mediaItem.style.cssText = 'position: relative; padding-top: 100%; background: #f3f4f6; border-radius: 0.5rem; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;';
@@ -570,31 +854,56 @@ document.addEventListener('DOMContentLoaded', function() {
                     mediaItem.dataset.mediaType = media.type;
                     mediaItem.dataset.mediaUrl = media.url;
                     
+                    // Check if already in gallery (should be selected)
+                    const isSelected = existingGalleryPaths.includes(media.path);
+                    
                     if (media.type === 'video') {
                         mediaItem.innerHTML = `
                             <video src="${media.url}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+                            ${isSelected ? '<div class="selection-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9, 158, 203, 0.3); display: flex; align-items: center; justify-content: center; z-index: 5;"><div style="background: var(--primary-blue); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">✓</div></div>' : ''}
                         `;
                     } else {
                         mediaItem.innerHTML = `
                             <img src="${media.url}" alt="${media.name}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                            ${isSelected ? '<div class="selection-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9, 158, 203, 0.3); display: flex; align-items: center; justify-content: center; z-index: 5;"><div style="background: var(--primary-blue); color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">✓</div></div>' : ''}
                         `;
+                    }
+                    
+                    if (isSelected) {
+                        mediaItem.style.borderColor = 'var(--primary-blue)';
+                        mediaItem.style.borderWidth = '3px';
+                        mediaItem.classList.add('selected');
+                        // Add a visual indicator that it's already in gallery
+                        mediaItem.style.opacity = '0.7';
+                        mediaItem.title = 'Already in gallery';
                     }
                     
                     mediaItem.addEventListener('click', function() {
                         if (currentSelectionMode === 'gallery') {
-                            addToGallery(media.path, media.type, media.url);
+                            toggleMediaSelection(mediaItem, media);
                         }
-                        imageSelectionModal.style.display = 'none';
                     });
                     
                     mediaItem.addEventListener('mouseenter', function() {
-                        this.style.borderColor = 'var(--primary-blue)';
-                        this.style.transform = 'scale(1.05)';
+                        if (!this.classList.contains('selected')) {
+                            this.style.borderColor = 'var(--primary-blue)';
+                            this.style.borderWidth = '2px';
+                            this.style.transform = 'scale(1.05)';
+                        } else if (existingGalleryPaths.includes(media.path)) {
+                            // Show it can be unselected
+                            this.style.cursor = 'pointer';
+                            this.style.opacity = '0.8';
+                        }
                     });
                     
                     mediaItem.addEventListener('mouseleave', function() {
-                        this.style.borderColor = 'transparent';
-                        this.style.transform = 'scale(1)';
+                        if (!this.classList.contains('selected')) {
+                            this.style.borderColor = 'transparent';
+                            this.style.borderWidth = '2px';
+                            this.style.transform = 'scale(1)';
+                        } else if (existingGalleryPaths.includes(media.path)) {
+                            this.style.opacity = '0.7';
+                        }
                     });
                     
                     mediaGrid.appendChild(mediaItem);
@@ -606,8 +915,55 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    // Add item to gallery with ID (for restoring removed items)
+    function addToGalleryWithId(mediaPath, mediaType, mediaUrl, itemId) {
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item';
+        galleryItem.style.cssText = 'position: relative; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; background: white;';
+        
+        galleryItem.innerHTML = `
+            <input type="hidden" name="gallery[${galleryIndex}][id]" value="${itemId}">
+            <input type="hidden" name="gallery[${galleryIndex}][media_path]" value="${mediaPath}">
+            <input type="hidden" name="gallery[${galleryIndex}][media_type]" value="${mediaType}">
+            ${mediaType === 'video' ? `
+                <div style="position: relative; padding-top: 100%; background: #000;">
+                    <video src="${mediaUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></video>
+                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove from gallery">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            ` : `
+                <div style="position: relative; padding-top: 100%; background: #f3f4f6;">
+                    <img src="${mediaUrl}" alt="Gallery item" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove from gallery">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            `}
+        `;
+        
+        galleryContainer.appendChild(galleryItem);
+        
+        // Handle remove button
+        galleryItem.querySelector('.remove-gallery-item-btn').addEventListener('click', function() {
+            galleryItem.remove();
+        });
+        
+        galleryIndex++;
+    }
+    
     // Add item to gallery
     function addToGallery(mediaPath, mediaType, mediaUrl) {
+        // Check if already in gallery to prevent duplicates
+        const currentGalleryPaths = getCurrentGalleryPaths();
+        if (currentGalleryPaths.includes(mediaPath)) {
+            return; // Already in gallery, don't add again
+        }
+        
         const galleryItem = document.createElement('div');
         galleryItem.className = 'gallery-item';
         galleryItem.style.cssText = 'position: relative; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; background: white;';
@@ -618,12 +974,20 @@ document.addEventListener('DOMContentLoaded', function() {
             ${mediaType === 'video' ? `
                 <div style="position: relative; padding-top: 100%; background: #000;">
                     <video src="${mediaUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></video>
-                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">×</button>
+                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove from gallery">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
                 </div>
             ` : `
                 <div style="position: relative; padding-top: 100%; background: #f3f4f6;">
                     <img src="${mediaUrl}" alt="Gallery item" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">×</button>
+                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove from gallery">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
                 </div>
             `}
         `;
@@ -641,12 +1005,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle file upload in modal
     if (modalFileInput) {
         modalFileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            // Upload all files
+            const uploadPromises = files.map(file => {
                 const formData = new FormData();
                 formData.append('file', file);
                 
-                fetch('{{ route("media.store") }}', {
+                return fetch('{{ route("media.store") }}', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -660,19 +1027,49 @@ document.addEventListener('DOMContentLoaded', function() {
                         const mediaUrl = data.url || '{{ asset("storage") }}/' + data.path;
                         
                         if (currentSelectionMode === 'gallery') {
-                            addToGallery(data.path, mediaType, mediaUrl);
+                            // Add to selection instead of directly to gallery
+                            const mediaItem = {
+                                path: data.path,
+                                type: mediaType,
+                                url: mediaUrl
+                            };
+                            
+                            // Check if not already selected
+                            if (!selectedMediaItems.some(item => item.path === data.path)) {
+                                selectedMediaItems.push(mediaItem);
+                            }
                         }
                         
-                        imageSelectionModal.style.display = 'none';
-                        modalFileInput.value = '';
-                        loadMediaGrid(); // Reload to show new file
+                        return { success: true, path: data.path, type: mediaType, url: mediaUrl };
                     }
+                    return { success: false };
                 })
                 .catch(error => {
                     console.error('Error uploading file:', error);
-                    alert('Error uploading file. Please try again.');
+                    return { success: false, error: error.message };
                 });
-            }
+            });
+            
+            // Wait for all uploads to complete
+            Promise.all(uploadPromises).then(results => {
+                const successCount = results.filter(r => r.success).length;
+                if (successCount > 0) {
+                    updateSelectedCount();
+                    loadMediaGrid(); // Reload to show new files
+                    
+                    // Switch to media tab to show uploaded files
+                    const mediaTabBtn = document.querySelector('.image-tab-btn[data-tab="media"]');
+                    if (mediaTabBtn) {
+                        mediaTabBtn.click();
+                    }
+                }
+                
+                if (successCount < files.length) {
+                    alert(`Successfully uploaded ${successCount} of ${files.length} files.`);
+                }
+                
+                modalFileInput.value = '';
+            });
         });
     }
 
@@ -699,6 +1096,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetContent = document.getElementById('modal' + targetTab.charAt(0).toUpperCase() + targetTab.slice(1) + 'Tab');
             if (targetContent) {
                 targetContent.style.display = 'block';
+            }
+            
+            // If switching to media tab and in gallery mode, reload the media grid
+            if (targetTab === 'media' && currentSelectionMode === 'gallery') {
+                const currentGalleryPaths = getCurrentGalleryPaths();
+                loadMediaGrid(currentGalleryPaths);
             }
         });
     });
@@ -1183,5 +1586,72 @@ document.addEventListener('DOMContentLoaded', function() {
     min-height: 300px;
 }
 </style>
+<script>
+// Reindex gallery items before form submission to ensure proper array indexing
+function reindexGalleryItems() {
+    const galleryItems = document.querySelectorAll('#galleryContainer .gallery-item');
+    console.log('Reindexing gallery items, count:', galleryItems.length);
+    
+    let validIndex = 0;
+    galleryItems.forEach((item, index) => {
+        // Skip items that are marked for removal or don't have media_path
+        const pathInput = item.querySelector('input[name*="[media_path]"]');
+        if (!pathInput || !pathInput.value || pathInput.value.trim() === '') {
+            console.log(`Skipping item at index ${index} - no valid media_path`);
+            return; // Skip this item
+        }
+        
+        // Update all input names to use sequential index starting from 0
+        const idInput = item.querySelector('input[name*="[id]"]');
+        const typeInput = item.querySelector('input[name*="[media_type]"]');
+        
+        // Only include ID if it exists and has a value (existing items)
+        if (idInput && idInput.value && idInput.value.trim() !== '') {
+            idInput.name = `gallery[${validIndex}][id]`;
+            console.log(`Updated id input: ${idInput.name} = ${idInput.value}`);
+        } else if (idInput) {
+            // Remove ID input if it's empty (new items shouldn't have ID)
+            idInput.remove();
+            console.log(`Removed empty id input for new item at index ${validIndex}`);
+        }
+        
+        if (pathInput) {
+            pathInput.name = `gallery[${validIndex}][media_path]`;
+            console.log(`Updated path input: ${pathInput.name} = ${pathInput.value}`);
+        }
+        if (typeInput) {
+            typeInput.name = `gallery[${validIndex}][media_type]`;
+            console.log(`Updated type input: ${typeInput.name} = ${typeInput.value}`);
+        }
+        
+        validIndex++;
+    });
+    
+    console.log(`Reindexing complete. Valid items: ${validIndex}`);
+    return true; // Allow form submission
+}
+
+// Add form submit event listener to reindex gallery items
+document.addEventListener('DOMContentLoaded', function() {
+    const productForm = document.getElementById('productForm');
+    if (productForm) {
+        productForm.addEventListener('submit', function(e) {
+            console.log('Form submitting, reindexing gallery items...');
+            const beforeCount = document.querySelectorAll('#galleryContainer .gallery-item').length;
+            console.log('Gallery items before reindex:', beforeCount);
+            reindexGalleryItems();
+            const afterCount = document.querySelectorAll('#galleryContainer .gallery-item').length;
+            console.log('Gallery items after reindex:', afterCount);
+            
+            // Verify all inputs have correct names
+            const allInputs = document.querySelectorAll('#galleryContainer input[name*="gallery"]');
+            console.log('Total gallery inputs:', allInputs.length);
+            allInputs.forEach((input, idx) => {
+                console.log(`Input ${idx}: name="${input.name}", value="${input.value}"`);
+            });
+        });
+    }
+});
+</script>
 @endpush
 @endsection

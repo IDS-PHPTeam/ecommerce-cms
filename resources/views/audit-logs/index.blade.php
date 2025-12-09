@@ -197,9 +197,11 @@
     </div>
 
     <!-- Pagination -->
-    <div style="margin-top: 1.5rem;">
+    @if($auditLogs->hasPages())
+    <div style="margin-top: 1.5rem; display: flex; justify-content: center;">
         {{ $auditLogs->links() }}
     </div>
+    @endif
 </div>
 
 <!-- Bulk Delete Form -->

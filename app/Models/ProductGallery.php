@@ -10,6 +10,8 @@ class ProductGallery extends Model
 {
     use HasFactory, HasAuditFields;
 
+    protected $table = 'product_galleries';
+
     protected $fillable = [
         'product_id',
         'media_path',

@@ -25,6 +25,7 @@ class SettingsController extends Controller
             'timezone' => Setting::get('timezone', 'UTC'),
             'multilingual' => Setting::get('multilingual', '0'),
             'default_language' => Setting::get('default_language', 'en'),
+            'multi_currency' => Setting::get('multi_currency', '0'),
         ];
 
         $currencies = Currency::orderBy('is_default', 'desc')
@@ -54,25 +55,30 @@ class SettingsController extends Controller
             'timezone' => 'required|string|max:255',
             'multilingual' => 'required|in:0,1',
             'default_language' => 'required|in:en,ar',
+            'multi_currency' => 'required|in:0,1',
         ]);
 
         $oldTimezone = Setting::get('timezone', 'UTC');
         $oldMultilingual = Setting::get('multilingual', '0');
         $oldDefaultLanguage = Setting::get('default_language', 'en');
+        $oldMultiCurrency = Setting::get('multi_currency', '0');
 
         Setting::set('timezone', $validated['timezone']);
         Setting::set('multilingual', $validated['multilingual']);
         Setting::set('default_language', $validated['default_language']);
+        Setting::set('multi_currency', $validated['multi_currency']);
 
         $oldValues = [
             'timezone' => $oldTimezone,
             'multilingual' => $oldMultilingual,
             'default_language' => $oldDefaultLanguage,
+            'multi_currency' => $oldMultiCurrency,
         ];
         $newValues = [
             'timezone' => $validated['timezone'],
             'multilingual' => $validated['multilingual'],
             'default_language' => $validated['default_language'],
+            'multi_currency' => $validated['multi_currency'],
         ];
 
         $this->logAudit('updated', null, 'General settings updated', $oldValues, $newValues);

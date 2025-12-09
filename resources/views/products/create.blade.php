@@ -13,7 +13,7 @@
         <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
             <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">General Information</button>
             <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">Media</button>
-            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', 'simple') == 'simple' ? 'block' : 'none' }};">Stock & Pricing</button>
+            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', 'simple') == 'simple' ? 'block' : 'none' }};">Stock & Pricing</button>
             <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">Attributes</button>
             <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">Variations</button>
         </div>
@@ -131,7 +131,7 @@
         </div>
 
         <!-- Tab 3: Stock & Pricing (Simple Products Only) -->
-        <div id="simpleFieldsTab" class="tab-content" style="display: {{ old('product_type', 'simple') == 'simple' ? 'block' : 'none' }};">
+        <div id="simpleFieldsTab" class="tab-content" style="display: none;">
             <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Pricing</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                 <div class="form-group">
@@ -298,7 +298,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     tabButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
             const targetTab = this.getAttribute('data-tab');
             const targetTabId = tabIdMap[targetTab] || (targetTab + 'Tab');
             
@@ -312,22 +313,32 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.borderBottomColor = 'var(--primary-blue)';
             this.style.color = 'var(--primary-blue)';
             
-            // Update content
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                content.style.display = 'none';
+            // Update content - hide all tab contents first
+            document.querySelectorAll('.tab-content').forEach(content => {
+                if (content.id && (content.id.includes('Tab') || content.id === 'simpleFieldsTab' || content.id === 'generalTab' || content.id === 'mediaTab' || content.id === 'attributesTab' || content.id === 'variationsTab')) {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                    content.style.setProperty('display', 'none', 'important');
+                }
             });
+            
+            // Show target content
             const targetContent = document.getElementById(targetTabId);
             if (targetContent) {
                 targetContent.classList.add('active');
                 targetContent.style.display = 'block';
+                targetContent.style.setProperty('display', 'block', 'important');
+                targetContent.style.visibility = 'visible';
+                targetContent.style.opacity = '1';
+            } else {
+                console.error('Tab content not found:', targetTabId, 'Available IDs:', Array.from(document.querySelectorAll('[id]')).map(el => el.id));
             }
         });
     });
 
     // Product type toggle - show/hide tabs
     const productTypeSelect = document.getElementById('product_type');
-    const simpleFieldsTabBtn = document.getElementById('simpleFieldsTab');
+    const simpleFieldsTabBtn = document.getElementById('simpleFieldsTabBtn');
     const attributesTabBtn = document.getElementById('attributesTab');
     const variationsTabBtn = document.getElementById('variationsTab');
     const simpleFieldsTab = document.getElementById('simpleFieldsTab');
@@ -337,14 +348,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (productTypeSelect) {
         productTypeSelect.addEventListener('change', function() {
             if (this.value === 'simple') {
-                // Show simple fields tab, hide variable tabs
+                // Show simple fields tab button, hide variable tabs
                 simpleFieldsTabBtn.style.display = 'block';
                 attributesTabBtn.style.display = 'none';
                 variationsTabBtn.style.display = 'none';
                 
-                // If currently on variable tabs, switch to simple
+                // Hide variable tab contents
+                attributesTab.style.display = 'none';
+                attributesTab.classList.remove('active');
+                variationsTab.style.display = 'none';
+                variationsTab.classList.remove('active');
+                
+                // If currently on variable tabs, switch to general tab
                 if (attributesTab.classList.contains('active') || variationsTab.classList.contains('active')) {
-                    simpleFieldsTabBtn.click();
+                    // Switch to general tab instead of automatically showing stock & pricing
+                    document.querySelector('[data-tab="general"]').click();
                 }
             } else if (this.value === 'variable') {
                 // Hide simple fields tab, show variable tabs
@@ -352,7 +370,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 attributesTabBtn.style.display = 'block';
                 variationsTabBtn.style.display = 'block';
                 
-                // If currently on simple tab, switch to attributes
+                // Hide simple fields tab content
+                simpleFieldsTab.style.display = 'none';
+                simpleFieldsTab.classList.remove('active');
+                
+                // If currently on simple fields tab, switch to attributes
                 if (simpleFieldsTab.classList.contains('active')) {
                     attributesTabBtn.click();
                 }

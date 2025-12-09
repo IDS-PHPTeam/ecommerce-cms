@@ -11,9 +11,11 @@
         <button class="settings-tab active" data-tab="general" onclick="switchTab('general')">
             {{ __('cms.general') }}
         </button>
+        @if(($settings['multi_currency'] ?? '0') === '1')
         <button class="settings-tab" data-tab="currency" onclick="switchTab('currency')">
             {{ __('cms.multi_currency') }}
         </button>
+        @endif
     </div>
 
     <!-- General Settings Tab -->
@@ -70,6 +72,23 @@
                     <option value="ar" {{ old('default_language', $settings['default_language']) == 'ar' ? 'selected' : '' }}>{{ __('cms.arabic') }}</option>
                 </select>
                 @error('default_language')
+                    <span class="form-error">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ __('cms.multi_currency') }} <span style="color: #ef4444;">*</span></label>
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="multi_currency" value="1" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '1' ? 'checked' : '' }} required>
+                        <span>{{ __('cms.yes') }}</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="multi_currency" value="0" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '0' ? 'checked' : '' }} required>
+                        <span>{{ __('cms.no') }}</span>
+                    </label>
+                </div>
+                @error('multi_currency')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>

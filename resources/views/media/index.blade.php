@@ -8,18 +8,6 @@
         <h2 style="font-size: 1.875rem; font-weight: 700;">Media Library</h2>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success" style="margin-bottom: 1.5rem;">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-error" style="margin-bottom: 1.5rem;">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <!-- Filters -->
     <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
         <form method="GET" action="{{ route('media.index') }}">
@@ -65,14 +53,23 @@
     @if($images->count() > 0)
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
             @foreach($images as $image)
-            <div class="media-item" data-image-url="{{ $image['url'] }}" data-image-name="{{ $image['name'] }}" style="position: relative; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;">
+            <div class="media-item" data-image-url="{{ $image['url'] }}" data-image-name="{{ $image['name'] }}" data-media-type="{{ $image['type'] ?? 'image' }}" style="position: relative; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;">
                 <div style="position: relative; width: 100%; padding-top: 100%; background-color: #f3f4f6;">
-                    <img src="{{ $image['url'] }}" alt="{{ $image['name'] }}" class="media-image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
-                    <form action="{{ route('media.destroy') }}" method="POST" style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10;" data-confirm="Are you sure you want to delete this image?">
+                    @if(isset($image['type']) && $image['type'] === 'video')
+                        <video src="{{ $image['url'] }}" class="media-video" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer;" muted></video>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 5;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="48" height="48" style="opacity: 0.8;">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                    @else
+                        <img src="{{ $image['url'] }}" alt="{{ $image['name'] }}" class="media-image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+                    @endif
+                    <form action="{{ route('media.destroy') }}" method="POST" style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10;" data-confirm="Are you sure you want to delete this {{ isset($image['type']) && $image['type'] === 'video' ? 'video' : 'image' }}?">
                         @csrf
                         @method('DELETE')
                         <input type="hidden" name="path" value="{{ $image['path'] }}">
-                        <button type="submit" class="action-btn action-btn-delete" title="Delete image" style="width: 28px; height: 28px;">
+                        <button type="submit" class="action-btn action-btn-delete" title="Delete {{ isset($image['type']) && $image['type'] === 'video' ? 'video' : 'image' }}" style="width: 28px; height: 28px;">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -103,7 +100,7 @@
     @endif
 </div>
 
-<!-- Image Modal -->
+<!-- Media Modal -->
 <div id="imageModal" class="image-modal-overlay" style="display: none;" onclick="closeImageModal()">
     <div class="image-modal-content" onclick="event.stopPropagation();">
         <button type="button" class="image-modal-close" id="closeImageModal">
@@ -112,7 +109,8 @@
             </svg>
         </button>
         <div class="image-modal-body">
-            <img id="modalImage" src="" alt="" class="image-modal-img">
+            <img id="modalImage" src="" alt="" class="image-modal-img" style="display: none;">
+            <video id="modalVideo" src="" controls class="image-modal-img" style="display: none; max-width: 100%; max-height: 80vh;"></video>
         </div>
         <div class="image-modal-footer">
             <p id="modalImageName"></p>

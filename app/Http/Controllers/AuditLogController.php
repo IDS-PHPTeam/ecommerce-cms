@@ -47,7 +47,7 @@ class AuditLogController extends Controller
             $query->where('description', 'like', '%' . $request->search . '%');
         }
 
-        $auditLogs = $query->paginate(20);
+        $auditLogs = $query->paginate(20)->withQueryString();
 
         // Get filter options
         $users = User::whereIn('role', ['admin', 'manager', 'editor'])->orderBy('name')->get();
