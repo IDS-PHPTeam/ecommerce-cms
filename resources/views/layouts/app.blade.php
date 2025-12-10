@@ -17,6 +17,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/admin.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-dark.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-responsive.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-rtl.css') }}?v={{ time() }}" rel="stylesheet">
 </head>
 <body>
     @auth
@@ -28,10 +31,10 @@
             <div class="header-actions">
                 @include('components.language-switcher')
                 <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <svg id="themeIconLight" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: {{ ($themeMode ?? 'light') === 'dark' ? 'none' : 'block' }};">
+                    <svg id="themeIconLight" class="{{ ($themeMode ?? 'light') === 'dark' ? 'd-none' : 'd-block' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
-                    <svg id="themeIconDark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: {{ ($themeMode ?? 'light') === 'dark' ? 'block' : 'none' }};">
+                    <svg id="themeIconDark" class="{{ ($themeMode ?? 'light') === 'dark' ? 'd-block' : 'd-none' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                 </button>
@@ -283,10 +286,10 @@
     @endguest
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal-overlay" style="display: none;">
+    <div id="deleteModal" class="modal-overlay modal-overlay-hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">{{ __('cms.confirm_delete') }}</h3>
+                <h3 class="text-xl font-bold text-primary">{{ __('cms.confirm_delete') }}</h3>
                 <button type="button" class="modal-close" id="closeModal">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -294,10 +297,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p id="deleteModalMessage" style="color: #374151; font-size: 1rem; line-height: 1.6;"></p>
+                <p id="deleteModalMessage" class="text-secondary text-base leading-relaxed"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" id="cancelDelete" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</button>
+                <button type="button" class="btn bg-gray-600 text-white" id="cancelDelete">{{ __('cms.cancel') }}</button>
                 <button type="button" class="btn btn-danger" id="confirmDelete">{{ __('cms.delete') }}</button>
             </div>
         </div>

@@ -4,10 +4,10 @@
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.settings') }}</h2>
+    <h2 class="section-header">{{ __('cms.settings') }}</h2>
 
     <!-- Tabs Navigation -->
-    <div class="settings-tabs" style="border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem;">
+    <div class="settings-tabs border-bottom-2 mb-6">
         <button class="settings-tab active" data-tab="general" onclick="switchTab('general')">
             {{ __('cms.general') }}
         </button>
@@ -25,14 +25,14 @@
             @method('PUT')
 
             <!-- Grid Layout for Better Organization -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div class="grid grid-auto gap-4 mb-8" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
                 
                 <!-- Left Column: Basic Settings -->
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e5e7eb;">{{ __('cms.basic_settings') }}</h3>
+                    <h3 class="settings-section-header">{{ __('cms.basic_settings') }}</h3>
                     
                     <div class="form-group">
-                        <label for="timezone" class="form-label">{{ __('cms.timezone') }} <span style="color: #ef4444;">*</span></label>
+                        <label for="timezone" class="form-label">{{ __('cms.timezone') }}</label>
                         <select id="timezone" name="timezone" required class="form-input">
                             <option value="">{{ __('cms.select_timezone') }}</option>
                             <option value="UTC" {{ old('timezone', $settings['timezone']) == 'UTC' ? 'selected' : '' }}>UTC</option>
@@ -55,8 +55,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">{{ __('cms.multilingual') }} <span style="color: #ef4444;">*</span></label>
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
+                        <label class="form-label">{{ __('cms.multilingual') }}</label>
+                        <div class="flex-center gap-3 mt-2">
                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                 <input type="radio" name="multilingual" value="1" {{ old('multilingual', $settings['multilingual']) == '1' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.yes') }}</span>
@@ -72,7 +72,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="default_language" class="form-label">{{ __('cms.default_language') }} <span style="color: #ef4444;">*</span></label>
+                        <label for="default_language" class="form-label">{{ __('cms.default_language') }}</label>
                         <select id="default_language" name="default_language" required class="form-input">
                             <option value="">{{ __('cms.default_language') }}</option>
                             <option value="en" {{ old('default_language', $settings['default_language']) == 'en' ? 'selected' : '' }}>{{ __('cms.english') }}</option>
@@ -84,8 +84,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="theme_mode" class="form-label">{{ __('cms.theme_mode') }} <span style="color: #ef4444;">*</span></label>
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
+                        <label for="theme_mode" class="form-label">{{ __('cms.theme_mode') }}</label>
+                        <div class="flex-center gap-3 mt-2">
                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                 <input type="radio" name="theme_mode" value="light" {{ old('theme_mode', $settings['theme_mode'] ?? 'light') == 'light' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.light_mode') }}</span>
@@ -103,11 +103,11 @@
 
                 <!-- Right Column: Additional Settings -->
                 <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e5e7eb;">{{ __('cms.additional_settings') }}</h3>
+                    <h3 class="settings-section-header">{{ __('cms.additional_settings') }}</h3>
                     
                     <div class="form-group">
-                        <label class="form-label">{{ __('cms.multi_currency') }} <span style="color: #ef4444;">*</span></label>
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem;">
+                        <label class="form-label">{{ __('cms.multi_currency') }}</label>
+                        <div class="flex-center gap-3 mt-2">
                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                 <input type="radio" name="multi_currency" value="1" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '1' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.yes') }}</span>
@@ -124,7 +124,7 @@
 
                     <div class="form-group">
                         <label class="form-label">{{ __('cms.notify_by') }}</label>
-                        <div style="display: flex; align-items: center; gap: 1.5rem; margin-top: 0.5rem;">
+                        <div class="flex-center gap-4 mt-2">
                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                                 <input type="checkbox" name="notify_by_email" value="1" {{ old('notify_by_email', $settings['notify_by_email'] ?? '1') == '1' ? 'checked' : '' }}>
                                 <span>{{ __('cms.email') }}</span>
@@ -145,7 +145,7 @@
             </div>
 
             <!-- Full Width: Delivery Countries -->
-            <div class="form-group" style="margin-bottom: 2rem;">
+            <div class="form-group mb-8">
                 <label for="delivery_countries" class="form-label">{{ __('cms.delivery_shipping_to_countries') }}</label>
                 <div class="custom-multiselect" style="position: relative; max-width: 500px;">
                     <div class="multiselect-trigger" id="countriesTrigger" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 42px;">
@@ -190,69 +190,69 @@
             </div>
 
             <!-- Action Buttons -->
-            <div style="display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e5e7eb;">
+            <div class="flex gap-4 mt-8 pt-6 border-top-2">
                 <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
-                <a href="{{ route('dashboard') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-gray">{{ __('cms.cancel') }}</a>
             </div>
         </form>
     </div>
 
     <!-- Multi-Currency Settings Tab -->
     <div id="currency-tab" class="settings-tab-content" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1.5rem; font-weight: 600;">{{ __('cms.multi_currency_settings') }}</h3>
+        <div class="flex-between mb-6">
+            <h3 class="section-subheader">{{ __('cms.multi_currency_settings') }}</h3>
             <button type="button" class="btn btn-primary" onclick="openAddCurrencyModal()">{{ __('cms.add_currency') }}</button>
         </div>
 
     <!-- Currency List -->
-    <div style="margin-bottom: 2rem;">
-        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">{{ __('cms.currencies') }}</h3>
+    <div class="mb-8">
+        <h3 class="text-lg font-semibold mb-4">{{ __('cms.currencies') }}</h3>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr class="table-header-row">
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.code') }}</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.name') }}</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.symbol') }}</th>
-                        <th style="padding: 0.75rem; text-align: center; font-weight: 600;">{{ __('cms.default') }}</th>
-                        <th style="padding: 0.75rem; text-align: center; font-weight: 600;">{{ __('cms.active') }}</th>
-                        <th style="padding: 0.75rem; text-align: right; font-weight: 600;">{{ __('cms.actions') }}</th>
+                        <th class="table-cell font-semibold">{{ __('cms.code') }}</th>
+                        <th class="table-cell font-semibold">{{ __('cms.name') }}</th>
+                        <th class="table-cell font-semibold">{{ __('cms.symbol') }}</th>
+                        <th class="table-cell font-semibold text-center">{{ __('cms.default') }}</th>
+                        <th class="table-cell font-semibold text-center">{{ __('cms.active') }}</th>
+                        <th class="table-cell font-semibold text-right">{{ __('cms.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($currencies as $currency)
-                        <tr style="border-bottom: 1px solid #e5e7eb;">
-                            <td style="padding: 0.75rem;"><strong>{{ $currency->code }}</strong></td>
-                            <td style="padding: 0.75rem;">{{ $currency->name }}</td>
-                            <td style="padding: 0.75rem;">{{ $currency->symbol }}</td>
-                            <td style="padding: 0.75rem; text-align: center;">
+                        <tr class="border-bottom">
+                            <td class="table-cell"><strong>{{ $currency->code }}</strong></td>
+                            <td class="table-cell">{{ $currency->name }}</td>
+                            <td class="table-cell">{{ $currency->symbol }}</td>
+                            <td class="table-cell text-center">
                                 @if($currency->is_default)
-                                    <span style="color: #10b981; font-weight: 600;">✓ {{ __('cms.default') }}</span>
+                                    <span class="status-default">✓ {{ __('cms.default') }}</span>
                                 @else
-                                    <span style="color: #6b7280;">-</span>
+                                    <span class="status-dash">-</span>
                                 @endif
                             </td>
-                            <td style="padding: 0.75rem; text-align: center;">
+                            <td class="table-cell text-center">
                                 @if($currency->is_active)
-                                    <span style="color: #10b981;">{{ __('cms.active') }}</span>
+                                    <span class="status-active">{{ __('cms.active') }}</span>
                                 @else
-                                    <span style="color: #ef4444;">{{ __('cms.inactive') }}</span>
+                                    <span class="status-inactive">{{ __('cms.inactive') }}</span>
                                 @endif
                             </td>
-                            <td style="padding: 0.75rem; text-align: right;">
-                                <button type="button" class="btn" style="padding: 0.375rem 0.75rem; font-size: 0.875rem; background-color: #099ecb; color: white; margin-right: 0.5rem;" onclick="openEditCurrencyModal({{ $currency->id }}, '{{ addslashes($currency->code) }}', '{{ addslashes($currency->name) }}', '{{ addslashes($currency->symbol) }}', {{ $currency->is_default ? 'true' : 'false' }}, {{ $currency->is_active ? 'true' : 'false' }})">{{ __('cms.edit') }}</button>
+                            <td class="table-cell text-right">
+                                <button type="button" class="btn btn-primary btn-small" style="margin-right: 0.5rem;" onclick="openEditCurrencyModal({{ $currency->id }}, '{{ addslashes($currency->code) }}', '{{ addslashes($currency->name) }}', '{{ addslashes($currency->symbol) }}', {{ $currency->is_default ? 'true' : 'false' }}, {{ $currency->is_active ? 'true' : 'false' }})">{{ __('cms.edit') }}</button>
                                 @if(!$currency->is_default && $currencies->count() > 1)
-                                    <form method="POST" action="{{ route('settings.currencies.delete', $currency) }}" style="display: inline;" onsubmit="return confirm('{{ __('cms.confirm_delete_currency') }}');">
+                                    <form method="POST" action="{{ route('settings.currencies.delete', $currency) }}" class="inline-form" onsubmit="return confirm('{{ __('cms.confirm_delete_currency') }}');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn" style="padding: 0.375rem 0.75rem; font-size: 0.875rem; background-color: #ef4444; color: white;">{{ __('cms.delete') }}</button>
+                                        <button type="submit" class="btn btn-small" style="background-color: #ef4444; color: white;">{{ __('cms.delete') }}</button>
                                     </form>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="padding: 2rem; text-align: center; color: #6b7280;">{{ __('cms.no_currencies_found') }}</td>
+                            <td colspan="6" class="p-6 text-center text-gray">{{ __('cms.no_currencies_found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -356,21 +356,21 @@
             @csrf
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="currency_code" class="form-label">{{ __('cms.currency_code') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="currency_code" class="form-label">{{ __('cms.currency_code') }}</label>
                     <input type="text" id="currency_code" name="code" required maxlength="3" class="form-input" placeholder="USD" style="text-transform: uppercase;">
                     @error('code')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="currency_name" class="form-label">{{ __('cms.currency_name') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="currency_name" class="form-label">{{ __('cms.currency_name') }}</label>
                     <input type="text" id="currency_name" name="name" required class="form-input" placeholder="{{ __('cms.currency_name_placeholder') }}">
                     @error('name')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="currency_symbol" class="form-label">{{ __('cms.symbol') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="currency_symbol" class="form-label">{{ __('cms.symbol') }}</label>
                     <input type="text" id="currency_symbol" name="symbol" required maxlength="10" class="form-input" placeholder="$">
                     @error('symbol')
                         <span class="form-error">{{ $message }}</span>
@@ -413,21 +413,21 @@
             @method('PUT')
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="edit_currency_code" class="form-label">{{ __('cms.currency_code') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="edit_currency_code" class="form-label">{{ __('cms.currency_code') }}</label>
                     <input type="text" id="edit_currency_code" name="code" required maxlength="3" class="form-input" placeholder="USD" style="text-transform: uppercase;">
                     @error('code')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="edit_currency_name" class="form-label">{{ __('cms.currency_name') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="edit_currency_name" class="form-label">{{ __('cms.currency_name') }}</label>
                     <input type="text" id="edit_currency_name" name="name" required class="form-input" placeholder="{{ __('cms.currency_name_placeholder') }}">
                     @error('name')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label for="edit_currency_symbol" class="form-label">{{ __('cms.symbol') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="edit_currency_symbol" class="form-label">{{ __('cms.symbol') }}</label>
                     <input type="text" id="edit_currency_symbol" name="symbol" required maxlength="10" class="form-input" placeholder="$">
                     @error('symbol')
                         <span class="form-error">{{ $message }}</span>

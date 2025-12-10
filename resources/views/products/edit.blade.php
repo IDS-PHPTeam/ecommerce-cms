@@ -3,36 +3,36 @@
 @section('title', __('cms.edit_product'))
 
 @section('content')
-<div class="card" style="padding-bottom: 90px; margin-bottom: 0;">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.edit_product') }}</h2>
+<div class="card pb-90 mb-0">
+    <h2 class="section-heading-lg mb-6">{{ __('cms.edit_product') }}</h2>
 
     <form method="POST" action="{{ route('products.update', $product) }}" enctype="multipart/form-data" id="productForm">
         @csrf
         @method('PUT')
 
         <!-- Tabs Navigation -->
-        <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
-            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.general_information') }}</button>
-            <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.media') }}</button>
-            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'simple' ? 'block' : 'none' }};">{{ __('cms.stock_pricing') }}</button>
-            <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">{{ __('cms.attributes') }}</button>
-            <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">{{ __('cms.variations') }}</button>
+        <div class="tabs-nav">
+            <button type="button" class="tab-btn active" data-tab="general">{{ __('cms.general_information') }}</button>
+            <button type="button" class="tab-btn" data-tab="media">{{ __('cms.media') }}</button>
+            <button type="button" class="tab-btn {{ old('product_type', $product->product_type) == 'simple' ? 'd-block' : 'd-none' }}" data-tab="simple-fields" id="simpleFieldsTabBtn">{{ __('cms.stock_pricing') }}</button>
+            <button type="button" class="tab-btn {{ old('product_type', $product->product_type) == 'variable' ? 'd-block' : 'd-none' }}" data-tab="attributes" id="attributesTab">{{ __('cms.attributes') }}</button>
+            <button type="button" class="tab-btn {{ old('product_type', $product->product_type) == 'variable' ? 'd-block' : 'd-none' }}" data-tab="variations" id="variationsTab">{{ __('cms.variations') }}</button>
         </div>
 
         <!-- Tab 1: General Information -->
-        <div id="generalTab" class="tab-content active" style="display: block;">
+        <div id="generalTab" class="tab-content active">
             <div class="form-group">
-                <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <label class="form-label">{{ __('cms.name') }} <span class="required-asterisk">*</span></label>
+                <div class="grid grid-2 gap-4">
                     <div>
-                        <label for="name_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
+                        <label for="name_en" class="input-label-small">{{ __('cms.english') }}</label>
                         <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $product->name_en ?: $product->name) }}" class="form-input" placeholder="{{ __('cms.product_name_english') }}">
                         @error('name_en')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
                     <div>
-                        <label for="name_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
+                        <label for="name_ar" class="input-label-small">{{ __('cms.arabic') }}</label>
                         <input type="text" id="name_ar" name="name_ar" value="{{ old('name_ar', $product->name_ar ?: $product->name) }}" class="form-input" placeholder="{{ __('cms.product_name_arabic') }}" dir="rtl">
                         @error('name_ar')
                             <span class="form-error">{{ $message }}</span>
@@ -47,16 +47,16 @@
 
             <div class="form-group">
                 <label class="form-label">{{ __('cms.description') }}</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="grid grid-2 gap-4">
                     <div>
-                        <label for="description_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
+                        <label for="description_en" class="input-label-small">{{ __('cms.english') }}</label>
                         <textarea id="description_en" name="description_en" rows="4" class="form-input" placeholder="{{ __('cms.product_description_english') }}">{{ old('description_en', $product->description_en ?: $product->description) }}</textarea>
                         @error('description_en')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
                     <div>
-                        <label for="description_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
+                        <label for="description_ar" class="input-label-small">{{ __('cms.arabic') }}</label>
                         <textarea id="description_ar" name="description_ar" rows="4" class="form-input" placeholder="{{ __('cms.product_description_arabic') }}" dir="rtl">{{ old('description_ar', $product->description_ar ?: $product->description) }}</textarea>
                         @error('description_ar')
                             <span class="form-error">{{ $message }}</span>
@@ -69,9 +69,9 @@
                 @enderror
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="grid grid-auto-250 gap-4">
                 <div class="form-group">
-                    <label for="product_type" class="form-label">Product Type <span style="color: #ef4444;">*</span></label>
+                    <label for="product_type" class="form-label">Product Type <span class="required-asterisk">*</span></label>
                     <select id="product_type" name="product_type" required class="form-input">
                         <option value="simple" {{ old('product_type', $product->product_type) == 'simple' ? 'selected' : '' }}>Simple</option>
                         <option value="variable" {{ old('product_type', $product->product_type) == 'variable' ? 'selected' : '' }}>Variable</option>
@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="status" class="form-label">Status <span style="color: #ef4444;">*</span></label>
+                    <label for="status" class="form-label">Status <span class="required-asterisk">*</span></label>
                     <select id="status" name="status" required class="form-input">
                         <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
@@ -94,33 +94,33 @@
             </div>
 
             <!-- Categories (Multi-select) -->
-            <div class="form-group" style="margin-top: 1rem;">
+            <div class="form-group mt-4">
                 <label for="categories" class="form-label">Categories</label>
-                <div class="custom-multiselect" style="position: relative;">
-                    <div class="multiselect-trigger" id="categoriesTrigger" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 42px;">
-                        <div class="multiselect-selected" style="color: #374151; flex: 1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                            <span class="placeholder-text" style="color: #9ca3af;">Select categories</span>
-                            <div class="selected-categories-tags" style="display: none; flex-wrap: wrap; gap: 0.5rem;">
+                <div class="custom-multiselect relative">
+                    <div class="multiselect-trigger multiselect-trigger-full" id="categoriesTrigger">
+                        <div class="multiselect-selected">
+                            <span class="placeholder-text text-quaternary">Select categories</span>
+                            <div class="selected-categories-tags d-none flex-wrap gap-2">
                                 <!-- Selected category tags will be added here -->
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <button type="button" class="clear-all-categories-btn" style="display: none; background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem; font-size: 0.875rem;" title="Clear all">Clear All</button>
-                            <svg class="multiselect-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: #6b7280; transition: transform 0.2s;">
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="clear-all-categories-btn d-none bg-none border-0 text-red cursor-pointer p-1 text-sm" title="Clear all">Clear All</button>
+                            <svg class="multiselect-arrow text-tertiary" style="transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
                     </div>
-                    <div class="multiselect-dropdown" id="categoriesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-top: 0.25rem; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                    <div class="multiselect-dropdown multiselect-dropdown-full" id="categoriesDropdown">
                         @foreach($categories as $category)
-                            <label class="multiselect-option" style="display: flex; align-items: center; padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s;">
+                            <label class="multiselect-option multiselect-option-item">
                                 <input type="checkbox" name="categories[]" value="{{ $category->id }}" class="category-checkbox" data-category-name="{{ $category->name }}" {{ in_array($category->id, old('categories', $product->categories->pluck('id')->toArray())) ? 'checked' : '' }} style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
-                                <span style="color: #374151; user-select: none;">{{ $category->name }}</span>
+                                <span class="text-secondary user-select-none">{{ $category->name }}</span>
                             </label>
                         @endforeach
                     </div>
                 </div>
-                <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">Select one or more categories</small>
+                <small class="text-tertiary text-sm mt-1 d-block">Select one or more categories</small>
                 @error('categories')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -205,7 +205,7 @@
 
         <!-- Tab 3: Stock & Pricing (Simple Products Only) -->
         <div id="simpleFieldsTab" class="tab-content" style="display: none;">
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Pricing</h3>
+            <h3 class="section-heading mb-4">Pricing</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                 <div class="form-group">
                     <label for="price" class="form-label">Price <span style="color: #ef4444;">*</span></label>
@@ -224,7 +224,7 @@
                 </div>
             </div>
 
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 1rem 0; color: #1f2937;">Stock Management</h3>
+            <h3 class="section-heading" style="margin: 1.5rem 0 1rem 0;">Stock Management</h3>
             <div class="form-group">
                 <label for="track_stock" class="form-label">Track Stock</label>
                 <select id="track_stock" name="track_stock" class="form-input">

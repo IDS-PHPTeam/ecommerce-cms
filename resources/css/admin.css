@@ -2275,7 +2275,8 @@ html[dir="rtl"] .sidebar {
 }
 
 /* Settings General Tab Improvements */
-.settings-tab-content h3 {
+.settings-tab-content h3,
+.settings-section-header {
     color: #1f2937;
     font-size: 1.25rem;
     font-weight: 600;
@@ -2284,13 +2285,260 @@ html[dir="rtl"] .sidebar {
     border-bottom: 2px solid #e5e7eb;
 }
 
-[data-theme="dark"] .settings-tab-content h3 {
+[data-theme="dark"] .settings-tab-content h3,
+[data-theme="dark"] .settings-section-header {
     color: var(--text-primary);
     border-bottom-color: var(--border-color);
 }
 
 [data-theme="dark"] .settings-tab-content small {
     color: var(--text-tertiary);
+}
+
+/* ============================================
+   UTILITY CLASSES FOR INLINE STYLES
+   ============================================ */
+
+/* Text Colors */
+.text-red { color: #ef4444; }
+.text-green { color: #10b981; }
+.text-gray { color: #6b7280; }
+.text-gray-light { color: #9ca3af; }
+.text-gray-dark { color: #374151; }
+.text-primary-dark { color: #1f2937; }
+
+[data-theme="dark"] .text-red { color: #ef4444; }
+[data-theme="dark"] .text-green { color: #10b981; }
+[data-theme="dark"] .text-gray { color: var(--text-secondary); }
+[data-theme="dark"] .text-gray-light { color: var(--text-tertiary); }
+[data-theme="dark"] .text-gray-dark { color: var(--text-secondary); }
+[data-theme="dark"] .text-primary-dark { color: var(--text-primary); }
+
+/* Background Colors */
+.bg-white { background-color: white; }
+.bg-gray-light { background-color: #f9fafb; }
+.bg-gray-lighter { background-color: #f3f4f6; }
+.bg-gray-border { background-color: #e5e7eb; }
+
+[data-theme="dark"] .bg-white { background-color: var(--card-bg); }
+[data-theme="dark"] .bg-gray-light { background-color: var(--bg-secondary); }
+[data-theme="dark"] .bg-gray-lighter { background-color: var(--bg-tertiary); }
+[data-theme="dark"] .bg-gray-border { background-color: var(--bg-tertiary); }
+
+/* Spacing Utilities */
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+
+/* Layout Utilities */
+.flex { display: flex; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-center { display: flex; align-items: center; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.grid { display: grid; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-auto { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* Text Utilities */
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.25rem; }
+.text-xl { font-size: 1.5rem; }
+.text-2xl { font-size: 1.875rem; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Border Utilities */
+.border-bottom { border-bottom: 1px solid #e5e7eb; }
+.border-bottom-2 { border-bottom: 2px solid #e5e7eb; }
+.border-top { border-top: 1px solid #e5e7eb; }
+.border-top-2 { border-top: 2px solid #e5e7eb; }
+
+[data-theme="dark"] .border-bottom,
+[data-theme="dark"] .border-bottom-2,
+[data-theme="dark"] .border-top,
+[data-theme="dark"] .border-top-2 {
+    border-color: var(--border-color);
+}
+
+/* Table Cell Padding */
+.table-cell { padding: 0.75rem; }
+
+/* Status Badges */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-badge-active {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge-inactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+[data-theme="dark"] .status-badge-active {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+[data-theme="dark"] .status-badge-inactive {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+/* Button Variants */
+.btn-gray {
+    background-color: #6b7280;
+    color: white;
+}
+
+.btn-small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Section Headers */
+.section-header {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.section-subheader {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .section-header,
+[data-theme="dark"] .section-subheader {
+    color: var(--text-primary);
+}
+
+/* Image Placeholder */
+.image-placeholder {
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+}
+
+[data-theme="dark"] .image-placeholder {
+    background-color: var(--bg-tertiary);
+    color: var(--text-tertiary);
+}
+
+/* Required Field Asterisk */
+.required-asterisk {
+    color: #ef4444;
+}
+
+/* Settings Grid Layout */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.settings-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e5e7eb;
+}
+
+[data-theme="dark"] .form-actions {
+    border-top-color: var(--border-color);
+}
+
+/* Currency Table Styles */
+.currency-table-cell {
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.currency-table-cell-center {
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.currency-table-cell-right {
+    padding: 0.75rem;
+    text-align: right;
+}
+
+/* Status Text Colors */
+.status-active {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: #ef4444;
+}
+
+.status-default {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.status-dash {
+    color: #6b7280;
+}
+
+[data-theme="dark"] .status-active,
+[data-theme="dark"] .status-default {
+    color: #10b981;
+}
+
+[data-theme="dark"] .status-inactive {
+    color: #ef4444;
+}
+
+[data-theme="dark"] .status-dash {
+    color: var(--text-secondary);
+}
+
+/* Text Alignment */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-left { text-align: left; }
+
+/* Inline Form */
+.inline-form {
+    display: inline;
 }
 
 /* Roles and Permissions - Assign Permissions Tab */

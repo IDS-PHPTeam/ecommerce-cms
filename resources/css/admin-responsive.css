@@ -1,0 +1,327 @@
+﻿@media (max-width: 640px) {
+    .language-switcher {
+        font-size: 0.8125rem;
+    }
+    
+    .language-link {
+        padding: 0.3rem 0.4rem;
+        font-size: 0.8125rem;
+    }
+    
+    .language-separator {
+        padding: 0 0.2rem;
+        font-size: 0.8125rem;
+    }
+}
+@media (max-width: 768px) {
+    /* Header adjustments */
+    .header {
+        padding: 1rem;
+    }
+
+    .header-content {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    /* Sidebar adjustments */
+    .sidebar {
+        width: 70px;
+    }
+
+    .sidebar.collapsed {
+        width: 70px;
+    }
+
+    .main-content {
+        margin-left: 70px;
+        padding: 1rem;
+    }
+
+    .sidebar.collapsed ~ .main-content {
+        margin-left: 70px;
+    }
+
+    /* Card padding */
+    .card {
+        padding: 1rem;
+    }
+
+    /* Page header with title and button */
+    .card > div:first-child {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .card > div:first-child h2 {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+    }
+
+    .card > div:first-child .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Filter forms */
+    .card form {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .card form > div {
+        flex: 1 1 100% !important;
+        min-width: 100% !important;
+        width: 100%;
+    }
+
+    .card form > div:last-child {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .card form > div:last-child .btn {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+
+    /* Tables - horizontal scroll on mobile */
+    [style*="overflow-x: auto"] {
+        -webkit-overflow-scrolling: touch;
+        overflow-x: auto;
+        width: 100%;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+
+    table {
+        font-size: 0.875rem;
+        min-width: 600px;
+    }
+
+    table th,
+    table td {
+        padding: 0.5rem 0.375rem;
+    }
+
+    /* Products table - Hide ID column on mobile */
+    table th:nth-child(1),
+    table td:nth-child(1) {
+        display: none; /* Hide ID column */
+    }
+
+    /* Products table - Make image column smaller */
+    table th:nth-child(2),
+    table td:nth-child(2) {
+        width: 40px;
+        padding: 0.5rem 0.25rem;
+        min-width: 40px;
+    }
+
+    table td:nth-child(2) img,
+    table td:nth-child(2) div[style*="width: 50px"] {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    /* Compact text in cells */
+    table td {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    /* Products table - Name column */
+    table td:nth-child(3) {
+        max-width: 120px;
+        font-weight: 600;
+    }
+
+    /* Products table - Price column */
+    table td:nth-child(4) {
+        max-width: 90px;
+        font-size: 0.8125rem;
+    }
+
+    /* Products table - Stock column */
+    table td:nth-child(5) {
+        max-width: 90px;
+    }
+
+    /* Products table - Status column */
+    table td:nth-child(6) {
+        max-width: 80px;
+    }
+
+    /* Categories table - Name column (after ID is hidden, this becomes 2nd) */
+    /* But since we're hiding ID, categories name is still 2nd child */
+    /* We'll handle this differently - don't hide ID for categories */
+
+    /* Status badges - smaller */
+    table td span[style*="border-radius: 9999px"] {
+        font-size: 0.75rem !important;
+        padding: 0.125rem 0.5rem !important;
+        white-space: nowrap;
+        display: inline-block;
+    }
+
+    /* Action buttons container */
+    table td:last-child {
+        white-space: nowrap;
+        min-width: 70px;
+    }
+
+    /* Description column in categories - make it shorter */
+    table td:nth-child(3) {
+        max-width: 150px;
+    }
+
+    /* Action buttons in tables */
+    .action-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .action-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Form grids - stack on mobile */
+    [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Form groups */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* Image previews */
+    #currentImageContainer,
+    #imagePreview {
+        width: 100%;
+    }
+
+    #currentImageContainer img,
+    #imagePreview img {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Product show page grid */
+    [style*="grid-template-columns: 300px"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Dashboard stats grid */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Button groups */
+    [style*="display: flex"][style*="gap"] {
+        flex-direction: column;
+    }
+
+    [style*="display: flex"][style*="gap"] .btn {
+        width: 100%;
+    }
+}
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .main-content {
+        padding: 0.5rem;
+    }
+
+    .card {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .card > div:first-child h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Table container */
+    [style*="overflow-x: auto"] {
+        margin: 0 -0.75rem;
+        padding: 0 0.75rem;
+    }
+
+    table {
+        font-size: 0.75rem;
+        min-width: 500px;
+    }
+
+    table th,
+    table td {
+        padding: 0.375rem 0.25rem;
+    }
+
+    /* On very small screens, make columns even more compact */
+    table td:nth-child(3) {
+        max-width: 100px;
+    }
+
+    /* Categories description - limit width */
+    table td:nth-child(3)[style*="color: #6b7280"] {
+        max-width: 120px;
+        font-size: 0.7rem;
+    }
+
+    /* Smaller images */
+    table td img,
+    table td div[style*="width: 50px"] {
+        width: 35px !important;
+        height: 35px !important;
+    }
+
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Action buttons even smaller */
+    .action-btn {
+        width: 24px;
+        height: 24px;
+    }
+
+    .action-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Media grid on mobile */
+    [style*="grid-template-columns: repeat(auto-fill"] {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+        gap: 1rem !important;
+    }
+
+    /* Modal on mobile */
+    .modal-content {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
