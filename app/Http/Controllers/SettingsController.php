@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Setting;
 use App\Models\Currency;
 use App\Models\CurrencyExchangeRate;
+use App\Models\Country;
 use App\Traits\LogsAudit;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -21,11 +22,23 @@ class SettingsController extends Controller
      */
     public function index()
     {
+        // Get delivery countries and decode JSON if needed
+        $deliveryCountriesSetting = Setting::get('delivery_countries', 'LB');
+        $deliveryCountries = is_string($deliveryCountriesSetting) ? json_decode($deliveryCountriesSetting, true) : $deliveryCountriesSetting;
+        if (!is_array($deliveryCountries)) {
+            // Handle legacy single country value
+            $deliveryCountries = [$deliveryCountriesSetting];
+        }
+
         $settings = [
             'timezone' => Setting::get('timezone', 'UTC'),
             'multilingual' => Setting::get('multilingual', '0'),
             'default_language' => Setting::get('default_language', 'en'),
             'multi_currency' => Setting::get('multi_currency', '0'),
+            'notify_by_email' => Setting::get('notify_by_email', '1'),
+            'notify_by_push' => Setting::get('notify_by_push', '0'),
+            'theme_mode' => Setting::get('theme_mode', 'light'),
+            'delivery_countries' => $deliveryCountries,
         ];
 
         $currencies = Currency::orderBy('is_default', 'desc')
@@ -40,7 +53,9 @@ class SettingsController extends Controller
             $rateMatrix[$rate->from_currency_id][$rate->to_currency_id] = $rate->rate;
         }
 
-        return view('settings.index', compact('settings', 'currencies', 'rateMatrix'));
+        $countries = Country::orderBy('country_name_en')->get();
+
+        return view('settings.index', compact('settings', 'currencies', 'rateMatrix', 'countries'));
     }
 
     /**
@@ -56,29 +71,56 @@ class SettingsController extends Controller
             'multilingual' => 'required|in:0,1',
             'default_language' => 'required|in:en,ar',
             'multi_currency' => 'required|in:0,1',
+            'notify_by_email' => 'nullable|in:0,1',
+            'notify_by_push' => 'nullable|in:0,1',
+            'theme_mode' => 'required|in:light,dark',
+            'delivery_countries' => 'nullable|array',
+            'delivery_countries.*' => 'required|string|exists:countries,country_code',
         ]);
 
         $oldTimezone = Setting::get('timezone', 'UTC');
         $oldMultilingual = Setting::get('multilingual', '0');
         $oldDefaultLanguage = Setting::get('default_language', 'en');
         $oldMultiCurrency = Setting::get('multi_currency', '0');
+        $oldNotifyByEmail = Setting::get('notify_by_email', '1');
+        $oldNotifyByPush = Setting::get('notify_by_push', '0');
+        $oldThemeMode = Setting::get('theme_mode', 'light');
+        $oldDeliveryCountriesSetting = Setting::get('delivery_countries', 'LB');
+        $oldDeliveryCountries = is_string($oldDeliveryCountriesSetting) ? json_decode($oldDeliveryCountriesSetting, true) : $oldDeliveryCountriesSetting;
+        if (!is_array($oldDeliveryCountries)) {
+            $oldDeliveryCountries = [$oldDeliveryCountriesSetting];
+        }
 
         Setting::set('timezone', $validated['timezone']);
         Setting::set('multilingual', $validated['multilingual']);
         Setting::set('default_language', $validated['default_language']);
         Setting::set('multi_currency', $validated['multi_currency']);
+        Setting::set('notify_by_email', $validated['notify_by_email'] ?? '0');
+        Setting::set('notify_by_push', $validated['notify_by_push'] ?? '0');
+        Setting::set('theme_mode', $validated['theme_mode']);
+        // Store delivery countries as JSON array
+        $deliveryCountries = $validated['delivery_countries'] ?? ['LB'];
+        Setting::set('delivery_countries', json_encode($deliveryCountries));
 
         $oldValues = [
             'timezone' => $oldTimezone,
             'multilingual' => $oldMultilingual,
             'default_language' => $oldDefaultLanguage,
             'multi_currency' => $oldMultiCurrency,
+            'notify_by_email' => $oldNotifyByEmail,
+            'notify_by_push' => $oldNotifyByPush,
+            'theme_mode' => $oldThemeMode,
+            'delivery_countries' => $oldDeliveryCountries,
         ];
         $newValues = [
             'timezone' => $validated['timezone'],
             'multilingual' => $validated['multilingual'],
             'default_language' => $validated['default_language'],
             'multi_currency' => $validated['multi_currency'],
+            'notify_by_email' => $validated['notify_by_email'] ?? '0',
+            'notify_by_push' => $validated['notify_by_push'] ?? '0',
+            'theme_mode' => $validated['theme_mode'],
+            'delivery_countries' => $deliveryCountries,
         ];
 
         $this->logAudit('updated', null, 'General settings updated', $oldValues, $newValues);
@@ -118,7 +160,7 @@ class SettingsController extends Controller
         $this->logAudit('created', $currency, "Currency created: {$currency->code} - {$currency->name}");
 
         return redirect()->route('settings.index')
-            ->with('success', 'Currency added successfully.');
+            ->with('success', __('cms.currency_added_successfully'));
     }
 
     /**
@@ -153,7 +195,7 @@ class SettingsController extends Controller
         $this->logAudit('updated', $currency, "Currency updated: {$currency->code} - {$currency->name}", $oldValues, $currency->toArray());
 
         return redirect()->route('settings.index')
-            ->with('success', 'Currency updated successfully.');
+            ->with('success', __('cms.currency_updated_successfully'));
     }
 
     /**
@@ -168,12 +210,12 @@ class SettingsController extends Controller
         $currencyCount = Currency::count();
         if ($currencyCount <= 1) {
             return redirect()->route('settings.index')
-                ->with('error', 'Cannot delete the last currency.');
+                ->with('error', __('cms.cannot_delete_last_currency'));
         }
 
         if ($currency->is_default) {
             return redirect()->route('settings.index')
-                ->with('error', 'Cannot delete the default currency. Please set another currency as default first.');
+                ->with('error', __('cms.cannot_delete_default_currency'));
         }
 
         $currencyCode = $currency->code;
@@ -182,7 +224,7 @@ class SettingsController extends Controller
         $this->logAudit('deleted', null, "Currency deleted: {$currencyCode}");
 
         return redirect()->route('settings.index')
-            ->with('success', 'Currency deleted successfully.');
+            ->with('success', __('cms.currency_deleted_successfully'));
     }
 
     /**
@@ -227,12 +269,32 @@ class SettingsController extends Controller
             $this->logAudit('updated', null, 'Exchange rates updated');
 
             return redirect()->route('settings.index')
-                ->with('success', 'Exchange rates updated successfully.');
+                ->with('success', __('cms.exchange_rates_updated_successfully'));
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('settings.index')
-                ->with('error', 'Failed to update exchange rates: ' . $e->getMessage());
+                ->with('error', __('cms.failed_to_update_exchange_rates') . ': ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Update theme mode via AJAX.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateTheme(Request $request)
+    {
+        $validated = $request->validate([
+            'theme_mode' => 'required|in:light,dark',
+        ]);
+
+        Setting::set('theme_mode', $validated['theme_mode']);
+
+        return response()->json([
+            'success' => true,
+            'theme_mode' => $validated['theme_mode']
+        ]);
     }
 }
 

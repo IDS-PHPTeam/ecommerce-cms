@@ -75,6 +75,7 @@ Route::resource('customers', CustomerController::class)->middleware('auth');
 // Settings Routes
 Route::get('/settings', [SettingsController::class, 'index'])->middleware('auth')->name('settings.index');
 Route::put('/settings', [SettingsController::class, 'update'])->middleware('auth')->name('settings.update');
+Route::post('/settings/update-theme', [SettingsController::class, 'updateTheme'])->middleware('auth')->name('settings.update-theme');
 Route::post('/settings/currencies', [SettingsController::class, 'storeCurrency'])->middleware('auth')->name('settings.currencies.store');
 Route::put('/settings/currencies/{currency}', [SettingsController::class, 'updateCurrency'])->middleware('auth')->name('settings.currencies.update');
 Route::delete('/settings/currencies/{currency}', [SettingsController::class, 'deleteCurrency'])->middleware('auth')->name('settings.currencies.delete');

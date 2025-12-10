@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" data-theme="{{ $themeMode ?? 'light' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,6 +27,14 @@
             </div>
             <div class="header-actions">
                 @include('components.language-switcher')
+                <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg id="themeIconLight" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: {{ ($themeMode ?? 'light') === 'dark' ? 'none' : 'block' }};">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="themeIconDark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: {{ ($themeMode ?? 'light') === 'dark' ? 'block' : 'none' }};">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
                 <div class="user-dropdown">
                     <button class="user-menu-toggle" id="userMenuToggle" aria-label="User menu">
                         <div class="user-avatar">
@@ -154,7 +162,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </span>
-                            <span class="sidebar-text">Settlements & Finance</span>
+                            <span class="sidebar-text">{{ __('cms.settlements_finance') }}</span>
                             <span class="sidebar-expand-icon">
                                 <svg class="icon-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -164,17 +172,17 @@
                         <ul class="sidebar-submenu {{ request()->routeIs('settlements.*') ? 'active' : '' }}">
                             <li class="sidebar-submenu-item">
                                 <a href="{{ route('settlements.history') }}" class="sidebar-submenu-link {{ request()->routeIs('settlements.history') ? 'active' : '' }}">
-                                    Settlement History
+                                    {{ __('cms.settlement_history') }}
                                 </a>
                             </li>
                             <li class="sidebar-submenu-item">
                                 <a href="{{ route('settlements.request') }}" class="sidebar-submenu-link {{ request()->routeIs('settlements.request') ? 'active' : '' }}">
-                                    Settlement Request
+                                    {{ __('cms.settlement_request') }}
                                 </a>
                             </li>
                             <li class="sidebar-submenu-item">
                                 <a href="{{ route('settlements.discrepancy-reports') }}" class="sidebar-submenu-link {{ request()->routeIs('settlements.discrepancy-reports') || request()->routeIs('settlements.payout-summary') || request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}">
-                                    Other
+                                    {{ __('cms.other') }}
                                 </a>
                             </li>
                         </ul>
@@ -298,6 +306,76 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/confirm-delete.js') }}"></script>
+    <script>
+        // Theme Toggle Functionality - Initialize immediately to prevent flash
+        (function() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme') || 'light';
+            html.setAttribute('data-theme', currentTheme);
+        })();
+        
+        // Theme Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            const themeIconLight = document.getElementById('themeIconLight');
+            const themeIconDark = document.getElementById('themeIconDark');
+            
+            // Get current theme from data attribute
+            let currentTheme = html.getAttribute('data-theme') || 'light';
+            
+            // Initialize icon display based on current theme
+            function updateIcons(theme) {
+                if (theme === 'dark') {
+                    if (themeIconLight) themeIconLight.style.display = 'none';
+                    if (themeIconDark) themeIconDark.style.display = 'block';
+                } else {
+                    if (themeIconLight) themeIconLight.style.display = 'block';
+                    if (themeIconDark) themeIconDark.style.display = 'none';
+                }
+            }
+            
+            // Set initial icon state
+            updateIcons(currentTheme);
+            
+            // Theme toggle handler
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    // Toggle theme
+                    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    html.setAttribute('data-theme', currentTheme);
+                    
+                    // Update icons
+                    updateIcons(currentTheme);
+                    
+                    // Save to server via AJAX
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (csrfToken) {
+                        fetch('{{ route("settings.update-theme") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                theme_mode: currentTheme
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log('Theme updated to:', data.theme_mode);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating theme:', error);
+                        });
+                    }
+                });
+            }
+        });
+    </script>
     <script>
         function toggleSubmenu(element) {
             const sidebarItem = element.closest('.sidebar-item');

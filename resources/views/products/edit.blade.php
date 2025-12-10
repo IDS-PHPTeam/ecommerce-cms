@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Product')
+@section('title', __('cms.edit_product'))
 
 @section('content')
-<div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">Edit Product</h2>
+<div class="card" style="padding-bottom: 90px; margin-bottom: 0;">
+    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.edit_product') }}</h2>
 
     <form method="POST" action="{{ route('products.update', $product) }}" enctype="multipart/form-data" id="productForm">
         @csrf
@@ -12,26 +12,58 @@
 
         <!-- Tabs Navigation -->
         <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
-            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">General Information</button>
-            <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">Media</button>
-            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'simple' ? 'block' : 'none' }};">Stock & Pricing</button>
-            <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">Attributes</button>
-            <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">Variations</button>
+            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.general_information') }}</button>
+            <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.media') }}</button>
+            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'simple' ? 'block' : 'none' }};">{{ __('cms.stock_pricing') }}</button>
+            <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">{{ __('cms.attributes') }}</button>
+            <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">{{ __('cms.variations') }}</button>
         </div>
 
         <!-- Tab 1: General Information -->
         <div id="generalTab" class="tab-content active" style="display: block;">
             <div class="form-group">
-                <label for="name" class="form-label">Name <span style="color: #ef4444;">*</span></label>
-                <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}" required class="form-input" placeholder="Product name">
+                <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="name_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
+                        <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $product->name_en ?: $product->name) }}" class="form-input" placeholder="{{ __('cms.product_name_english') }}">
+                        @error('name_en')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="name_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
+                        <input type="text" id="name_ar" name="name_ar" value="{{ old('name_ar', $product->name_ar ?: $product->name) }}" class="form-input" placeholder="{{ __('cms.product_name_arabic') }}" dir="rtl">
+                        @error('name_ar')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <input type="hidden" id="name" name="name" value="{{ old('name', $product->name) }}">
                 @error('name')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" name="description" rows="4" class="form-input" placeholder="Product description">{{ old('description', $product->description) }}</textarea>
+                <label class="form-label">{{ __('cms.description') }}</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="description_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
+                        <textarea id="description_en" name="description_en" rows="4" class="form-input" placeholder="{{ __('cms.product_description_english') }}">{{ old('description_en', $product->description_en ?: $product->description) }}</textarea>
+                        @error('description_en')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="description_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
+                        <textarea id="description_ar" name="description_ar" rows="4" class="form-input" placeholder="{{ __('cms.product_description_arabic') }}" dir="rtl">{{ old('description_ar', $product->description_ar ?: $product->description) }}</textarea>
+                        @error('description_ar')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <input type="hidden" id="description" name="description" value="{{ old('description', $product->description) }}">
                 @error('description')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -226,14 +258,12 @@
             </div>
         </div>
 
-        <!-- Variable Product Fields -->
-        <div id="variableProductFields" style="display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 1rem 0; color: #1f2937;">Product Variants</h3>
-            
-            <!-- Step 1: Select Attributes -->
-            <div id="attributeSelectionStep" class="form-group" style="margin-bottom: 1.5rem;">
-                <label class="form-label">Select Attributes for Variants</label>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+        <!-- Tab 4: Attributes (Variable Products Only) -->
+        <div id="attributesTabContent" class="tab-content" style="display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">
+            <div class="form-group">
+                <label class="form-label">{{ __('cms.select_attributes_for_variants') }}</label>
+                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">{{ __('cms.select_attributes_for_variants_description') }}</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                     @foreach($attributes as $attribute)
                         @php
                             // Check if this attribute is used in existing variants
@@ -251,22 +281,19 @@
                             <input type="checkbox" class="variant-attribute-checkbox" value="{{ $attribute->id }}" data-attribute-name="{{ $attribute->name }}" data-attribute-values="{{ json_encode($attribute->values->pluck('value', 'id')->toArray()) }}" {{ $isUsed ? 'checked' : '' }} style="margin-right: 0.5rem; width: 1rem; height: 1rem; cursor: pointer;">
                             <div style="flex: 1;">
                                 <div style="font-weight: 600; color: #374151;">{{ $attribute->name }}</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">{{ $attribute->values->count() }} values</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">{{ $attribute->values->count() }} {{ __('cms.values') }}</div>
                             </div>
                         </label>
                     @endforeach
                 </div>
                 @if($attributes->isEmpty())
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">No attributes available. Please create attributes first.</p>
+                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">{{ __('cms.no_attributes_available') }}</p>
                 @endif
             </div>
+        </div>
 
-            <!-- Step 2: Generate Combinations Button -->
-            <div id="generateCombinationsStep" style="display: none; margin-bottom: 1.5rem;">
-                <button type="button" id="generateCombinationsBtn" class="btn btn-primary">Generate New Variant Combinations</button>
-                <small style="color: #6b7280; font-size: 0.875rem; margin-left: 0.5rem; display: block; margin-top: 0.25rem;">This will create all possible combinations of selected attribute values (existing variants will be replaced)</small>
-            </div>
-
+        <!-- Tab 5: Variations (Variable Products Only) -->
+        <div id="variationsTabContent" class="tab-content" style="display: {{ old('product_type', $product->product_type) == 'variable' ? 'block' : 'none' }};">
             <div id="variantsList">
                 @foreach($product->variants as $index => $variant)
                     <div class="variant-form" data-variant-id="{{ $variant->id }}" style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1rem; background-color: #f9fafb;">
@@ -368,11 +395,15 @@
                     </div>
                 @endforeach
             </div>
-            <button type="button" id="addVariantBtn" class="btn btn-primary" style="margin-top: 1rem;">+ Add Variant</button>
+            <button type="button" id="addVariantBtn" class="btn btn-primary" style="margin-top: 1rem;">{{ __('cms.add_variant') }}</button>
             
             @error('variants')
                 <span class="form-error">{{ $message }}</span>
             @enderror
+        </div>
+
+        <!-- Variable Product Fields (Legacy - kept for backward compatibility) -->
+        <div id="variableProductFields" style="display: none;">
         </div>
         
         <!-- Store attributes data for JavaScript -->
@@ -386,13 +417,66 @@
                 ]];
             }))
         </script>
-
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{{ route('products.index') }}" class="btn" style="background-color: #6b7280; color: white;">Cancel</a>
-        </div>
     </form>
 </div>
+
+<!-- Save/Cancel buttons - Fixed at bottom of viewport, always visible -->
+<div id="productFormButtons" class="product-form-buttons">
+    <button type="submit" form="productForm" class="btn btn-primary" style="min-width: 120px; padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 600; cursor: pointer; background-color: #099ecb; color: white; border: none; border-radius: 0.375rem;">{{ __('cms.save') }}</button>
+    <a href="{{ route('products.index') }}" class="btn" style="background-color: #6b7280; color: white; min-width: 120px; padding: 0.75rem 1.5rem; text-decoration: none; display: inline-block; text-align: center; font-size: 1rem; font-weight: 600; border-radius: 0.375rem; cursor: pointer;">{{ __('cms.cancel') }}</a>
+</div>
+
+<script>
+    // Ensure buttons are always fixed at bottom of viewport
+    (function() {
+        const buttonsContainer = document.getElementById('productFormButtons');
+        if (!buttonsContainer) return;
+        
+        // Force fixed positioning
+        buttonsContainer.style.position = 'fixed';
+        buttonsContainer.style.bottom = '0';
+        buttonsContainer.style.zIndex = '9999';
+        
+        function updateButtonPosition() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar && buttonsContainer) {
+                const sidebarWidth = sidebar.offsetWidth || 250;
+                const computedStyle = window.getComputedStyle(sidebar);
+                const isVisible = computedStyle.display !== 'none' && computedStyle.visibility !== 'hidden';
+                
+                if (isVisible) {
+                    buttonsContainer.style.left = sidebarWidth + 'px';
+                } else {
+                    buttonsContainer.style.left = '0';
+                }
+            }
+        }
+        
+        // Initial update
+        updateButtonPosition();
+        
+        // Update on various events
+        window.addEventListener('resize', updateButtonPosition);
+        window.addEventListener('load', updateButtonPosition);
+        
+        // Watch for sidebar changes
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            const observer = new MutationObserver(function() {
+                updateButtonPosition();
+            });
+            observer.observe(sidebar, { 
+                attributes: true, 
+                attributeFilter: ['class', 'style'],
+                childList: false,
+                subtree: false
+            });
+        }
+        
+        // Fallback: check periodically
+        setInterval(updateButtonPosition, 1000);
+    })();
+</script>
 
 <!-- Image Selection Modal -->
 <div id="imageSelectionModal" class="modal-overlay" style="display: none;">
@@ -462,14 +546,14 @@ document.addEventListener('DOMContentLoaded', function() {
         'general': 'generalTab',
         'media': 'mediaTab',
         'simple-fields': 'simpleFieldsTab',
-        'attributes': 'attributesTab',
-        'variations': 'variationsTab'
+        'attributes': 'attributesTabContent',
+        'variations': 'variationsTabContent'
     };
     
     // Function to switch tabs
     function switchTab(targetTabId) {
         // Hide all tab contents
-        const mainTabContents = ['generalTab', 'mediaTab', 'simpleFieldsTab', 'attributesTab', 'variationsTab'];
+        const mainTabContents = ['generalTab', 'mediaTab', 'simpleFieldsTab', 'attributesTabContent', 'variationsTabContent'];
         mainTabContents.forEach(tabId => {
             const tabContent = document.getElementById(tabId);
             if (tabContent) {
@@ -530,8 +614,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const attributesTabBtn = document.getElementById('attributesTab');
     const variationsTabBtn = document.getElementById('variationsTab');
     const simpleFieldsTab = document.getElementById('simpleFieldsTab');
-    const attributesTab = document.getElementById('attributesTab');
-    const variationsTab = document.getElementById('variationsTab');
+    const attributesTabContent = document.getElementById('attributesTabContent');
+    const variationsTabContent = document.getElementById('variationsTabContent');
     
     if (productTypeSelect) {
         productTypeSelect.addEventListener('change', function() {
@@ -542,13 +626,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 variationsTabBtn.style.display = 'none';
                 
                 // Hide variable tab contents
-                attributesTab.style.display = 'none';
-                attributesTab.classList.remove('active');
-                variationsTab.style.display = 'none';
-                variationsTab.classList.remove('active');
+                attributesTabContent.style.display = 'none';
+                attributesTabContent.classList.remove('active');
+                variationsTabContent.style.display = 'none';
+                variationsTabContent.classList.remove('active');
                 
                 // If currently on variable tabs, switch to general tab
-                if (attributesTab.classList.contains('active') || variationsTab.classList.contains('active')) {
+                if (attributesTabContent.classList.contains('active') || variationsTabContent.classList.contains('active')) {
                     // Switch to general tab instead of automatically showing stock & pricing
                     document.querySelector('[data-tab="general"]').click();
                 }
@@ -1268,6 +1352,41 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.backgroundColor = 'white';
         });
     });
+    
+    // Sync bilingual name and description fields
+    const nameEnInput = document.getElementById('name_en');
+    const nameArInput = document.getElementById('name_ar');
+    const nameHiddenInput = document.getElementById('name');
+    const descriptionEnInput = document.getElementById('description_en');
+    const descriptionArInput = document.getElementById('description_ar');
+    const descriptionHiddenInput = document.getElementById('description');
+    
+    function updateNameField() {
+        const currentLocale = document.documentElement.lang || 'en';
+        if (currentLocale === 'ar' && nameArInput.value) {
+            nameHiddenInput.value = nameArInput.value;
+        } else if (nameEnInput.value) {
+            nameHiddenInput.value = nameEnInput.value;
+        } else if (nameArInput.value) {
+            nameHiddenInput.value = nameArInput.value;
+        }
+    }
+    
+    function updateDescriptionField() {
+        const currentLocale = document.documentElement.lang || 'en';
+        if (currentLocale === 'ar' && descriptionArInput.value) {
+            descriptionHiddenInput.value = descriptionArInput.value;
+        } else if (descriptionEnInput.value) {
+            descriptionHiddenInput.value = descriptionEnInput.value;
+        } else if (descriptionArInput.value) {
+            descriptionHiddenInput.value = descriptionArInput.value;
+        }
+    }
+    
+    if (nameEnInput) nameEnInput.addEventListener('input', updateNameField);
+    if (nameArInput) nameArInput.addEventListener('input', updateNameField);
+    if (descriptionEnInput) descriptionEnInput.addEventListener('input', updateDescriptionField);
+    if (descriptionArInput) descriptionArInput.addEventListener('input', updateDescriptionField);
 });
 </script>
 <style>

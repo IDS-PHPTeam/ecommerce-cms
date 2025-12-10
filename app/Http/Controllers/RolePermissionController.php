@@ -42,7 +42,7 @@ class RolePermissionController extends Controller
         $this->logAudit('created', $role, "Role created: {$role->name}");
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Role created successfully.');
+            ->with('success', __('cms.role_created_successfully'));
     }
 
     /**
@@ -67,7 +67,7 @@ class RolePermissionController extends Controller
         $this->logAudit('updated', $role, "Role updated: {$role->name}", $oldValues, $newValues);
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Role updated successfully.');
+            ->with('success', __('cms.role_updated_successfully'));
     }
 
     /**
@@ -87,7 +87,7 @@ class RolePermissionController extends Controller
         $role->delete();
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Role deleted successfully.');
+            ->with('success', __('cms.role_deleted_successfully'));
     }
 
     /**
@@ -110,7 +110,7 @@ class RolePermissionController extends Controller
         $this->logAudit('created', $permission, "Permission created: {$permission->name}");
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Permission created successfully.');
+            ->with('success', __('cms.permission_created_successfully'));
     }
 
     /**
@@ -136,7 +136,7 @@ class RolePermissionController extends Controller
         $this->logAudit('updated', $permission, "Permission updated: {$permission->name}", $oldValues, $newValues);
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Permission updated successfully.');
+            ->with('success', __('cms.permission_updated_successfully'));
     }
 
     /**
@@ -155,7 +155,7 @@ class RolePermissionController extends Controller
         $permission->delete();
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Permission deleted successfully.');
+            ->with('success', __('cms.permission_deleted_successfully'));
     }
 
     /**
@@ -181,7 +181,7 @@ class RolePermissionController extends Controller
             ['permissions' => $newPermissionIds]);
 
         return redirect()->route('roles-permissions.index')
-            ->with('success', 'Role permissions updated successfully.');
+            ->with('success', __('cms.role_permissions_updated_successfully'));
     }
 }
 

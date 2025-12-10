@@ -6,9 +6,17 @@
 <div class="card">
     <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">Add New Customer</h2>
 
-    <form method="POST" action="{{ route('customers.store') }}" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('customers.store') }}" enctype="multipart/form-data" id="customerForm">
         @csrf
 
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
+            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">General Information</button>
+            <button type="button" class="tab-btn" data-tab="addresses" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">Addresses</button>
+        </div>
+
+        <!-- Tab 1: General Information -->
+        <div id="generalTab" class="tab-content active" style="display: block;">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
             <div class="form-group">
                 <label for="first_name" class="form-label">First Name <span style="color: #ef4444;">*</span></label>
@@ -135,6 +143,68 @@
             </div>
         </div>
 
+        </div>
+        <!-- End of General Information Tab -->
+
+        <!-- Tab 2: Addresses -->
+        <div id="addressesTab" class="tab-content" style="display: none;">
+            <div class="form-group">
+                <label class="form-label">Addresses</label>
+                <div id="addressesContainer" style="margin-bottom: 0.5rem;">
+                    <div class="address-item" data-address-index="0" style="border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.5rem; background-color: #f9fafb;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h4 style="font-size: 1rem; font-weight: 600; color: #1f2937;">Address 1</h4>
+                            <button type="button" class="remove-address-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem; display: none;">Remove</button>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="form-group">
+                                <label class="form-label">Label (e.g., Home, Work)</label>
+                                <input type="text" name="addresses[0][label]" value="{{ old('addresses.0.label', '') }}" class="form-input" placeholder="Home">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Street Address</label>
+                                <input type="text" name="addresses[0][street]" value="{{ old('addresses.0.street', '') }}" class="form-input" placeholder="123 Main St">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Street Address 2 (Optional)</label>
+                                <input type="text" name="addresses[0][street2]" value="{{ old('addresses.0.street2', '') }}" class="form-input" placeholder="Apt, Suite, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">City</label>
+                                <input type="text" name="addresses[0][city]" value="{{ old('addresses.0.city', '') }}" class="form-input" placeholder="City">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">State/Province</label>
+                                <input type="text" name="addresses[0][state]" value="{{ old('addresses.0.state', '') }}" class="form-input" placeholder="State">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Postal Code</label>
+                                <input type="text" name="addresses[0][postal_code]" value="{{ old('addresses.0.postal_code', '') }}" class="form-input" placeholder="12345">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Country</label>
+                                <select name="addresses[0][country]" class="form-input">
+                                    <option value="">Select Country</option>
+                                    @php
+                                        $currentLocale = app()->getLocale();
+                                        $selectedCountry = old('addresses.0.country', '');
+                                    @endphp
+                                    @foreach($deliveryCountries as $country)
+                                        <option value="{{ $country->country_code }}" {{ $selectedCountry == $country->country_code ? 'selected' : '' }}>
+                                            {{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="addAddressBtn" class="btn" style="margin-top: 0.5rem; background-color: #6b7280; color: white;">Add Address</button>
+                <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">Add one or more addresses for this customer</small>
+            </div>
+        </div>
+        <!-- End of Addresses Tab -->
+
         <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
             <button type="submit" class="btn btn-primary">Save</button>
             <a href="{{ route('customers.index') }}" class="btn" style="background-color: #6b7280; color: white;">Cancel</a>
@@ -145,8 +215,153 @@
 @push('scripts')
 <script src="{{ asset('js/media-selector.js') }}"></script>
 <script>
-    // Initialize media selector for profile image
+    // Delivery countries data for JavaScript
+    @php
+        $currentLocale = app()->getLocale();
+    @endphp
+    const deliveryCountries = @json($deliveryCountries->map(function($country) use ($currentLocale) {
+        return [
+            'code' => $country->country_code,
+            'name' => $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en
+        ];
+    }));
+    
+    // Tab switching functionality
     document.addEventListener('DOMContentLoaded', function() {
+        // Tab navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // Update tab buttons
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.borderBottomColor = 'transparent';
+                    b.style.color = '#6b7280';
+                });
+                this.classList.add('active');
+                this.style.borderBottomColor = 'var(--primary-blue)';
+                this.style.color = 'var(--primary-blue)';
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+                document.getElementById(tabName + 'Tab').classList.add('active');
+                document.getElementById(tabName + 'Tab').style.display = 'block';
+            });
+        });
+
+        // Address management
+        const addressesContainer = document.getElementById('addressesContainer');
+        const addAddressBtn = document.getElementById('addAddressBtn');
+        let addressIndex = addressesContainer.querySelectorAll('.address-item').length;
+
+        addAddressBtn.addEventListener('click', function() {
+            const addressItem = document.createElement('div');
+            addressItem.className = 'address-item';
+            addressItem.setAttribute('data-address-index', addressIndex);
+            addressItem.style.cssText = 'border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.5rem; background-color: #f9fafb;';
+            
+            addressItem.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h4 style="font-size: 1rem; font-weight: 600; color: #1f2937;">Address ${addressIndex + 1}</h4>
+                    <button type="button" class="remove-address-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Remove</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Label (e.g., Home, Work)</label>
+                        <input type="text" name="addresses[${addressIndex}][label]" class="form-input" placeholder="Home">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Street Address</label>
+                        <input type="text" name="addresses[${addressIndex}][street]" class="form-input" placeholder="123 Main St">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Street Address 2 (Optional)</label>
+                        <input type="text" name="addresses[${addressIndex}][street2]" class="form-input" placeholder="Apt, Suite, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">City</label>
+                        <input type="text" name="addresses[${addressIndex}][city]" class="form-input" placeholder="City">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">State/Province</label>
+                        <input type="text" name="addresses[${addressIndex}][state]" class="form-input" placeholder="State">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Postal Code</label>
+                        <input type="text" name="addresses[${addressIndex}][postal_code]" class="form-input" placeholder="12345">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Country</label>
+                        <select name="addresses[${addressIndex}][country]" class="form-input">
+                            <option value="">Select Country</option>
+                            ${deliveryCountries.map(country => `<option value="${country.code}">${country.name}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            addressesContainer.appendChild(addressItem);
+            addressIndex++;
+            
+            // Update remove buttons visibility
+            updateRemoveButtons();
+            
+            // Attach remove event
+            addressItem.querySelector('.remove-address-btn').addEventListener('click', function() {
+                addressItem.remove();
+                updateAddressNumbers();
+                updateRemoveButtons();
+            });
+        });
+
+        // Remove address buttons
+        document.querySelectorAll('.remove-address-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.address-item').remove();
+                updateAddressNumbers();
+                updateRemoveButtons();
+            });
+        });
+
+        function updateAddressNumbers() {
+            const addressItems = addressesContainer.querySelectorAll('.address-item');
+            addressItems.forEach((item, index) => {
+                const title = item.querySelector('h4');
+                if (title) {
+                    title.textContent = `Address ${index + 1}`;
+                }
+                // Update input and select names
+                item.querySelectorAll('input, select').forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name && name.startsWith('addresses[')) {
+                        // Extract field name (e.g., 'label', 'street', etc.)
+                        const match = name.match(/addresses\[\d+\]\[(.+)\]/);
+                        if (match && match[1]) {
+                            input.setAttribute('name', `addresses[${index}][${match[1]}]`);
+                        }
+                    }
+                });
+            });
+        }
+
+        function updateRemoveButtons() {
+            const addressItems = addressesContainer.querySelectorAll('.address-item');
+            addressItems.forEach(item => {
+                const removeBtn = item.querySelector('.remove-address-btn');
+                if (removeBtn) {
+                    removeBtn.style.display = addressItems.length > 1 ? 'block' : 'none';
+                }
+            });
+        }
+
+        // Initialize remove buttons visibility
+        updateRemoveButtons();
+
+        // Initialize media selector for profile image
         const chooseFileBtn = document.getElementById('chooseFileBtn');
         const profileImageInput = document.getElementById('profile_image');
         const selectedMediaPath = document.getElementById('selected_media_path');

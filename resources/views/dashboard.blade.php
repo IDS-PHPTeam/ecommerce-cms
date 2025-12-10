@@ -13,11 +13,11 @@
     </div>
 
     <!-- Filters -->
-    <div class="card" style="margin-bottom: 2rem; padding: 1.5rem; background: white;">
+    <div class="card card-padded">
         <form method="GET" action="{{ route('dashboard') }}">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
                 <div>
-                    <label for="date_from" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #374151;">From Date</label>
+                    <label for="date_from" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500;">From Date</label>
                     <input 
                         type="date" 
                         id="date_from" 
@@ -28,7 +28,7 @@
                     >
                 </div>
                 <div>
-                    <label for="date_to" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #374151;">To Date</label>
+                    <label for="date_to" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500;">To Date</label>
                     <input 
                         type="date" 
                         id="date_to" 
@@ -39,7 +39,7 @@
                     >
                 </div>
                 <div>
-                    <label for="client" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #374151;">Client</label>
+                    <label for="client" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500;">Client</label>
                     <input 
                         type="text" 
                         id="client" 
@@ -51,7 +51,7 @@
                     >
                 </div>
                 <div>
-                    <label for="driver" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #374151;">Driver</label>
+                    <label for="driver" class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; font-weight: 500;">Driver</label>
                     <select id="driver" name="driver" class="form-input" style="width: 100%;">
                         <option value="">All Drivers</option>
                         @foreach($drivers as $driver)
@@ -102,7 +102,7 @@
     <!-- Detailed Sections -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
         <!-- Orders Overview -->
-        <div class="card" style="padding: 0; background: white;">
+        <div class="card card-no-padding">
             <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
                 <h3 style="font-size: 1.25rem; font-weight: 600; color: #1f2937;">Orders Overview</h3>
             </div>
@@ -129,7 +129,7 @@
         </div>
 
         <!-- Operations Status -->
-        <div class="card" style="padding: 0; background: white;">
+        <div class="card card-no-padding">
             <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
                 <h3 style="font-size: 1.25rem; font-weight: 600; color: #1f2937;">Operations Status</h3>
             </div>
@@ -157,7 +157,7 @@
     </div>
 
     <!-- Performance Metrics -->
-    <div class="card" style="padding: 0; background: white; margin-bottom: 2rem;">
+    <div class="card card-no-padding" style="margin-bottom: 2rem;">
         <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #1f2937;">Performance Metrics</h3>
         </div>
@@ -176,7 +176,7 @@
     </div>
 
     <!-- Map Section -->
-    <div class="card" style="padding: 0; background: white;">
+    <div class="card card-no-padding">
         <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #1f2937;">Live Map</h3>
         </div>

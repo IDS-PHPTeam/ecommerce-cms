@@ -62,7 +62,7 @@ class AdminController extends Controller
         $this->logAudit('created', $user, "Admin created: {$user->name} ({$user->email})");
 
         return redirect()->route('admins.index')
-            ->with('success', 'Admin created successfully.');
+            ->with('success', __('cms.admin_created_successfully'));
     }
 
     /**
@@ -111,7 +111,7 @@ class AdminController extends Controller
         $this->logAudit('updated', $admin, "Admin updated: {$admin->name} ({$admin->email})", $oldValues, $newValues);
 
         return redirect()->route('admins.index')
-            ->with('success', 'Admin updated successfully.');
+            ->with('success', __('cms.admin_updated_successfully'));
     }
 
     /**
@@ -131,7 +131,7 @@ class AdminController extends Controller
         $admin->delete();
 
         return redirect()->route('admins.index')
-            ->with('success', 'Admin deleted successfully.');
+            ->with('success', __('cms.admin_deleted_successfully'));
     }
 }
 

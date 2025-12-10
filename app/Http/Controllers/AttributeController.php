@@ -57,11 +57,37 @@ class AttributeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:attributes,name',
+            'name_en' => 'nullable|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'status' => 'required|in:active,inactive',
             'values' => 'nullable|array',
-            'values.*' => 'required|string|max:255',
+            'values.*' => 'nullable|string|max:255',
+            'values_en' => 'nullable|array',
+            'values_en.*' => 'nullable|string|max:255',
+            'values_ar' => 'nullable|array',
+            'values_ar.*' => 'nullable|string|max:255',
         ]);
+
+        // Determine the main name and description based on current locale or fallback
+        $currentLocale = app()->getLocale();
+        if (empty($validated['name']) && !empty($validated['name_' . $currentLocale])) {
+            $validated['name'] = $validated['name_' . $currentLocale];
+        } elseif (empty($validated['name']) && !empty($validated['name_en'])) {
+            $validated['name'] = $validated['name_en'];
+        } elseif (empty($validated['name']) && !empty($validated['name_ar'])) {
+            $validated['name'] = $validated['name_ar'];
+        }
+
+        if (empty($validated['description']) && !empty($validated['description_' . $currentLocale])) {
+            $validated['description'] = $validated['description_' . $currentLocale];
+        } elseif (empty($validated['description']) && !empty($validated['description_en'])) {
+            $validated['description'] = $validated['description_en'];
+        } elseif (empty($validated['description']) && !empty($validated['description_ar'])) {
+            $validated['description'] = $validated['description_ar'];
+        }
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['created_by'] = Auth::id();
@@ -70,12 +96,35 @@ class AttributeController extends Controller
         $attribute = Attribute::create($validated);
 
         // Create attribute values
-        if (isset($validated['values']) && is_array($validated['values'])) {
-            foreach ($validated['values'] as $index => $value) {
-                if (!empty(trim($value))) {
+        $valuesEn = $validated['values_en'] ?? [];
+        $valuesAr = $validated['values_ar'] ?? [];
+        $values = $validated['values'] ?? [];
+
+        if (!empty($valuesEn) || !empty($valuesAr) || !empty($values)) {
+            $maxIndex = max(count($valuesEn), count($valuesAr), count($values));
+
+            for ($index = 0; $index < $maxIndex; $index++) {
+                $valueEn = trim($valuesEn[$index] ?? '');
+                $valueAr = trim($valuesAr[$index] ?? '');
+                $value = trim($values[$index] ?? '');
+
+                // Determine the main value based on current locale or fallback
+                if (empty($value)) {
+                    if (!empty($valueAr) && $currentLocale === 'ar') {
+                        $value = $valueAr;
+                    } elseif (!empty($valueEn)) {
+                        $value = $valueEn;
+                    } elseif (!empty($valueAr)) {
+                        $value = $valueAr;
+                    }
+                }
+
+                if (!empty($value)) {
                     AttributeValue::create([
                         'attribute_id' => $attribute->id,
-                        'value' => trim($value),
+                        'value' => $value,
+                        'value_en' => $valueEn ?: null,
+                        'value_ar' => $valueAr ?: null,
                         'sort_order' => $index,
                         'created_by' => Auth::id(),
                         'updated_by' => Auth::id(),
@@ -113,37 +162,85 @@ class AttributeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:attributes,name,' . $attribute->id,
+            'name_en' => 'nullable|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'status' => 'required|in:active,inactive',
             'values' => 'nullable|array',
-            'values.*' => 'required|string|max:255',
+            'values.*' => 'nullable|string|max:255',
+            'values_en' => 'nullable|array',
+            'values_en.*' => 'nullable|string|max:255',
+            'values_ar' => 'nullable|array',
+            'values_ar.*' => 'nullable|string|max:255',
             'value_ids' => 'nullable|array',
             'value_ids.*' => 'exists:attribute_values,id',
         ]);
 
+        // Determine the main name and description based on current locale or fallback
+        $currentLocale = app()->getLocale();
+        if (empty($validated['name']) && !empty($validated['name_' . $currentLocale])) {
+            $validated['name'] = $validated['name_' . $currentLocale];
+        } elseif (empty($validated['name']) && !empty($validated['name_en'])) {
+            $validated['name'] = $validated['name_en'];
+        } elseif (empty($validated['name']) && !empty($validated['name_ar'])) {
+            $validated['name'] = $validated['name_ar'];
+        }
+
+        if (empty($validated['description']) && !empty($validated['description_' . $currentLocale])) {
+            $validated['description'] = $validated['description_' . $currentLocale];
+        } elseif (empty($validated['description']) && !empty($validated['description_en'])) {
+            $validated['description'] = $validated['description_en'];
+        } elseif (empty($validated['description']) && !empty($validated['description_ar'])) {
+            $validated['description'] = $validated['description_ar'];
+        }
+
         $validated['slug'] = Str::slug($validated['name']);
         $validated['updated_by'] = Auth::id();
 
-        $oldValues = $this->getOldValues($attribute, ['name', 'status']);
+        $oldValues = $this->getOldValues($attribute, ['name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar', 'status']);
         $attribute->update($validated);
-        $newValues = $this->getNewValues($validated, ['name', 'status']);
+        $newValues = $this->getNewValues($validated, ['name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar', 'status']);
 
         // Update attribute values
-        if (isset($validated['values']) && is_array($validated['values'])) {
+        $valuesEn = $validated['values_en'] ?? [];
+        $valuesAr = $validated['values_ar'] ?? [];
+        $values = $validated['values'] ?? [];
+        $valueIds = $validated['value_ids'] ?? [];
+
+        if (!empty($valuesEn) || !empty($valuesAr) || !empty($values)) {
             $existingValueIds = [];
-            $valueIds = $validated['value_ids'] ?? [];
+            $maxIndex = max(count($valuesEn), count($valuesAr), count($values));
 
-            foreach ($validated['values'] as $index => $value) {
-                if (empty(trim($value))) continue;
+            for ($index = 0; $index < $maxIndex; $index++) {
+                $valueEn = trim($valuesEn[$index] ?? '');
+                $valueAr = trim($valuesAr[$index] ?? '');
+                $value = trim($values[$index] ?? '');
 
-                $valueId = isset($valueIds[$index]) ? $valueIds[$index] : null;
+                // Determine the main value based on current locale or fallback
+                if (empty($value)) {
+                    if (!empty($valueAr) && $currentLocale === 'ar') {
+                        $value = $valueAr;
+                    } elseif (!empty($valueEn)) {
+                        $value = $valueEn;
+                    } elseif (!empty($valueAr)) {
+                        $value = $valueAr;
+                    }
+                }
+
+                if (empty($value)) continue;
+
+                $valueId = isset($valueIds[$index]) && !empty($valueIds[$index]) ? $valueIds[$index] : null;
 
                 if ($valueId) {
                     // Update existing value
                     AttributeValue::where('id', $valueId)
                         ->where('attribute_id', $attribute->id)
                         ->update([
-                            'value' => trim($value),
+                            'value' => $value,
+                            'value_en' => $valueEn ?: null,
+                            'value_ar' => $valueAr ?: null,
                             'sort_order' => $index,
                             'updated_by' => Auth::id(),
                         ]);
@@ -152,7 +249,9 @@ class AttributeController extends Controller
                     // Create new value
                     $newValue = AttributeValue::create([
                         'attribute_id' => $attribute->id,
-                        'value' => trim($value),
+                        'value' => $value,
+                        'value_en' => $valueEn ?: null,
+                        'value_ar' => $valueAr ?: null,
                         'sort_order' => $index,
                         'created_by' => Auth::id(),
                         'updated_by' => Auth::id(),

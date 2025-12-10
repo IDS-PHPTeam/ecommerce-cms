@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Settlements & Finance')
+@section('title', __('cms.settlements_finance'))
 
 @section('content')
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">Settlements & Finance</h2>
+        <h2 style="font-size: 1.875rem; font-weight: 700;">{{ __('cms.settlements_finance') }}</h2>
     </div>
 
     <!-- Tabs -->
@@ -14,17 +14,17 @@
             <a href="{{ route('settlements.history') }}" 
                class="tab-link {{ request()->routeIs('settlements.history') ? 'active' : '' }}"
                style="padding: 0.75rem 1.5rem; text-decoration: none; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;">
-                Settlement History
+                {{ __('cms.settlement_history') }}
             </a>
             <a href="{{ route('settlements.request') }}" 
                class="tab-link {{ request()->routeIs('settlements.request') ? 'active' : '' }}"
                style="padding: 0.75rem 1.5rem; text-decoration: none; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;">
-                Settlement Request
+                {{ __('cms.settlement_request') }}
             </a>
             <a href="{{ route('settlements.discrepancy-reports') }}" 
                class="tab-link {{ request()->routeIs('settlements.discrepancy-reports') || request()->routeIs('settlements.payout-summary') || request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}"
                style="padding: 0.75rem 1.5rem; text-decoration: none; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;">
-                Other
+                {{ __('cms.other') }}
             </a>
         </div>
     </div>

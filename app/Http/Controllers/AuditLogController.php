@@ -165,7 +165,7 @@ class AuditLogController extends Controller
         $auditLog->delete();
 
         return redirect()->route('audit-logs.index')
-            ->with('success', 'Audit log deleted successfully.');
+            ->with('success', __('cms.audit_log_deleted_successfully'));
     }
 
     /**
@@ -184,7 +184,7 @@ class AuditLogController extends Controller
         AuditLog::whereIn('id', $request->ids)->delete();
 
         return redirect()->route('audit-logs.index')
-            ->with('success', count($request->ids) . ' audit log(s) deleted successfully.');
+            ->with('success', __('cms.audit_logs_deleted_successfully', ['count' => count($request->ids)]));
     }
 
     /**
@@ -226,7 +226,7 @@ class AuditLogController extends Controller
         $query->delete();
 
         return redirect()->route('audit-logs.index')
-            ->with('success', $count . ' audit log(s) deleted successfully.');
+            ->with('success', __('cms.audit_logs_deleted_successfully', ['count' => $count]));
     }
 }
 

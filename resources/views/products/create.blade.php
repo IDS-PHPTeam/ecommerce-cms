@@ -1,36 +1,68 @@
 @extends('layouts.app')
 
-@section('title', 'Add Product')
+@section('title', __('cms.add_product'))
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">Add New Product</h2>
+    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.add_new_product') }}</h2>
 
     <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" id="productForm">
         @csrf
 
         <!-- Tabs Navigation -->
         <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
-            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">General Information</button>
-            <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">Media</button>
-            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', 'simple') == 'simple' ? 'block' : 'none' }};">Stock & Pricing</button>
-            <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">Attributes</button>
-            <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">Variations</button>
+            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.general_information') }}</button>
+            <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.media') }}</button>
+            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', 'simple') == 'simple' ? 'block' : 'none' }};">{{ __('cms.stock_pricing') }}</button>
+            <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">{{ __('cms.attributes') }}</button>
+            <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">{{ __('cms.variations') }}</button>
         </div>
 
         <!-- Tab 1: General Information -->
         <div id="generalTab" class="tab-content active" style="display: block;">
             <div class="form-group">
-                <label for="name" class="form-label">Name <span style="color: #ef4444;">*</span></label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required class="form-input" placeholder="Product name">
+                <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="name_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
+                        <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-input" placeholder="{{ __('cms.product_name_english') }}">
+                        @error('name_en')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="name_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
+                        <input type="text" id="name_ar" name="name_ar" value="{{ old('name_ar') }}" class="form-input" placeholder="{{ __('cms.product_name_arabic') }}" dir="rtl">
+                        @error('name_ar')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <input type="hidden" id="name" name="name" value="{{ old('name') }}">
                 @error('name')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
             </div>
 
             <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" name="description" rows="4" class="form-input" placeholder="Product description">{{ old('description') }}</textarea>
+                <label class="form-label">{{ __('cms.description') }}</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="description_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
+                        <textarea id="description_en" name="description_en" rows="4" class="form-input" placeholder="{{ __('cms.product_description_english') }}">{{ old('description_en') }}</textarea>
+                        @error('description_en')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="description_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
+                        <textarea id="description_ar" name="description_ar" rows="4" class="form-input" placeholder="{{ __('cms.product_description_arabic') }}" dir="rtl">{{ old('description_ar') }}</textarea>
+                        @error('description_ar')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <input type="hidden" id="description" name="description" value="{{ old('description') }}">
                 @error('description')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -38,10 +70,10 @@
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                 <div class="form-group">
-                    <label for="product_type" class="form-label">Product Type <span style="color: #ef4444;">*</span></label>
+                    <label for="product_type" class="form-label">{{ __('cms.product_type') }} <span style="color: #ef4444;">*</span></label>
                     <select id="product_type" name="product_type" required class="form-input">
-                        <option value="simple" {{ old('product_type', 'simple') == 'simple' ? 'selected' : '' }}>Simple</option>
-                        <option value="variable" {{ old('product_type') == 'variable' ? 'selected' : '' }}>Variable</option>
+                        <option value="simple" {{ old('product_type', 'simple') == 'simple' ? 'selected' : '' }}>{{ __('cms.simple') }}</option>
+                        <option value="variable" {{ old('product_type') == 'variable' ? 'selected' : '' }}>{{ __('cms.variable') }}</option>
                     </select>
                     @error('product_type')
                         <span class="form-error">{{ $message }}</span>
@@ -49,10 +81,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="status" class="form-label">Status <span style="color: #ef4444;">*</span></label>
+                    <label for="status" class="form-label">{{ __('cms.status') }} <span style="color: #ef4444;">*</span></label>
                     <select id="status" name="status" required class="form-input">
-                        <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>{{ __('cms.active') }}</option>
+                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>{{ __('cms.inactive') }}</option>
                     </select>
                     @error('status')
                         <span class="form-error">{{ $message }}</span>
@@ -62,17 +94,17 @@
 
             <!-- Categories (Multi-select) -->
             <div class="form-group" style="margin-top: 1rem;">
-                <label for="categories" class="form-label">Categories</label>
+                <label for="categories" class="form-label">{{ __('cms.categories') }}</label>
                 <div class="custom-multiselect" style="position: relative;">
                     <div class="multiselect-trigger" id="categoriesTrigger" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 42px;">
                         <div class="multiselect-selected" style="color: #374151; flex: 1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                            <span class="placeholder-text" style="color: #9ca3af;">Select categories</span>
+                            <span class="placeholder-text" style="color: #9ca3af;">{{ __('cms.select_categories') }}</span>
                             <div class="selected-categories-tags" style="display: none; flex-wrap: wrap; gap: 0.5rem;">
                                 <!-- Selected category tags will be added here -->
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <button type="button" class="clear-all-categories-btn" style="display: none; background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem; font-size: 0.875rem;" title="Clear all">Clear All</button>
+                            <button type="button" class="clear-all-categories-btn" style="display: none; background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem; font-size: 0.875rem;" title="{{ __('cms.clear_all') }}">{{ __('cms.clear_all') }}</button>
                             <svg class="multiselect-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: #6b7280; transition: transform 0.2s;">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -87,7 +119,7 @@
                         @endforeach
                     </div>
                 </div>
-                <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">Select one or more categories</small>
+                <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ __('cms.select_one_or_more_categories') }}</small>
                 @error('categories')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -98,8 +130,8 @@
         <div id="mediaTab" class="tab-content" style="display: none;">
             <!-- Featured Image -->
             <div class="form-group">
-                <label for="featured_image" class="form-label">Featured Image</label>
-                <button type="button" id="chooseFileBtn" class="btn btn-primary" data-media-url="{{ route('media.json') }}">Choose File</button>
+                <label for="featured_image" class="form-label">{{ __('cms.featured_image') }}</label>
+                <button type="button" id="chooseFileBtn" class="btn btn-primary" data-media-url="{{ route('media.json') }}">{{ __('cms.choose_file') }}</button>
                 <input type="file" id="featured_image" name="featured_image" accept="image/*" style="display: none;">
                 <input type="hidden" id="selected_media_path" name="selected_media_path" value="">
                 @error('featured_image')
@@ -119,8 +151,8 @@
 
             <!-- Gallery -->
             <div class="form-group">
-                <label class="form-label">Gallery (Images + Videos)</label>
-                <button type="button" id="addGalleryItemBtn" class="btn btn-primary">Add to Gallery</button>
+                <label class="form-label">{{ __('cms.gallery') }} ({{ __('cms.images') }} + {{ __('cms.videos') }})</label>
+                <button type="button" id="addGalleryItemBtn" class="btn btn-primary">{{ __('cms.add_to_gallery') }}</button>
                 <div id="galleryContainer" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
                     <!-- Gallery items will be added here dynamically -->
                 </div>
@@ -132,10 +164,10 @@
 
         <!-- Tab 3: Stock & Pricing (Simple Products Only) -->
         <div id="simpleFieldsTab" class="tab-content" style="display: none;">
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">Pricing</h3>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">{{ __('cms.pricing') }}</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                 <div class="form-group">
-                    <label for="price" class="form-label">Price <span style="color: #ef4444;">*</span></label>
+                    <label for="price" class="form-label">{{ __('cms.price') }} <span style="color: #ef4444;">*</span></label>
                     <input type="number" id="price" name="price" value="{{ old('price') }}" step="0.01" min="0" class="form-input" placeholder="0.00">
                     @error('price')
                         <span class="form-error">{{ $message }}</span>
@@ -143,7 +175,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="sale_price" class="form-label">Sale Price</label>
+                    <label for="sale_price" class="form-label">{{ __('cms.sale_price') }}</label>
                     <input type="number" id="sale_price" name="sale_price" value="{{ old('sale_price') }}" step="0.01" min="0" class="form-input" placeholder="0.00">
                     @error('sale_price')
                         <span class="form-error">{{ $message }}</span>
@@ -151,18 +183,18 @@
                 </div>
             </div>
 
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 1rem 0; color: #1f2937;">Stock Management</h3>
+            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 1rem 0; color: #1f2937;">{{ __('cms.stock_management') }}</h3>
             <div class="form-group">
-                <label for="track_stock" class="form-label">Track Stock</label>
+                <label for="track_stock" class="form-label">{{ __('cms.track_stock') }}</label>
                 <select id="track_stock" name="track_stock" class="form-input">
-                    <option value="1" {{ old('track_stock', '1') == '1' ? 'selected' : '' }}>Yes</option>
-                    <option value="0" {{ old('track_stock') == '0' ? 'selected' : '' }}>No</option>
+                    <option value="1" {{ old('track_stock', '1') == '1' ? 'selected' : '' }}>{{ __('cms.yes') }}</option>
+                    <option value="0" {{ old('track_stock') == '0' ? 'selected' : '' }}>{{ __('cms.no') }}</option>
                 </select>
             </div>
 
             <div id="stockQuantityField" style="display: {{ old('track_stock', '1') == '1' ? 'block' : 'none' }};">
                 <div class="form-group">
-                    <label for="stock_quantity" class="form-label">Stock Quantity</label>
+                    <label for="stock_quantity" class="form-label">{{ __('cms.stock_quantity') }}</label>
                     <input type="number" id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity') }}" min="0" class="form-input" placeholder="0">
                     @error('stock_quantity')
                         <span class="form-error">{{ $message }}</span>
@@ -172,11 +204,11 @@
 
             <div id="stockStatusField" style="display: {{ old('track_stock', '1') == '0' ? 'block' : 'none' }};">
                 <div class="form-group">
-                    <label for="stock_status" class="form-label">Stock Status</label>
+                    <label for="stock_status" class="form-label">{{ __('cms.stock_status') }}</label>
                     <select id="stock_status" name="stock_status" class="form-input">
-                        <option value="in_stock" {{ old('stock_status', 'in_stock') == 'in_stock' ? 'selected' : '' }}>In Stock</option>
-                        <option value="out_of_stock" {{ old('stock_status') == 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
-                        <option value="on_backorder" {{ old('stock_status') == 'on_backorder' ? 'selected' : '' }}>On Backorder</option>
+                        <option value="in_stock" {{ old('stock_status', 'in_stock') == 'in_stock' ? 'selected' : '' }}>{{ __('cms.in_stock') }}</option>
+                        <option value="out_of_stock" {{ old('stock_status') == 'out_of_stock' ? 'selected' : '' }}>{{ __('cms.out_of_stock') }}</option>
+                        <option value="on_backorder" {{ old('stock_status') == 'on_backorder' ? 'selected' : '' }}>{{ __('cms.on_backorder') }}</option>
                     </select>
                     @error('stock_status')
                         <span class="form-error">{{ $message }}</span>
@@ -188,21 +220,21 @@
         <!-- Tab 4: Attributes (Variable Products Only) -->
         <div id="attributesTab" class="tab-content" style="display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">
             <div class="form-group">
-                <label class="form-label">Select Attributes for Variants</label>
-                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">Select which attributes will be available when creating variants (e.g., Size, Color, Type)</p>
+                <label class="form-label">{{ __('cms.select_attributes_for_variants') }}</label>
+                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">{{ __('cms.select_attributes_for_variants_description') }}</p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                     @foreach($attributes as $attribute)
                         <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s;">
                             <input type="checkbox" class="variant-attribute-checkbox" value="{{ $attribute->id }}" data-attribute-name="{{ $attribute->name }}" data-attribute-values="{{ json_encode($attribute->values->pluck('value', 'id')->toArray()) }}" style="margin-right: 0.5rem; width: 1rem; height: 1rem; cursor: pointer;">
                             <div style="flex: 1;">
                                 <div style="font-weight: 600; color: #374151;">{{ $attribute->name }}</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">{{ $attribute->values->count() }} values</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">{{ $attribute->values->count() }} {{ __('cms.values') }}</div>
                             </div>
                         </label>
                     @endforeach
                 </div>
                 @if($attributes->isEmpty())
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">No attributes available. Please create attributes first.</p>
+                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">{{ __('cms.no_attributes_available') }}</p>
                 @endif
             </div>
         </div>
@@ -213,7 +245,7 @@
                 <div id="variantsList">
                     <!-- Variants will be added here -->
                 </div>
-                <button type="button" id="addVariantBtn" class="btn btn-primary" style="margin-top: 1rem;">+ Add Variant</button>
+                <button type="button" id="addVariantBtn" class="btn btn-primary" style="margin-top: 1rem;">{{ __('cms.add_variant') }}</button>
             </div>
             
             @error('variants')
@@ -234,8 +266,8 @@
         </script>
 
         <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a href="{{ route('products.index') }}" class="btn" style="background-color: #6b7280; color: white;">Cancel</a>
+            <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
+            <a href="{{ route('products.index') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</a>
         </div>
     </form>
 </div>
@@ -244,7 +276,7 @@
 <div id="imageSelectionModal" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 90vw; max-height: 90vh; padding: 0;">
         <div class="modal-header">
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">Choose Media</h3>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">{{ __('cms.choose_media') }}</h3>
             <button type="button" class="modal-close" id="closeImageSelectionModal">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -253,8 +285,8 @@
         </div>
         
         <div style="display: flex; border-bottom: 1px solid #e5e7eb;">
-            <button type="button" class="image-tab-btn active" data-tab="media" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer;">Select from Media</button>
-            <button type="button" class="image-tab-btn" data-tab="upload" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer;">Select from PC</button>
+            <button type="button" class="image-tab-btn active" data-tab="media" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer;">{{ __('cms.select_from_media') }}</button>
+            <button type="button" class="image-tab-btn" data-tab="upload" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer;">{{ __('cms.select_from_pc') }}</button>
         </div>
 
         <div class="modal-body" style="max-height: calc(90vh - 180px); overflow-y: auto; padding: 1.5rem;">
@@ -267,13 +299,13 @@
             <div id="modalUploadTab" class="tab-content" style="display: none;">
                 <div style="text-align: center; padding: 2rem;">
                     <input type="file" id="modalFileInput" accept="image/*,video/*" class="form-input" style="max-width: 400px; margin: 0 auto;">
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">Select an image or video file from your computer</p>
+                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">{{ __('cms.select_file_from_computer') }}</p>
                 </div>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn" id="cancelImageSelection" style="background-color: #6b7280; color: white;">Cancel</button>
+            <button type="button" class="btn" id="cancelImageSelection" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</button>
         </div>
     </div>
 </div>
@@ -284,6 +316,41 @@
 <script src="{{ asset('js/media-selector.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Sync bilingual name and description fields
+    const nameEnInput = document.getElementById('name_en');
+    const nameArInput = document.getElementById('name_ar');
+    const nameHiddenInput = document.getElementById('name');
+    const descriptionEnInput = document.getElementById('description_en');
+    const descriptionArInput = document.getElementById('description_ar');
+    const descriptionHiddenInput = document.getElementById('description');
+    
+    function updateNameField() {
+        const currentLocale = document.documentElement.lang || 'en';
+        if (currentLocale === 'ar' && nameArInput.value) {
+            nameHiddenInput.value = nameArInput.value;
+        } else if (nameEnInput.value) {
+            nameHiddenInput.value = nameEnInput.value;
+        } else if (nameArInput.value) {
+            nameHiddenInput.value = nameArInput.value;
+        }
+    }
+    
+    function updateDescriptionField() {
+        const currentLocale = document.documentElement.lang || 'en';
+        if (currentLocale === 'ar' && descriptionArInput.value) {
+            descriptionHiddenInput.value = descriptionArInput.value;
+        } else if (descriptionEnInput.value) {
+            descriptionHiddenInput.value = descriptionEnInput.value;
+        } else if (descriptionArInput.value) {
+            descriptionHiddenInput.value = descriptionArInput.value;
+        }
+    }
+    
+    if (nameEnInput) nameEnInput.addEventListener('input', updateNameField);
+    if (nameArInput) nameArInput.addEventListener('input', updateNameField);
+    if (descriptionEnInput) descriptionEnInput.addEventListener('input', updateDescriptionField);
+    if (descriptionArInput) descriptionArInput.addEventListener('input', updateDescriptionField);
+    
     // Tab switching functionality
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -732,65 +799,65 @@ document.addEventListener('DOMContentLoaded', function() {
         
         variantDiv.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--primary-blue);">
-                <h5 style="font-size: 1rem; font-weight: 600; color: #1f2937; margin: 0;">Variant ${variantIndex + 1}</h5>
-                <button type="button" class="remove-variant-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Remove</button>
+                <h5 style="font-size: 1rem; font-weight: 600; color: #1f2937; margin: 0;">{{ __('cms.variant') }} ${variantIndex + 1}</h5>
+                <button type="button" class="remove-variant-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.25rem 0.75rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">{{ __('cms.remove') }}</button>
             </div>
             
             <!-- Attributes Repeater -->
             <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label class="form-label">Attributes</label>
+                <label class="form-label">{{ __('cms.attributes') }}</label>
                 <div class="attributes-repeater" style="margin-top: 0.5rem;">
                     <!-- Attribute rows will be added here -->
                 </div>
-                <button type="button" class="add-attribute-row-btn btn" style="margin-top: 0.5rem; background-color: #6b7280; color: white; font-size: 0.875rem;">+ Add Attribute</button>
+                <button type="button" class="add-attribute-row-btn btn" style="margin-top: 0.5rem; background-color: #6b7280; color: white; font-size: 0.875rem;">{{ __('cms.add_attribute') }}</button>
             </div>
             
             <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label">Description</label>
-                <textarea name="variants[${variantIndex}][description]" class="form-input" rows="2" placeholder="Variant description (optional)"></textarea>
+                <label class="form-label">{{ __('cms.description') }}</label>
+                <textarea name="variants[${variantIndex}][description]" class="form-input" rows="2" placeholder="{{ __('cms.variant_description_optional') }}"></textarea>
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Price <span style="color: #ef4444;">*</span></label>
+                    <label class="form-label">{{ __('cms.price') }} <span style="color: #ef4444;">*</span></label>
                     <input type="number" name="variants[${variantIndex}][price]" step="0.01" min="0" required class="form-input" placeholder="0.00">
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">Sale Price</label>
+                    <label class="form-label">{{ __('cms.sale_price') }}</label>
                     <input type="number" name="variants[${variantIndex}][sale_price]" step="0.01" min="0" class="form-input" placeholder="0.00">
                 </div>
             </div>
             
             <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label">Track Stock</label>
+                <label class="form-label">{{ __('cms.track_stock') }}</label>
                 <select name="variants[${variantIndex}][track_stock]" class="form-input track-stock-select">
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
+                    <option value="1">{{ __('cms.yes') }}</option>
+                    <option value="0">{{ __('cms.no') }}</option>
                 </select>
             </div>
             
             <div class="stock-quantity-field" style="display: block; margin-bottom: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Stock Quantity</label>
+                    <label class="form-label">{{ __('cms.stock_quantity') }}</label>
                     <input type="number" name="variants[${variantIndex}][stock_quantity]" min="0" class="form-input" placeholder="0">
                 </div>
             </div>
             
             <div class="stock-status-field" style="display: none; margin-bottom: 1rem;">
                 <div class="form-group">
-                    <label class="form-label">Stock Status</label>
+                    <label class="form-label">{{ __('cms.stock_status') }}</label>
                     <select name="variants[${variantIndex}][stock_status]" class="form-input">
-                        <option value="in_stock">In Stock</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                        <option value="on_backorder">On Backorder</option>
+                        <option value="in_stock">{{ __('cms.in_stock') }}</option>
+                        <option value="out_of_stock">{{ __('cms.out_of_stock') }}</option>
+                        <option value="on_backorder">{{ __('cms.on_backorder') }}</option>
                     </select>
                 </div>
             </div>
             
             <div class="form-group">
-                <label class="form-label">Variant Image (Optional)</label>
-                <input type="text" name="variants[${variantIndex}][image]" class="form-input" placeholder="Image path or URL">
+                <label class="form-label">{{ __('cms.variant_image_optional') }}</label>
+                <input type="text" name="variants[${variantIndex}][image]" class="form-input" placeholder="{{ __('cms.image_path_or_url') }}">
             </div>
         `;
         
@@ -842,7 +909,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="form-group" style="flex: 1;">
                 <label class="form-label">Attribute</label>
                 <select class="form-input attribute-select" name="variants[${variantIdx}][attributes][${attrRowIndex}][attribute_id]" style="width: 100%;">
-                    <option value="">Select Attribute</option>
+                    <option value="">{{ __('cms.select_attribute') }}</option>
                     ${Object.entries(attributesData).map(([id, attr]) => 
                         `<option value="${id}" data-attribute-name="${attr.name}">${attr.name}</option>`
                     ).join('')}
@@ -851,10 +918,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="form-group" style="flex: 1;">
                 <label class="form-label">Value</label>
                 <select class="form-input attribute-value-select" name="variants[${variantIdx}][attributes][${attrRowIndex}][value_id]" style="width: 100%;" disabled>
-                    <option value="">Select Attribute First</option>
+                    <option value="">{{ __('cms.select_attribute_first') }}</option>
                 </select>
             </div>
-            <button type="button" class="remove-attribute-row-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; height: fit-content; margin-bottom: 0.5rem;">Remove</button>
+            <button type="button" class="remove-attribute-row-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; height: fit-content; margin-bottom: 0.5rem;">{{ __('cms.remove') }}</button>
         `;
         
         container.appendChild(attrRow);
@@ -869,7 +936,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const attributeName = selectedOption.getAttribute('data-attribute-name');
             
             // Clear and populate value dropdown
-            valueSelect.innerHTML = '<option value="">Select Value</option>';
+            valueSelect.innerHTML = '<option value="">{{ __('cms.select_value') }}</option>';
             valueSelect.disabled = !selectedAttrId;
             
             if (selectedAttrId && attributesData[selectedAttrId]) {

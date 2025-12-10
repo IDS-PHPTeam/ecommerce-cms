@@ -28,5 +28,11 @@ class AppServiceProvider extends ServiceProvider
     {
         // Locale is now set via SetLocale middleware after session is available
         // This ensures the session is properly initialized before reading locale
+        
+        // Share theme mode with all views
+        view()->composer('*', function ($view) {
+            $themeMode = Setting::get('theme_mode', 'light');
+            $view->with('themeMode', $themeMode);
+        });
     }
 }

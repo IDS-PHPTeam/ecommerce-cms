@@ -1,23 +1,23 @@
 @extends('layouts.app')
 
-@section('title', 'Audit Logs')
+@section('title', __('cms.audit_logs'))
 
 @section('content')
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">Audit Logs</h2>
+        <h2 style="font-size: 1.875rem; font-weight: 700;">{{ __('cms.audit_logs') }}</h2>
         <div style="display: flex; gap: 0.5rem;">
             <a href="{{ route('audit-logs.export', request()->query()) }}" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Export CSV
+                {{ __('cms.export_csv') }}
             </a>
             <button type="button" onclick="deleteSelected()" id="delete-selected-btn" class="btn" style="background-color: #ef4444; color: white; display: none;">
-                Delete Selected
+                {{ __('cms.delete_selected') }}
             </button>
             <button type="button" onclick="deleteAllFiltered()" class="btn" style="background-color: #dc2626; color: white;">
-                Delete All Filtered
+                {{ __('cms.delete_all_filtered') }}
             </button>
         </div>
     </div>
@@ -32,29 +32,29 @@
     <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
         <form method="GET" action="{{ route('audit-logs.index') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
             <div>
-                <label for="search" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">Search</label>
+                <label for="search" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.search') }}</label>
                 <input 
                     type="text" 
                     id="search" 
                     name="search" 
                     value="{{ request('search') }}" 
                     class="form-input"
-                    placeholder="Search description..."
+                    placeholder="{{ __('cms.search_description') }}"
                 >
             </div>
             <div>
-                <label for="action" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">Action</label>
+                <label for="action" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.action') }}</label>
                 <select id="action" name="action" class="form-input">
-                    <option value="">All Actions</option>
+                    <option value="">{{ __('cms.all_actions') }}</option>
                     @foreach($actions as $action)
-                        <option value="{{ $action }}" {{ request('action') == $action ? 'selected' : '' }}>{{ ucfirst($action) }}</option>
+                        <option value="{{ $action }}" {{ request('action') == $action ? 'selected' : '' }}>{{ __('cms.action_' . $action) ?: ucfirst($action) }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <label for="user_id" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">User</label>
+                <label for="user_id" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.user') }}</label>
                 <select id="user_id" name="user_id" class="form-input">
-                    <option value="">All Users</option>
+                    <option value="">{{ __('cms.all_users') }}</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
                             {{ $user->first_name && $user->last_name ? $user->first_name . ' ' . $user->last_name : $user->name }}
@@ -63,18 +63,18 @@
                 </select>
             </div>
             <div>
-                <label for="model_type" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">Model Type</label>
+                <label for="model_type" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.model_type') }}</label>
                 <select id="model_type" name="model_type" class="form-input">
-                    <option value="">All Models</option>
+                    <option value="">{{ __('cms.all_models') }}</option>
                     @foreach($modelTypes as $modelType)
                         <option value="{{ $modelType }}" {{ request('model_type') == $modelType ? 'selected' : '' }}>
-                            {{ class_basename($modelType) }}
+                            {{ __('cms.model_' . strtolower(class_basename($modelType))) ?: class_basename($modelType) }}
                         </option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <label for="date_from" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">Date From</label>
+                <label for="date_from" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.from_date') }}</label>
                 <input 
                     type="date" 
                     id="date_from" 
@@ -84,7 +84,7 @@
                 >
             </div>
             <div>
-                <label for="date_to" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">Date To</label>
+                <label for="date_to" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.to_date') }}</label>
                 <input 
                     type="date" 
                     id="date_to" 
@@ -94,8 +94,8 @@
                 >
             </div>
             <div style="display: flex; align-items: end; gap: 0.5rem;">
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{{ route('audit-logs.index') }}" class="btn" style="background-color: #6b7280; color: white;">Reset</a>
+                <button type="submit" class="btn btn-primary">{{ __('cms.filter') }}</button>
+                <a href="{{ route('audit-logs.index') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.reset') }}</a>
             </div>
         </form>
     </div>
@@ -104,17 +104,17 @@
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr style="background-color: #f3f4f6; border-bottom: 2px solid #e5e7eb;">
+                <tr class="table-header-row">
                     <th style="padding: 0.75rem; text-align: left; font-weight: 600; width: 40px;">
                         <input type="checkbox" id="select-all" onchange="toggleSelectAll(this)">
                     </th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Date & Time</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">User</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Action</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Model</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Description</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">IP Address</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Actions</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.date_time') }}</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.user') }}</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.action') }}</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.model') }}</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.description') }}</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.ip_address') }}</th>
+                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -133,7 +133,7 @@
                             <br>
                             <span style="color: #6b7280; font-size: 0.875rem;">{{ $log->user->email }}</span>
                         @else
-                            <span style="color: #9ca3af;">System</span>
+                            <span style="color: #9ca3af;">{{ __('cms.system') }}</span>
                         @endif
                     </td>
                     <td style="padding: 0.75rem;">
@@ -143,42 +143,42 @@
                             @elseif($log->action == 'deleted') background-color: #fee2e2; color: #991b1b;
                             @else background-color: #f3f4f6; color: #374151;
                             @endif">
-                            {{ ucfirst($log->action) }}
+                            {{ __('cms.action_' . $log->action) ?: ucfirst($log->action) }}
                         </span>
                     </td>
                     <td style="padding: 0.75rem;">
                         @if($log->model_type)
                             <span style="font-family: monospace; font-size: 0.875rem; color: #6b7280;">
-                                {{ class_basename($log->model_type) }}
+                                {{ __('cms.model_' . strtolower(class_basename($log->model_type))) ?: class_basename($log->model_type) }}
                             </span>
                             @if($log->model_id)
                                 <br>
-                                <span style="color: #9ca3af; font-size: 0.75rem;">ID: {{ $log->model_id }}</span>
+                                <span style="color: #9ca3af; font-size: 0.75rem;">{{ __('cms.id') }}: {{ $log->model_id }}</span>
                             @endif
                         @else
-                            <span style="color: #9ca3af;">N/A</span>
+                            <span style="color: #9ca3af;">{{ __('cms.na') }}</span>
                         @endif
                     </td>
                     <td style="padding: 0.75rem; max-width: 300px;">
                         <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                            {{ $log->description ?? 'N/A' }}
+                            {{ $log->description ?? __('cms.na') }}
                         </div>
                     </td>
                     <td style="padding: 0.75rem; font-family: monospace; font-size: 0.875rem; color: #6b7280;">
-                        {{ $log->ip_address ?? 'N/A' }}
+                        {{ $log->ip_address ?? __('cms.na') }}
                     </td>
                     <td style="padding: 0.75rem;">
                         <div style="display: flex; gap: 0.5rem;">
-                            <a href="{{ route('audit-logs.show', $log) }}" class="action-btn action-btn-edit" title="View Details">
+                            <a href="{{ route('audit-logs.show', $log) }}" class="action-btn action-btn-edit" title="{{ __('cms.view_details') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('audit-logs.destroy', $log) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this audit log?');">
+                            <form action="{{ route('audit-logs.destroy', $log) }}" method="POST" style="display: inline;" onsubmit="return confirm('{{ __('cms.confirm_delete_audit_log') }}');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="action-btn action-btn-delete" title="Delete">
+                                <button type="submit" class="action-btn action-btn-delete" title="{{ __('cms.delete') }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
@@ -189,7 +189,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="padding: 2rem; text-align: center; color: #6b7280;">No audit logs found.</td>
+                    <td colspan="8" style="padding: 2rem; text-align: center; color: #6b7280;">{{ __('cms.no_audit_logs_found') }}</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -249,7 +249,7 @@ function updateDeleteButton() {
     
     if (checked.length > 0) {
         deleteBtn.style.display = 'block';
-        deleteBtn.textContent = `Delete Selected (${checked.length})`;
+        deleteBtn.textContent = '{{ __('cms.delete_selected_count') }}'.replace(':count', checked.length);
     } else {
         deleteBtn.style.display = 'none';
     }
@@ -258,11 +258,12 @@ function updateDeleteButton() {
 function deleteSelected() {
     const checked = document.querySelectorAll('.log-checkbox:checked');
     if (checked.length === 0) {
-        alert('Please select at least one audit log to delete.');
+        alert('{{ __('cms.please_select_audit_log') }}');
         return;
     }
     
-    if (!confirm(`Are you sure you want to delete ${checked.length} audit log(s)?`)) {
+    const confirmMessage = '{{ __('cms.confirm_delete_audit_logs') }}'.replace(':count', checked.length);
+    if (!confirm(confirmMessage)) {
         return;
     }
     
@@ -284,11 +285,12 @@ function deleteSelected() {
 function deleteAllFiltered() {
     const count = {{ $auditLogs->total() }};
     if (count === 0) {
-        alert('No audit logs to delete.');
+        alert('{{ __('cms.no_audit_logs_to_delete') }}');
         return;
     }
     
-    if (!confirm(`Are you sure you want to delete all ${count} filtered audit log(s)? This action cannot be undone.`)) {
+    const confirmMessage = '{{ __('cms.confirm_delete_all_filtered_audit_logs') }}'.replace(':count', count);
+    if (!confirm(confirmMessage)) {
         return;
     }
     

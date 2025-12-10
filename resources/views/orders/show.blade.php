@@ -53,7 +53,7 @@
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background-color: #f3f4f6; border-bottom: 2px solid #e5e7eb;">
+                        <tr class="table-header-row">
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Product</th>
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Quantity</th>
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Price</th>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Country;
+use App\Models\Setting;
 use App\Traits\LogsAudit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -90,7 +92,8 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('customers.create');
+        $deliveryCountries = $this->getDeliveryCountries();
+        return view('customers.create', compact('deliveryCountries'));
     }
 
     /**
@@ -109,6 +112,14 @@ class CustomerController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'profile_image' => 'nullable|image|max:2048',
             'account_status' => 'required|in:active_not_verified,active_verified,deactivated,suspended',
+            'addresses' => 'nullable|array',
+            'addresses.*.label' => 'nullable|string|max:255',
+            'addresses.*.street' => 'nullable|string|max:255',
+            'addresses.*.street2' => 'nullable|string|max:255',
+            'addresses.*.city' => 'nullable|string|max:255',
+            'addresses.*.state' => 'nullable|string|max:255',
+            'addresses.*.postal_code' => 'nullable|string|max:20',
+            'addresses.*.country' => 'nullable|string|max:255',
         ]);
 
         $validated['name'] = $validated['first_name'] . ' ' . $validated['last_name'];
@@ -122,6 +133,22 @@ class CustomerController extends Controller
             $validated['profile_image'] = $request->file('profile_image')->store("profiles/{$year}/{$month}", 'public');
         } elseif ($request->filled('selected_media_path')) {
             $validated['profile_image'] = $request->selected_media_path;
+        }
+
+        // Handle addresses
+        if ($request->filled('addresses')) {
+            $addresses = [];
+            foreach ($request->addresses as $address) {
+                // Only add address if at least street or city is provided
+                if (!empty($address['street']) || !empty($address['city'])) {
+                    $addresses[] = array_filter($address, function($value) {
+                        return $value !== null && $value !== '';
+                    });
+                }
+            }
+            $validated['addresses'] = !empty($addresses) ? json_encode($addresses) : null;
+        } else {
+            $validated['addresses'] = null;
         }
 
         $customer = User::create($validated);
@@ -141,7 +168,28 @@ class CustomerController extends Controller
     public function edit($id)
     {
         $customer = User::where('role', 'customer')->findOrFail($id);
-        return view('customers.edit', compact('customer'));
+        $deliveryCountries = $this->getDeliveryCountries();
+        return view('customers.edit', compact('customer', 'deliveryCountries'));
+    }
+
+    /**
+     * Get delivery countries from settings.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getDeliveryCountries()
+    {
+        // Get delivery countries setting
+        $deliveryCountriesSetting = Setting::get('delivery_countries', 'LB');
+        $deliveryCountryCodes = is_string($deliveryCountriesSetting) ? json_decode($deliveryCountriesSetting, true) : $deliveryCountriesSetting;
+        if (!is_array($deliveryCountryCodes)) {
+            $deliveryCountryCodes = [$deliveryCountriesSetting];
+        }
+
+        // Get country details for delivery countries
+        return Country::whereIn('country_code', $deliveryCountryCodes)
+            ->orderBy('country_name_en')
+            ->get();
     }
 
     /**
@@ -163,9 +211,17 @@ class CustomerController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'profile_image' => 'nullable|image|max:2048',
             'account_status' => 'required|in:active_not_verified,active_verified,deactivated,suspended',
+            'addresses' => 'nullable|array',
+            'addresses.*.label' => 'nullable|string|max:255',
+            'addresses.*.street' => 'nullable|string|max:255',
+            'addresses.*.street2' => 'nullable|string|max:255',
+            'addresses.*.city' => 'nullable|string|max:255',
+            'addresses.*.state' => 'nullable|string|max:255',
+            'addresses.*.postal_code' => 'nullable|string|max:20',
+            'addresses.*.country' => 'nullable|string|max:255',
         ]);
 
-        $oldValues = $this->getOldValues($customer, ['first_name', 'last_name', 'email', 'phone', 'profile_image', 'account_status']);
+        $oldValues = $this->getOldValues($customer, ['first_name', 'last_name', 'email', 'phone', 'profile_image', 'account_status', 'addresses']);
 
         $validated['name'] = $validated['first_name'] . ' ' . $validated['last_name'];
         
@@ -197,9 +253,25 @@ class CustomerController extends Controller
             $validated['profile_image'] = null;
         }
 
+        // Handle addresses
+        if ($request->filled('addresses')) {
+            $addresses = [];
+            foreach ($request->addresses as $address) {
+                // Only add address if at least street or city is provided
+                if (!empty($address['street']) || !empty($address['city'])) {
+                    $addresses[] = array_filter($address, function($value) {
+                        return $value !== null && $value !== '';
+                    });
+                }
+            }
+            $validated['addresses'] = !empty($addresses) ? json_encode($addresses) : null;
+        } else {
+            $validated['addresses'] = null;
+        }
+
         $customer->update($validated);
 
-        $newValues = $this->getNewValues($validated, ['first_name', 'last_name', 'email', 'phone', 'profile_image', 'account_status']);
+        $newValues = $this->getNewValues($validated, ['first_name', 'last_name', 'email', 'phone', 'profile_image', 'account_status', 'addresses']);
         $this->logAudit('updated', $customer, "Customer updated: {$customer->name} ({$customer->email})", $oldValues, $newValues);
 
         return redirect()->route('customers.index')

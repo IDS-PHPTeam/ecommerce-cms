@@ -115,7 +115,11 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'name_en' => 'nullable|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'product_type' => 'required|in:simple,variable',
             'featured_image' => 'nullable|image|max:2048',
             'categories' => 'nullable|array',
@@ -146,6 +150,24 @@ class ProductController extends Controller
             'sale_price.lt' => 'The sale price must be less than the regular price.',
             'variants.*.sale_price.lt' => 'The variant sale price must be less than the variant regular price.',
         ]);
+
+        // Determine the main name and description based on current locale or fallback
+        $currentLocale = app()->getLocale();
+        if (empty($validated['name']) && !empty($validated['name_' . $currentLocale])) {
+            $validated['name'] = $validated['name_' . $currentLocale];
+        } elseif (empty($validated['name']) && !empty($validated['name_en'])) {
+            $validated['name'] = $validated['name_en'];
+        } elseif (empty($validated['name']) && !empty($validated['name_ar'])) {
+            $validated['name'] = $validated['name_ar'];
+        }
+
+        if (empty($validated['description']) && !empty($validated['description_' . $currentLocale])) {
+            $validated['description'] = $validated['description_' . $currentLocale];
+        } elseif (empty($validated['description']) && !empty($validated['description_en'])) {
+            $validated['description'] = $validated['description_en'];
+        } elseif (empty($validated['description']) && !empty($validated['description_ar'])) {
+            $validated['description'] = $validated['description_ar'];
+        }
 
         // Validate sale price is less than price
         if ($validated['product_type'] === 'simple') {
@@ -302,7 +324,11 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'name_en' => 'nullable|string|max:255',
+            'name_ar' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'description_en' => 'nullable|string',
+            'description_ar' => 'nullable|string',
             'product_type' => 'required|in:simple,variable',
             'featured_image' => 'nullable|image|max:2048',
             'categories' => 'nullable|array',
@@ -341,6 +367,24 @@ class ProductController extends Controller
             'variants.*.sale_price.lt' => 'The variant sale price must be less than the variant regular price.',
         ]);
 
+        // Determine the main name and description based on current locale or fallback
+        $currentLocale = app()->getLocale();
+        if (empty($validated['name']) && !empty($validated['name_' . $currentLocale])) {
+            $validated['name'] = $validated['name_' . $currentLocale];
+        } elseif (empty($validated['name']) && !empty($validated['name_en'])) {
+            $validated['name'] = $validated['name_en'];
+        } elseif (empty($validated['name']) && !empty($validated['name_ar'])) {
+            $validated['name'] = $validated['name_ar'];
+        }
+
+        if (empty($validated['description']) && !empty($validated['description_' . $currentLocale])) {
+            $validated['description'] = $validated['description_' . $currentLocale];
+        } elseif (empty($validated['description']) && !empty($validated['description_en'])) {
+            $validated['description'] = $validated['description_en'];
+        } elseif (empty($validated['description']) && !empty($validated['description_ar'])) {
+            $validated['description'] = $validated['description_ar'];
+        }
+
         // Validate sale price
         if ($validated['product_type'] === 'simple') {
             if (isset($validated['sale_price']) && $validated['sale_price'] > 0 && 
@@ -372,9 +416,9 @@ class ProductController extends Controller
             $validated['updated_by'] = Auth::id();
 
             // Update product
-            $oldValues = $this->getOldValues($product, ['name', 'description', 'product_type', 'price', 'sale_price', 'status']);
+            $oldValues = $this->getOldValues($product, ['name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar', 'product_type', 'price', 'sale_price', 'status']);
             $product->update($validated);
-            $newValues = $this->getNewValues($validated, ['name', 'description', 'product_type', 'price', 'sale_price', 'status']);
+            $newValues = $this->getNewValues($validated, ['name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar', 'product_type', 'price', 'sale_price', 'status']);
 
             // Sync categories
             if (isset($validated['categories'])) {
@@ -595,22 +639,13 @@ class ProductController extends Controller
     {
         $productName = $product->name;
 
-        // Delete featured image
-        if ($product->featured_image) {
-            Storage::disk('public')->delete($product->featured_image);
-        }
+        // Note: We do NOT delete the media files (images/videos) from storage
+        // This allows the media to be reused for other products or remain available
+        // in the media library. Only the database records are deleted.
 
-        // Delete gallery images
-        foreach ($product->gallery as $galleryItem) {
-            Storage::disk('public')->delete($galleryItem->media_path);
-        }
-
-        // Delete variant images
-        foreach ($product->variants as $variant) {
-            if ($variant->image) {
-                Storage::disk('public')->delete($variant->image);
-            }
-        }
+        // Featured image - keep the file in storage
+        // Gallery images/videos - keep the files in storage
+        // Variant images - keep the files in storage
 
         $this->logAudit('deleted', $product, "Product deleted: {$productName}");
 

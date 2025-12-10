@@ -233,7 +233,7 @@ class SettlementController extends Controller
         $this->logAudit('created', $settlement, "Settlement request created for driver #{$validated['driver_id']}");
 
         return redirect()->route('settlements.request')
-            ->with('success', 'Settlement request created successfully.');
+            ->with('success', __('cms.settlement_request_created_successfully'));
     }
 
     /**
@@ -273,7 +273,7 @@ class SettlementController extends Controller
         $this->logAudit('updated', $settlement, "Settlement status updated from {$oldStatus} to {$validated['status']}");
 
         return redirect()->route('settlements.history')
-            ->with('success', 'Settlement status updated successfully.');
+            ->with('success', __('cms.settlement_status_updated_successfully'));
     }
 
     /**
