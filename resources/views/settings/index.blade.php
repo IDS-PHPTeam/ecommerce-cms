@@ -25,10 +25,10 @@
             @method('PUT')
 
             <!-- Grid Layout for Better Organization -->
-            <div class="grid grid-auto gap-4 mb-8" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+            <div class="grid grid-auto-400 gap-4 mb-8">
                 
                 <!-- Left Column: Basic Settings -->
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="flex flex-column gap-6">
                     <h3 class="settings-section-header">{{ __('cms.basic_settings') }}</h3>
                     
                     <div class="form-group">
@@ -57,11 +57,11 @@
                     <div class="form-group">
                         <label class="form-label">{{ __('cms.multilingual') }}</label>
                         <div class="flex-center gap-3 mt-2">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="radio" name="multilingual" value="1" {{ old('multilingual', $settings['multilingual']) == '1' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.yes') }}</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="radio" name="multilingual" value="0" {{ old('multilingual', $settings['multilingual']) == '0' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.no') }}</span>
                             </label>
@@ -86,11 +86,11 @@
                     <div class="form-group">
                         <label for="theme_mode" class="form-label">{{ __('cms.theme_mode') }}</label>
                         <div class="flex-center gap-3 mt-2">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="radio" name="theme_mode" value="light" {{ old('theme_mode', $settings['theme_mode'] ?? 'light') == 'light' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.light_mode') }}</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="radio" name="theme_mode" value="dark" {{ old('theme_mode', $settings['theme_mode'] ?? 'light') == 'dark' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.dark_mode') }}</span>
                             </label>
@@ -102,17 +102,17 @@
                 </div>
 
                 <!-- Right Column: Additional Settings -->
-                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="flex flex-column gap-6">
                     <h3 class="settings-section-header">{{ __('cms.additional_settings') }}</h3>
                     
                     <div class="form-group">
                         <label class="form-label">{{ __('cms.multi_currency') }}</label>
                         <div class="flex-center gap-3 mt-2">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="radio" name="multi_currency" value="1" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '1' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.yes') }}</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="radio" name="multi_currency" value="0" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '0' ? 'checked' : '' }} required>
                                 <span>{{ __('cms.no') }}</span>
                             </label>
@@ -125,11 +125,11 @@
                     <div class="form-group">
                         <label class="form-label">{{ __('cms.notify_by') }}</label>
                         <div class="flex-center gap-4 mt-2">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="checkbox" name="notify_by_email" value="1" {{ old('notify_by_email', $settings['notify_by_email'] ?? '1') == '1' ? 'checked' : '' }}>
                                 <span>{{ __('cms.email') }}</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <label class="radio-label">
                                 <input type="checkbox" name="notify_by_push" value="1" {{ old('notify_by_push', $settings['notify_by_push'] ?? '0') == '1' ? 'checked' : '' }}>
                                 <span>{{ __('cms.push') }}</span>
                             </label>
@@ -147,22 +147,22 @@
             <!-- Full Width: Delivery Countries -->
             <div class="form-group mb-8">
                 <label for="delivery_countries" class="form-label">{{ __('cms.delivery_shipping_to_countries') }}</label>
-                <div class="custom-multiselect" style="position: relative; max-width: 500px;">
-                    <div class="multiselect-trigger" id="countriesTrigger" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 42px;">
-                        <div class="multiselect-selected" style="color: #374151; flex: 1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                            <span class="placeholder-text" style="color: #9ca3af;">{{ __('cms.select_countries') }}</span>
-                            <div class="selected-countries-tags" style="display: none; flex-wrap: wrap; gap: 0.5rem;">
+                <div class="custom-multiselect relative" style="max-width: 500px;">
+                    <div class="multiselect-trigger multiselect-trigger-full" id="countriesTrigger">
+                        <div class="multiselect-selected">
+                            <span class="placeholder-text text-quaternary">{{ __('cms.select_countries') }}</span>
+                            <div class="selected-countries-tags d-none flex-wrap gap-2">
                                 <!-- Selected country tags will be added here -->
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <button type="button" class="clear-all-countries-btn" style="display: none; background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem; font-size: 0.875rem;" title="{{ __('cms.clear_all') }}">{{ __('cms.clear_all') }}</button>
-                            <svg class="multiselect-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: #6b7280; transition: transform 0.2s;">
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="clear-all-countries-btn d-none bg-none border-0 text-red cursor-pointer p-1 text-sm" title="{{ __('cms.clear_all') }}">{{ __('cms.clear_all') }}</button>
+                            <svg class="multiselect-arrow text-tertiary" style="transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
                     </div>
-                    <div class="multiselect-dropdown" id="countriesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-top: 0.25rem; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                    <div class="multiselect-dropdown multiselect-dropdown-full" id="countriesDropdown">
                         @php
                             $currentLocale = app()->getLocale();
                             $selectedCountries = old('delivery_countries', $settings['delivery_countries'] ?? ['LB']);
@@ -173,14 +173,14 @@
                             }
                         @endphp
                         @foreach($countries as $country)
-                            <label class="multiselect-option" style="display: flex; align-items: center; padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s;">
+                            <label class="multiselect-option multiselect-option-item">
                                 <input type="checkbox" name="delivery_countries[]" value="{{ $country->country_code }}" class="country-checkbox" data-country-name="{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }}" {{ in_array($country->country_code, $selectedCountries) ? 'checked' : '' }} style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
-                                <span style="color: #374151; user-select: none;">{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }}</span>
+                                <span class="text-secondary user-select-none">{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }}</span>
                             </label>
                         @endforeach
                     </div>
                 </div>
-                <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ __('cms.select_one_or_more_countries') }}</small>
+                <small class="text-tertiary text-sm mt-1 d-block">{{ __('cms.select_one_or_more_countries') }}</small>
                 @error('delivery_countries')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -198,7 +198,7 @@
     </div>
 
     <!-- Multi-Currency Settings Tab -->
-    <div id="currency-tab" class="settings-tab-content" style="display: none;">
+    <div id="currency-tab" class="settings-tab-content d-none">
         <div class="flex-between mb-6">
             <h3 class="section-subheader">{{ __('cms.multi_currency_settings') }}</h3>
             <button type="button" class="btn btn-primary" onclick="openAddCurrencyModal()">{{ __('cms.add_currency') }}</button>
@@ -207,8 +207,8 @@
     <!-- Currency List -->
     <div class="mb-8">
         <h3 class="text-lg font-semibold mb-4">{{ __('cms.currencies') }}</h3>
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
+        <div class="overflow-x-auto">
+            <table class="w-full" style="border-collapse: collapse;">
                 <thead>
                     <tr class="table-header-row">
                         <th class="table-cell font-semibold">{{ __('cms.code') }}</th>
@@ -240,12 +240,12 @@
                                 @endif
                             </td>
                             <td class="table-cell text-right">
-                                <button type="button" class="btn btn-primary btn-small" style="margin-right: 0.5rem;" onclick="openEditCurrencyModal({{ $currency->id }}, '{{ addslashes($currency->code) }}', '{{ addslashes($currency->name) }}', '{{ addslashes($currency->symbol) }}', {{ $currency->is_default ? 'true' : 'false' }}, {{ $currency->is_active ? 'true' : 'false' }})">{{ __('cms.edit') }}</button>
+                                <button type="button" class="btn btn-primary btn-small mr-2" onclick="openEditCurrencyModal({{ $currency->id }}, '{{ addslashes($currency->code) }}', '{{ addslashes($currency->name) }}', '{{ addslashes($currency->symbol) }}', {{ $currency->is_default ? 'true' : 'false' }}, {{ $currency->is_active ? 'true' : 'false' }})">{{ __('cms.edit') }}</button>
                                 @if(!$currency->is_default && $currencies->count() > 1)
                                     <form method="POST" action="{{ route('settings.currencies.delete', $currency) }}" class="inline-form" onsubmit="return confirm('{{ __('cms.confirm_delete_currency') }}');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-small" style="background-color: #ef4444; color: white;">{{ __('cms.delete') }}</button>
+                                        <button type="submit" class="btn btn-small bg-red-500 text-white">{{ __('cms.delete') }}</button>
                                     </form>
                                 @endif
                             </td>
@@ -263,30 +263,30 @@
     <!-- Exchange Rates Matrix -->
     @if($currencies->count() > 1)
         <div>
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">{{ __('cms.exchange_rates') }}</h3>
-            <p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.875rem;">{{ __('cms.exchange_rates_description') }}</p>
+            <h3 class="section-heading mb-4">{{ __('cms.exchange_rates') }}</h3>
+            <p class="text-tertiary text-sm mb-4">{{ __('cms.exchange_rates_description') }}</p>
             
             <form method="POST" action="{{ route('settings.exchange-rates.update') }}" id="exchangeRatesForm">
                 @csrf
                 @method('PUT')
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                <div class="overflow-x-auto">
+                    <table class="w-full" style="border-collapse: collapse; min-width: 600px;">
                         <thead>
                             <tr class="table-header-row">
-                                <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.from_to') }}</th>
+                                <th class="table-cell-header">{{ __('cms.from_to') }}</th>
                                 @foreach($currencies as $toCurrency)
-                                    <th style="padding: 0.75rem; text-align: center; font-weight: 600;">{{ $toCurrency->code }}</th>
+                                    <th class="table-cell-header text-center">{{ $toCurrency->code }}</th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($currencies as $fromCurrency)
-                                <tr style="border-bottom: 1px solid #e5e7eb;">
-                                    <td style="padding: 0.75rem; font-weight: 600;">{{ $fromCurrency->code }}</td>
+                                <tr class="table-row-border">
+                                    <td class="table-cell-padding font-semibold">{{ $fromCurrency->code }}</td>
                                     @foreach($currencies as $toCurrency)
-                                        <td style="padding: 0.5rem; text-align: center;">
+                                        <td class="table-cell-small">
                                             @if($fromCurrency->id == $toCurrency->id)
-                                                <span style="color: #9ca3af;">-</span>
+                                                <span class="text-quaternary">-</span>
                                             @else
                                                 @php
                                                     // Determine step and decimal places based on target currency
@@ -319,7 +319,8 @@
                                                     value="{{ $rateValue }}"
                                                     step="{{ $step }}"
                                                     min="0"
-                                                    style="width: 100px; padding: 0.375rem; border: 1px solid #d1d5db; border-radius: 0.375rem; text-align: center;"
+                                                    class="exchange-rate-input rounded border border-gray-300 text-center"
+                                                    style="width: 100px; padding: 0.375rem;"
                                                     placeholder="{{ $placeholder }}"
                                                     data-currency-code="{{ $toCurrency->code }}"
                                                     class="exchange-rate-input"
@@ -332,7 +333,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <div class="flex gap-4 mt-6">
                     <button type="submit" class="btn btn-primary">{{ __('cms.save_exchange_rates') }}</button>
                 </div>
             </form>
@@ -342,10 +343,10 @@
 </div>
 
 <!-- Add Currency Modal -->
-<div id="addCurrencyModal" class="modal-overlay" style="display: none;">
+<div id="addCurrencyModal" class="modal-overlay modal-overlay-hidden">
     <div class="modal-content" style="max-width: 500px;">
         <div class="modal-header">
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">{{ __('cms.add_currency') }}</h3>
+            <h3 class="text-xl font-bold text-primary">{{ __('cms.add_currency') }}</h3>
             <button type="button" class="modal-close" onclick="closeAddCurrencyModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -357,7 +358,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="currency_code" class="form-label">{{ __('cms.currency_code') }}</label>
-                    <input type="text" id="currency_code" name="code" required maxlength="3" class="form-input" placeholder="USD" style="text-transform: uppercase;">
+                    <input type="text" id="currency_code" name="code" required maxlength="3" class="form-input uppercase" placeholder="USD">
                     @error('code')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
@@ -377,20 +378,20 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label class="radio-label">
                         <input type="checkbox" name="is_default" value="1">
                         <span>{{ __('cms.set_as_default_currency') }}</span>
                     </label>
                 </div>
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label class="radio-label">
                         <input type="checkbox" name="is_active" value="1" checked>
                         <span>{{ __('cms.active') }}</span>
                     </label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" style="background-color: #6b7280; color: white;" onclick="closeAddCurrencyModal()">{{ __('cms.cancel') }}</button>
+                <button type="button" class="btn bg-gray-600 text-white" onclick="closeAddCurrencyModal()">{{ __('cms.cancel') }}</button>
                 <button type="submit" class="btn btn-primary">{{ __('cms.add_currency') }}</button>
             </div>
         </form>
@@ -398,10 +399,10 @@
 </div>
 
 <!-- Edit Currency Modal -->
-<div id="editCurrencyModal" class="modal-overlay" style="display: none;">
+<div id="editCurrencyModal" class="modal-overlay modal-overlay-hidden">
     <div class="modal-content" style="max-width: 500px;">
         <div class="modal-header">
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">{{ __('cms.edit_currency') }}</h3>
+            <h3 class="text-xl font-bold text-primary">{{ __('cms.edit_currency') }}</h3>
             <button type="button" class="modal-close" onclick="closeEditCurrencyModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -414,7 +415,7 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="edit_currency_code" class="form-label">{{ __('cms.currency_code') }}</label>
-                    <input type="text" id="edit_currency_code" name="code" required maxlength="3" class="form-input" placeholder="USD" style="text-transform: uppercase;">
+                    <input type="text" id="edit_currency_code" name="code" required maxlength="3" class="form-input uppercase" placeholder="USD">
                     @error('code')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
@@ -434,20 +435,20 @@
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label class="radio-label">
                         <input type="checkbox" id="edit_is_default" name="is_default" value="1">
                         <span>{{ __('cms.set_as_default_currency') }}</span>
                     </label>
                 </div>
                 <div class="form-group">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <label class="radio-label">
                         <input type="checkbox" id="edit_is_active" name="is_active" value="1">
                         <span>{{ __('cms.active') }}</span>
                     </label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" style="background-color: #6b7280; color: white;" onclick="closeEditCurrencyModal()">{{ __('cms.cancel') }}</button>
+                <button type="button" class="btn bg-gray-600 text-white" onclick="closeEditCurrencyModal()">{{ __('cms.cancel') }}</button>
                 <button type="submit" class="btn btn-primary">{{ __('cms.update_currency') }}</button>
             </div>
         </form>

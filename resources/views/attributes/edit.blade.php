@@ -14,14 +14,12 @@
             <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div>
-                    <label for="name_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                     <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $attribute->name_en ?: $attribute->name) }}" class="form-input" placeholder="{{ __('cms.attribute_name_english') }}">
                     @error('name_en')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
-                    <label for="name_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                     <input type="text" id="name_ar" name="name_ar" value="{{ old('name_ar', $attribute->name_ar ?: $attribute->name) }}" class="form-input" placeholder="{{ __('cms.attribute_name_arabic') }}" dir="rtl">
                     @error('name_ar')
                         <span class="form-error">{{ $message }}</span>
@@ -38,14 +36,12 @@
             <label class="form-label">{{ __('cms.description') }}</label>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div>
-                    <label for="description_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                     <textarea id="description_en" name="description_en" rows="3" class="form-input" placeholder="{{ __('cms.attribute_description_english') }}">{{ old('description_en', $attribute->description_en ?: $attribute->description) }}</textarea>
                     @error('description_en')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
-                    <label for="description_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                     <textarea id="description_ar" name="description_ar" rows="3" class="form-input" placeholder="{{ __('cms.attribute_description_arabic') }}" dir="rtl">{{ old('description_ar', $attribute->description_ar ?: $attribute->description) }}</textarea>
                     @error('description_ar')
                         <span class="form-error">{{ $message }}</span>
@@ -74,11 +70,9 @@
                         <input type="hidden" name="value_ids[]" value="{{ $value->id }}">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
-                                <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                                 <input type="text" name="values_en[]" value="{{ old("values_en.{$index}", $value->value_en ?: $value->value) }}" class="form-input value-en-input" placeholder="{{ __('cms.enter_value_english') }}">
                             </div>
                             <div>
-                                <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                                 <input type="text" name="values_ar[]" value="{{ old("values_ar.{$index}", $value->value_ar ?: $value->value) }}" class="form-input value-ar-input" placeholder="{{ __('cms.enter_value_arabic') }}" dir="rtl">
                             </div>
                         </div>
@@ -99,11 +93,9 @@
                         <input type="hidden" name="value_ids[]" value="">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
-                                <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                                 <input type="text" name="values_en[]" class="form-input value-en-input" placeholder="{{ __('cms.enter_value_english') }}">
                             </div>
                             <div>
-                                <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                                 <input type="text" name="values_ar[]" class="form-input value-ar-input" placeholder="{{ __('cms.enter_value_arabic') }}" dir="rtl">
                             </div>
                         </div>
@@ -183,11 +175,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <input type="hidden" name="value_ids[]" value="">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div>
-                    <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                     <input type="text" name="values_en[]" class="form-input value-en-input" placeholder="{{ __('cms.enter_value_english') }}">
                 </div>
                 <div>
-                    <label style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                     <input type="text" name="values_ar[]" class="form-input value-ar-input" placeholder="{{ __('cms.enter_value_arabic') }}" dir="rtl">
                 </div>
             </div>

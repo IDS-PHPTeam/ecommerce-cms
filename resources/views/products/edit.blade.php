@@ -25,14 +25,12 @@
                 <label class="form-label">{{ __('cms.name') }} <span class="required-asterisk">*</span></label>
                 <div class="grid grid-2 gap-4">
                     <div>
-                        <label for="name_en" class="input-label-small">{{ __('cms.english') }}</label>
                         <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $product->name_en ?: $product->name) }}" class="form-input" placeholder="{{ __('cms.product_name_english') }}">
                         @error('name_en')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
                     <div>
-                        <label for="name_ar" class="input-label-small">{{ __('cms.arabic') }}</label>
                         <input type="text" id="name_ar" name="name_ar" value="{{ old('name_ar', $product->name_ar ?: $product->name) }}" class="form-input" placeholder="{{ __('cms.product_name_arabic') }}" dir="rtl">
                         @error('name_ar')
                             <span class="form-error">{{ $message }}</span>
@@ -49,14 +47,12 @@
                 <label class="form-label">{{ __('cms.description') }}</label>
                 <div class="grid grid-2 gap-4">
                     <div>
-                        <label for="description_en" class="input-label-small">{{ __('cms.english') }}</label>
                         <textarea id="description_en" name="description_en" rows="4" class="form-input" placeholder="{{ __('cms.product_description_english') }}">{{ old('description_en', $product->description_en ?: $product->description) }}</textarea>
                         @error('description_en')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
                     <div>
-                        <label for="description_ar" class="input-label-small">{{ __('cms.arabic') }}</label>
                         <textarea id="description_ar" name="description_ar" rows="4" class="form-input" placeholder="{{ __('cms.product_description_arabic') }}" dir="rtl">{{ old('description_ar', $product->description_ar ?: $product->description) }}</textarea>
                         @error('description_ar')
                             <span class="form-error">{{ $message }}</span>

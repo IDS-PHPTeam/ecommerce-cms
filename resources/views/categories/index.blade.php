@@ -4,15 +4,15 @@
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">Categories</h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="section-heading-lg">Categories</h2>
         <a href="{{ route('categories.create') }}" class="btn btn-primary">+ Add New</a>
     </div>
 
     <!-- Filters -->
-    <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
-        <form method="GET" action="{{ route('categories.index') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
-            <div style="flex: 1; min-width: 200px;">
+    <div class="card mb-6 p-4">
+        <form method="GET" action="{{ route('categories.index') }}" class="flex gap-4 flex-wrap items-end">
+            <div class="flex-1-min-200">
                 <input 
                     type="text" 
                     id="name" 
@@ -22,7 +22,7 @@
                     placeholder="Search by name..."
                 >
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <select id="status" name="status" class="form-input">
                     <option value="">All Status</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
@@ -31,42 +31,42 @@
             </div>
             <div>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{{ route('categories.index') }}" class="btn" style="background-color: #6b7280; color: white; margin-left: 0.5rem;">Reset</a>
+                <a href="{{ route('categories.index') }}" class="btn bg-gray-600 text-white ml-2">Reset</a>
             </div>
         </form>
     </div>
 
     <!-- Categories Table -->
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+    <div class="overflow-x-auto">
+        <table class="w-full" style="border-collapse: collapse;">
             <thead>
                 <tr class="table-header-row">
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">ID</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Name</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Description</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Status</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Actions</th>
+                    <th class="table-cell-header">ID</th>
+                    <th class="table-cell-header">Name</th>
+                    <th class="table-cell-header">Description</th>
+                    <th class="table-cell-header">Status</th>
+                    <th class="table-cell-header">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($categories as $category)
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 0.75rem;">{{ $category->id }}</td>
-                    <td style="padding: 0.75rem; font-weight: 600;">{{ $category->name }}</td>
-                    <td style="padding: 0.75rem; color: #6b7280;">{{ Str::limit($category->description, 50) ?: 'No description' }}</td>
-                    <td style="padding: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $category->status == 'active' ? 'background-color: #d1fae5; color: #065f46;' : 'background-color: #fee2e2; color: #991b1b;' }}">
+                <tr class="table-row-border">
+                    <td class="table-cell-padding">{{ $category->id }}</td>
+                    <td class="table-cell-padding font-semibold">{{ $category->name }}</td>
+                    <td class="table-cell-padding text-tertiary">{{ Str::limit($category->description, 50) ?: 'No description' }}</td>
+                    <td class="table-cell-padding">
+                        <span class="badge {{ $category->status == 'active' ? 'badge-green' : 'badge-red' }}">
                             {{ ucfirst($category->status) }}
                         </span>
                     </td>
-                    <td style="padding: 0.75rem;">
-                        <div style="display: flex; gap: 0.5rem;">
+                    <td class="table-cell-padding">
+                        <div class="flex gap-2">
                             <a href="{{ route('categories.edit', $category) }}" class="action-btn action-btn-edit" title="Edit">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('categories.destroy', $category) }}" method="POST" style="display: inline;" data-confirm="Are you sure you want to delete this category?">
+                            <form action="{{ route('categories.destroy', $category) }}" method="POST" class="d-inline" data-confirm="Are you sure you want to delete this category?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="action-btn action-btn-delete" title="Delete">
@@ -80,7 +80,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 2rem; text-align: center; color: #6b7280;">No categories found.</td>
+                    <td colspan="5" class="p-8 text-center text-tertiary">No categories found.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Pagination -->
-    <div style="margin-top: 1.5rem;">
+    <div class="mt-6">
         {{ $categories->links() }}
     </div>
 </div>

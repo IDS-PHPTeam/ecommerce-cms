@@ -4,50 +4,50 @@
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">{{ __('cms.all_admins') }}</h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="section-heading-lg">{{ __('cms.all_admins') }}</h2>
         <a href="{{ route('admins.create') }}" class="btn btn-primary">{{ __('cms.add_new') }}</a>
     </div>
 
     @if(session('success'))
-        <div style="background-color: #d1fae5; color: #065f46; padding: 0.75rem 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #6ee7b7;">
+        <div class="alert-success mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     <!-- Admins Table -->
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+    <div class="overflow-x-auto">
+        <table class="w-full" style="border-collapse: collapse;">
             <thead>
                 <tr class="table-header-row">
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.name') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.email') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.role') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.created') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.actions') }}</th>
+                    <th class="table-cell-header">{{ __('cms.name') }}</th>
+                    <th class="table-cell-header">{{ __('cms.email') }}</th>
+                    <th class="table-cell-header">{{ __('cms.role') }}</th>
+                    <th class="table-cell-header">{{ __('cms.created') }}</th>
+                    <th class="table-cell-header">{{ __('cms.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($admins as $admin)
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 0.75rem;">
+                <tr class="table-row-border">
+                    <td class="table-cell-padding">
                         {{ $admin->first_name && $admin->last_name ? $admin->first_name . ' ' . $admin->last_name : $admin->name }}
                     </td>
-                    <td style="padding: 0.75rem;">{{ $admin->email }}</td>
-                    <td style="padding: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #dbeafe; color: #1e40af;">
+                    <td class="table-cell-padding">{{ $admin->email }}</td>
+                    <td class="table-cell-padding">
+                        <span class="badge badge-blue">
                             {{ ucfirst($admin->role) }}
                         </span>
                     </td>
-                    <td style="padding: 0.75rem;">{{ $admin->created_at->format('M d, Y') }}</td>
-                    <td style="padding: 0.75rem;">
-                        <div style="display: flex; gap: 0.5rem;">
+                    <td class="table-cell-padding">{{ $admin->created_at->format('M d, Y') }}</td>
+                    <td class="table-cell-padding">
+                        <div class="flex gap-2">
                             <a href="{{ route('admins.edit', $admin) }}" class="action-btn action-btn-edit" title="{{ __('cms.edit') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('admins.destroy', $admin) }}" method="POST" style="display: inline;" onsubmit="return confirm('{{ __('cms.confirm_delete_admin') }}');">
+                            <form action="{{ route('admins.destroy', $admin) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('cms.confirm_delete_admin') }}');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="action-btn action-btn-delete" title="{{ __('cms.delete') }}">
@@ -61,7 +61,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 2rem; text-align: center; color: #6b7280;">{{ __('cms.no_admins_found') }}</td>
+                    <td colspan="5" class="p-8 text-center text-tertiary">{{ __('cms.no_admins_found') }}</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -69,7 +69,7 @@
     </div>
 
     <!-- Pagination -->
-    <div style="margin-top: 1.5rem;">
+    <div class="mt-6">
         {{ $admins->links() }}
     </div>
 </div>

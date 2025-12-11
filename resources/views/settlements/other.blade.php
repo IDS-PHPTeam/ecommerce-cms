@@ -2,21 +2,21 @@
 
 @section('settlements-content')
 <!-- Sub-tabs for Other section -->
-<div style="border-bottom: 1px solid #e5e7eb; margin-bottom: 1.5rem;">
-    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+<div class="border-b border-gray-200 mb-6">
+    <div class="flex gap-2 flex-wrap">
         <a href="{{ route('settlements.discrepancy-reports') }}" 
-           class="sub-tab-link {{ request()->routeIs('settlements.discrepancy-reports') ? 'active' : '' }}"
-           style="padding: 0.5rem 1rem; text-decoration: none; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;">
+           class="sub-tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium {{ request()->routeIs('settlements.discrepancy-reports') ? 'active' : '' }}"
+           style="padding: 0.5rem 1rem; transition: all 0.2s;">
             Discrepancy Reports
         </a>
         <a href="{{ route('settlements.payout-summary') }}" 
-           class="sub-tab-link {{ request()->routeIs('settlements.payout-summary') ? 'active' : '' }}"
-           style="padding: 0.5rem 1rem; text-decoration: none; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;">
+           class="sub-tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium {{ request()->routeIs('settlements.payout-summary') ? 'active' : '' }}"
+           style="padding: 0.5rem 1rem; transition: all 0.2s;">
             Payout Summary Generator
         </a>
         <a href="{{ route('settlements.commission-calculator') }}" 
-           class="sub-tab-link {{ request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}"
-           style="padding: 0.5rem 1rem; text-decoration: none; color: #6b7280; border-bottom: 2px solid transparent; transition: all 0.2s; font-weight: 500;">
+           class="sub-tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium {{ request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}"
+           style="padding: 0.5rem 1rem; transition: all 0.2s;">
             Commission Calculator
         </a>
     </div>

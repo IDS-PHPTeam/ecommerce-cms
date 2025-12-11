@@ -4,24 +4,22 @@
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.edit_category') }}</h2>
+    <h2 class="section-heading-lg mb-6">{{ __('cms.edit_category') }}</h2>
 
     <form method="POST" action="{{ route('categories.update', $category) }}" id="categoryForm">
         @csrf
         @method('PUT')
 
         <div class="form-group">
-            <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <label class="form-label">{{ __('cms.name') }}</label>
+            <div class="grid grid-2 gap-4">
                 <div>
-                    <label for="name_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                     <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $category->name_en) }}" class="form-input" placeholder="{{ __('cms.category_name_english') }}">
                     @error('name_en')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
-                    <label for="name_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                     <input type="text" id="name_ar" name="name_ar" value="{{ old('name_ar', $category->name_ar) }}" class="form-input" placeholder="{{ __('cms.category_name_arabic') }}" dir="rtl">
                     @error('name_ar')
                         <span class="form-error">{{ $message }}</span>
@@ -36,16 +34,14 @@
 
         <div class="form-group">
             <label class="form-label">{{ __('cms.description') }}</label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="grid grid-2 gap-4">
                 <div>
-                    <label for="description_en" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.english') }}</label>
                     <textarea id="description_en" name="description_en" rows="4" class="form-input" placeholder="{{ __('cms.category_description_english') }}">{{ old('description_en', $category->description_en) }}</textarea>
                     @error('description_en')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>
                 <div>
-                    <label for="description_ar" style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; display: block;">{{ __('cms.arabic') }}</label>
                     <textarea id="description_ar" name="description_ar" rows="4" class="form-input" placeholder="{{ __('cms.category_description_arabic') }}" dir="rtl">{{ old('description_ar', $category->description_ar) }}</textarea>
                     @error('description_ar')
                         <span class="form-error">{{ $message }}</span>
@@ -59,7 +55,7 @@
         </div>
 
         <div class="form-group">
-            <label for="status" class="form-label">{{ __('cms.status') }} <span style="color: #ef4444;">*</span></label>
+            <label for="status" class="form-label">{{ __('cms.status') }}</label>
             <select id="status" name="status" required class="form-input">
                 <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>{{ __('cms.active') }}</option>
                 <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>{{ __('cms.inactive') }}</option>
@@ -69,9 +65,9 @@
             @enderror
         </div>
 
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <div class="flex gap-4 mt-6">
             <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
-            <a href="{{ route('categories.index') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</a>
+            <a href="{{ route('categories.index') }}" class="btn bg-gray-600 text-white">{{ __('cms.cancel') }}</a>
         </div>
     </form>
 </div>
