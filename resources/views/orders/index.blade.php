@@ -1,20 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Orders')
+@section('title', __('cms.orders'))
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">Orders</h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="section-heading-lg">{{ __('cms.orders') }}</h2>
     </div>
 
     <!-- Filters -->
-    <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
+    <div class="card mb-6 p-4">
         <form method="GET" action="{{ route('orders.index') }}">
             <!-- First Row: Date Fields -->
-            <div style="display: flex; gap: 1rem; align-items: end; margin-bottom: 1rem;">
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="date_from" class="form-label">Date From</label>
+            <div class="flex gap-4 items-end mb-4">
+                <div class="flex-1-min-200">
+                    <label for="date_from" class="form-label">{{ __('cms.date_from') }}</label>
                     <input 
                         type="date" 
                         id="date_from" 
@@ -23,8 +23,8 @@
                         class="form-input"
                     >
                 </div>
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="date_to" class="form-label">Date To</label>
+                <div class="flex-1-min-200">
+                    <label for="date_to" class="form-label">{{ __('cms.date_to') }}</label>
                     <input 
                         type="date" 
                         id="date_to" 
@@ -36,39 +36,39 @@
             </div>
             
             <!-- Second Row: Status, Location, Customer, Driver, Buttons -->
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
-                <div style="flex: 1; min-width: 200px;">
+            <div class="flex gap-4 flex-wrap items-end">
+                <div class="flex-1-min-200">
                     <select id="status" name="status" class="form-input">
-                        <option value="">All Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>Assigned</option>
-                        <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>Failed</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="">{{ __('cms.all_status') }}</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>{{ __('cms.pending') }}</option>
+                        <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>{{ __('cms.assigned') }}</option>
+                        <option value="failed" {{ request('status') == 'failed' ? 'selected' : '' }}>{{ __('cms.failed') }}</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('cms.completed') }}</option>
                     </select>
                 </div>
-                <div style="flex: 1; min-width: 200px;">
+                <div class="flex-1-min-200">
                     <input 
                         type="text" 
                         id="location" 
                         name="location" 
                         value="{{ request('location') }}" 
                         class="form-input"
-                        placeholder="Search by location..."
+                        placeholder="{{ __('cms.search_by_location') }}"
                     >
                 </div>
-                <div style="flex: 1; min-width: 200px;">
+                <div class="flex-1-min-200">
                     <input 
                         type="text" 
                         id="customer" 
                         name="customer" 
                         value="{{ request('customer') }}" 
                         class="form-input"
-                        placeholder="Search by customer..."
+                        placeholder="{{ __('cms.search_by_customer') }}"
                     >
                 </div>
-                <div style="flex: 0 0 auto; min-width: 200px; max-width: 250px;">
+                <div class="flex-auto-min-200-max-250">
                     <select id="driver" name="driver" class="form-input">
-                        <option value="">All Drivers</option>
+                        <option value="">{{ __('cms.all_drivers') }}</option>
                         @foreach($drivers as $driver)
                             <option value="{{ $driver->id }}" {{ request('driver') == $driver->id ? 'selected' : '' }}>
                                 {{ $driver->first_name && $driver->last_name ? $driver->first_name . ' ' . $driver->last_name : $driver->name }}
@@ -77,54 +77,61 @@
                     </select>
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ route('orders.index') }}" class="btn" style="background-color: #6b7280; color: white; margin-left: 0.5rem;">Reset</a>
+                    <button type="submit" class="btn btn-primary">{{ __('cms.filter') }}</button>
+                    <a href="{{ route('orders.index') }}" class="btn bg-gray-600 text-white ml-2">{{ __('cms.reset') }}</a>
                 </div>
             </div>
         </form>
     </div>
 
     <!-- Orders Table -->
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+    <div class="overflow-x-auto">
+        <table class="w-full" style="border-collapse: collapse;">
             <thead>
                 <tr class="table-header-row">
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">ID</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Customer</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Location</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Driver</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Total</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Status</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Date</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Actions</th>
+                    <th class="table-cell-header">{{ __('cms.id') }}</th>
+                    <th class="table-cell-header">{{ __('cms.customer') }}</th>
+                    <th class="table-cell-header">{{ __('cms.location') }}</th>
+                    <th class="table-cell-header">{{ __('cms.driver') }}</th>
+                    <th class="table-cell-header">{{ __('cms.total') }}</th>
+                    <th class="table-cell-header">{{ __('cms.status') }}</th>
+                    <th class="table-cell-header">{{ __('cms.order_date') }}</th>
+                    <th class="table-cell-header">{{ __('cms.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($orders as $order)
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 0.75rem;">{{ $order->id }}</td>
-                    <td style="padding: 0.75rem;">{{ $order->customer_name }}</td>
-                    <td style="padding: 0.75rem; max-width: 200px; word-break: break-word;">{{ Str::limit($order->location, 50) }}</td>
-                    <td style="padding: 0.75rem;">
+                <tr class="table-row-border">
+                    <td class="table-cell-padding">{{ $order->id }}</td>
+                    <td class="table-cell-padding">{{ $order->customer_name }}</td>
+                    <td class="table-cell-padding max-w-200 word-break">{{ Str::limit($order->location, 50) }}</td>
+                    <td class="table-cell-padding">
                         @if($order->driver)
                             {{ $order->driver->first_name && $order->driver->last_name ? $order->driver->first_name . ' ' . $order->driver->last_name : $order->driver->name }}
                         @else
-                            <span style="color: #9ca3af;">Not Assigned</span>
+                            <span class="text-gray-400">{{ __('cms.not_assigned') }}</span>
                         @endif
                     </td>
-                    <td style="padding: 0.75rem;">${{ number_format($order->total, 2) }}</td>
-                    <td style="padding: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; 
-                            {{ $order->status == 'completed' ? 'background-color: #d1fae5; color: #065f46;' : 
-                               ($order->status == 'failed' ? 'background-color: #fee2e2; color: #991b1b;' : 
-                               ($order->status == 'assigned' ? 'background-color: #dbeafe; color: #1e40af;' : 
-                               'background-color: #fef3c7; color: #92400e;')) }}">
-                            {{ ucfirst($order->status) }}
+                    <td class="table-cell-padding">${{ number_format($order->total, 2) }}</td>
+                    <td class="table-cell-padding">
+                        @php
+                            $statusBadgeClass = $order->status == 'completed' ? 'badge-green' : 
+                                               ($order->status == 'failed' ? 'badge-red' : 
+                                               ($order->status == 'assigned' ? 'badge-blue' : 'badge-yellow'));
+                            $statusTranslations = [
+                                'pending' => __('cms.pending'),
+                                'assigned' => __('cms.assigned'),
+                                'failed' => __('cms.failed'),
+                                'completed' => __('cms.completed'),
+                            ];
+                        @endphp
+                        <span class="badge {{ $statusBadgeClass }}">
+                            {{ $statusTranslations[$order->status] ?? ucfirst($order->status) }}
                         </span>
                     </td>
-                    <td style="padding: 0.75rem;">{{ $order->order_date->format('M d, Y') }}</td>
-                    <td style="padding: 0.75rem;">
-                        <a href="{{ route('orders.show', $order) }}" class="action-btn action-btn-edit" title="View">
+                    <td class="table-cell-padding">{{ $order->order_date->format('M d, Y') }}</td>
+                    <td class="table-cell-padding">
+                        <a href="{{ route('orders.show', $order) }}" class="action-btn action-btn-edit" title="{{ __('cms.view') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -134,7 +141,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="padding: 2rem; text-align: center; color: #6b7280;">No orders found.</td>
+                    <td colspan="8" class="p-8 text-center text-tertiary">{{ __('cms.no_orders_found') }}</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -142,7 +149,7 @@
     </div>
 
     <!-- Pagination -->
-    <div style="margin-top: 1.5rem;">
+    <div class="mt-6">
         {{ $orders->links() }}
     </div>
 </div>

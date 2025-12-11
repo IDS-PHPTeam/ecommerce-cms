@@ -4,35 +4,35 @@
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">{{ __('cms.audit_logs') }}</h2>
-        <div style="display: flex; gap: 0.5rem;">
-            <a href="{{ route('audit-logs.export', request()->query()) }}" class="btn btn-primary" style="display: flex; align-items: center; gap: 0.5rem;">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="section-heading-lg">{{ __('cms.audit_logs') }}</h2>
+        <div class="flex gap-2">
+            <a href="{{ route('audit-logs.export', request()->query()) }}" class="btn btn-primary flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 {{ __('cms.export_csv') }}
             </a>
-            <button type="button" onclick="deleteSelected()" id="delete-selected-btn" class="btn" style="background-color: #ef4444; color: white; display: none;">
+            <button type="button" onclick="deleteSelected()" id="delete-selected-btn" class="btn bg-red-500 text-white d-none">
                 {{ __('cms.delete_selected') }}
             </button>
-            <button type="button" onclick="deleteAllFiltered()" class="btn" style="background-color: #dc2626; color: white;">
+            <button type="button" onclick="deleteAllFiltered()" class="btn bg-red-600 text-white">
                 {{ __('cms.delete_all_filtered') }}
             </button>
         </div>
     </div>
 
     @if(session('success'))
-        <div style="background-color: #d1fae5; color: #065f46; padding: 0.75rem 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #6ee7b7;">
+        <div class="alert-success mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     <!-- Filters -->
-    <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
-        <form method="GET" action="{{ route('audit-logs.index') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+    <div class="card mb-6 p-4">
+        <form method="GET" action="{{ route('audit-logs.index') }}" class="grid grid-auto-200 gap-4">
             <div>
-                <label for="search" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.search') }}</label>
+                <label for="search" class="form-label text-sm mb-1">{{ __('cms.search') }}</label>
                 <input 
                     type="text" 
                     id="search" 
@@ -43,7 +43,7 @@
                 >
             </div>
             <div>
-                <label for="action" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.action') }}</label>
+                <label for="action" class="form-label text-sm mb-1">{{ __('cms.action') }}</label>
                 <select id="action" name="action" class="form-input">
                     <option value="">{{ __('cms.all_actions') }}</option>
                     @foreach($actions as $action)
@@ -52,7 +52,7 @@
                 </select>
             </div>
             <div>
-                <label for="user_id" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.user') }}</label>
+                <label for="user_id" class="form-label text-sm mb-1">{{ __('cms.user') }}</label>
                 <select id="user_id" name="user_id" class="form-input">
                     <option value="">{{ __('cms.all_users') }}</option>
                     @foreach($users as $user)
@@ -63,7 +63,7 @@
                 </select>
             </div>
             <div>
-                <label for="model_type" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.model_type') }}</label>
+                <label for="model_type" class="form-label text-sm mb-1">{{ __('cms.model_type') }}</label>
                 <select id="model_type" name="model_type" class="form-input">
                     <option value="">{{ __('cms.all_models') }}</option>
                     @foreach($modelTypes as $modelType)
@@ -74,7 +74,7 @@
                 </select>
             </div>
             <div>
-                <label for="date_from" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.from_date') }}</label>
+                <label for="date_from" class="form-label text-sm mb-1">{{ __('cms.from_date') }}</label>
                 <input 
                     type="date" 
                     id="date_from" 
@@ -84,7 +84,7 @@
                 >
             </div>
             <div>
-                <label for="date_to" class="form-label" style="font-size: 0.875rem; margin-bottom: 0.25rem;">{{ __('cms.to_date') }}</label>
+                <label for="date_to" class="form-label text-sm mb-1">{{ __('cms.to_date') }}</label>
                 <input 
                     type="date" 
                     id="date_to" 
@@ -93,89 +93,89 @@
                     class="form-input"
                 >
             </div>
-            <div style="display: flex; align-items: end; gap: 0.5rem;">
+            <div class="flex items-end gap-2">
                 <button type="submit" class="btn btn-primary">{{ __('cms.filter') }}</button>
-                <a href="{{ route('audit-logs.index') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.reset') }}</a>
+                <a href="{{ route('audit-logs.index') }}" class="btn bg-gray-600 text-white">{{ __('cms.reset') }}</a>
             </div>
         </form>
     </div>
 
     <!-- Audit Logs Table -->
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
             <thead>
                 <tr class="table-header-row">
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600; width: 40px;">
+                    <th class="table-cell-header w-40px">
                         <input type="checkbox" id="select-all" onchange="toggleSelectAll(this)">
                     </th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.date_time') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.user') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.action') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.model') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.description') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.ip_address') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.actions') }}</th>
+                    <th class="table-cell-header">{{ __('cms.date_time') }}</th>
+                    <th class="table-cell-header">{{ __('cms.user') }}</th>
+                    <th class="table-cell-header">{{ __('cms.action') }}</th>
+                    <th class="table-cell-header">{{ __('cms.model') }}</th>
+                    <th class="table-cell-header">{{ __('cms.description') }}</th>
+                    <th class="table-cell-header">{{ __('cms.ip_address') }}</th>
+                    <th class="table-cell-header">{{ __('cms.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($auditLogs as $log)
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 0.75rem; text-align: center;">
+                <tr class="table-row-border">
+                    <td class="table-cell-padding text-center">
                         <input type="checkbox" class="log-checkbox" value="{{ $log->id }}" onchange="updateDeleteButton()">
                     </td>
-                    <td style="padding: 0.75rem; font-size: 0.875rem;">
+                    <td class="table-cell-padding text-sm">
                         {{ $log->created_at->format('M d, Y') }}<br>
-                        <span style="color: #6b7280;">{{ $log->created_at->format('h:i A') }}</span>
+                        <span class="text-tertiary">{{ $log->created_at->format('h:i A') }}</span>
                     </td>
-                    <td style="padding: 0.75rem;">
+                    <td class="table-cell-padding">
                         @if($log->user)
                             {{ $log->user->first_name && $log->user->last_name ? $log->user->first_name . ' ' . $log->user->last_name : $log->user->name }}
                             <br>
-                            <span style="color: #6b7280; font-size: 0.875rem;">{{ $log->user->email }}</span>
+                            <span class="text-tertiary text-sm">{{ $log->user->email }}</span>
                         @else
-                            <span style="color: #9ca3af;">{{ __('cms.system') }}</span>
+                            <span class="text-quaternary">{{ __('cms.system') }}</span>
                         @endif
                     </td>
-                    <td style="padding: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; 
-                            @if($log->action == 'created') background-color: #d1fae5; color: #065f46;
-                            @elseif($log->action == 'updated') background-color: #dbeafe; color: #1e40af;
-                            @elseif($log->action == 'deleted') background-color: #fee2e2; color: #991b1b;
-                            @else background-color: #f3f4f6; color: #374151;
-                            @endif">
+                    <td class="table-cell-padding">
+                        @php
+                            $actionBadgeClass = $log->action == 'created' ? 'badge-green' : 
+                                               ($log->action == 'updated' ? 'badge-blue' : 
+                                               ($log->action == 'deleted' ? 'badge-red' : 'badge-gray'));
+                        @endphp
+                        <span class="badge {{ $actionBadgeClass }}">
                             {{ __('cms.action_' . $log->action) ?: ucfirst($log->action) }}
                         </span>
                     </td>
-                    <td style="padding: 0.75rem;">
+                    <td class="table-cell-padding">
                         @if($log->model_type)
-                            <span style="font-family: monospace; font-size: 0.875rem; color: #6b7280;">
+                            <span class="font-mono text-sm text-tertiary">
                                 {{ __('cms.model_' . strtolower(class_basename($log->model_type))) ?: class_basename($log->model_type) }}
                             </span>
                             @if($log->model_id)
                                 <br>
-                                <span style="color: #9ca3af; font-size: 0.75rem;">{{ __('cms.id') }}: {{ $log->model_id }}</span>
+                                <span class="text-quaternary text-xs">{{ __('cms.id') }}: {{ $log->model_id }}</span>
                             @endif
                         @else
-                            <span style="color: #9ca3af;">{{ __('cms.na') }}</span>
+                            <span class="text-quaternary">{{ __('cms.na') }}</span>
                         @endif
                     </td>
-                    <td style="padding: 0.75rem; max-width: 300px;">
-                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <td class="table-cell-padding max-w-300">
+                        <div class="text-ellipsis">
                             {{ $log->description ?? __('cms.na') }}
                         </div>
                     </td>
-                    <td style="padding: 0.75rem; font-family: monospace; font-size: 0.875rem; color: #6b7280;">
+                    <td class="table-cell-padding font-mono text-sm text-tertiary">
                         {{ $log->ip_address ?? __('cms.na') }}
                     </td>
-                    <td style="padding: 0.75rem;">
-                        <div style="display: flex; gap: 0.5rem;">
+                    <td class="table-cell-padding">
+                        <div class="flex gap-2">
                             <a href="{{ route('audit-logs.show', $log) }}" class="action-btn action-btn-edit" title="{{ __('cms.view_details') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('audit-logs.destroy', $log) }}" method="POST" style="display: inline;" onsubmit="return confirm('{{ __('cms.confirm_delete_audit_log') }}');">
+                            <form action="{{ route('audit-logs.destroy', $log) }}" method="POST" class="d-inline" data-confirm="{{ __('cms.confirm_delete_audit_log') }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="action-btn action-btn-delete" title="{{ __('cms.delete') }}">
@@ -189,7 +189,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="padding: 2rem; text-align: center; color: #6b7280;">{{ __('cms.no_audit_logs_found') }}</td>
+                    <td colspan="8" class="p-8 text-center text-tertiary">{{ __('cms.no_audit_logs_found') }}</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -198,20 +198,20 @@
 
     <!-- Pagination -->
     @if($auditLogs->hasPages())
-    <div style="margin-top: 1.5rem; display: flex; justify-content: center;">
+    <div class="mt-6 flex justify-center">
         {{ $auditLogs->links() }}
     </div>
     @endif
 </div>
 
 <!-- Bulk Delete Form -->
-<form id="bulk-delete-form" action="{{ route('audit-logs.destroyMultiple') }}" method="POST" style="display: none;">
+<form id="bulk-delete-form" action="{{ route('audit-logs.destroyMultiple') }}" method="POST" class="d-none">
     @csrf
     @method('DELETE')
 </form>
 
 <!-- Delete All Filtered Form -->
-<form id="delete-all-form" action="{{ route('audit-logs.destroyAll') }}" method="POST" style="display: none;">
+<form id="delete-all-form" action="{{ route('audit-logs.destroyAll') }}" method="POST" class="d-none">
     @csrf
     @method('DELETE')
     @if(request('action'))

@@ -80,6 +80,9 @@ Route::post('/settings/currencies', [SettingsController::class, 'storeCurrency']
 Route::put('/settings/currencies/{currency}', [SettingsController::class, 'updateCurrency'])->middleware('auth')->name('settings.currencies.update');
 Route::delete('/settings/currencies/{currency}', [SettingsController::class, 'deleteCurrency'])->middleware('auth')->name('settings.currencies.delete');
 Route::put('/settings/exchange-rates', [SettingsController::class, 'updateExchangeRates'])->middleware('auth')->name('settings.exchange-rates.update');
+Route::post('/settings/shipping-zones', [SettingsController::class, 'storeShippingZone'])->middleware('auth')->name('settings.shipping-zones.store');
+Route::put('/settings/shipping-zones/{shippingZone}', [SettingsController::class, 'updateShippingZone'])->middleware('auth')->name('settings.shipping-zones.update');
+Route::delete('/settings/shipping-zones/{shippingZone}', [SettingsController::class, 'deleteShippingZone'])->middleware('auth')->name('settings.shipping-zones.delete');
 
 // Admins Routes
 Route::resource('admins', AdminController::class)->middleware('auth');

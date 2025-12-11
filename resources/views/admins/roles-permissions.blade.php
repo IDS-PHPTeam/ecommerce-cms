@@ -4,50 +4,50 @@
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.roles_and_permissions') }}</h2>
+    <h2 class="section-heading-lg mb-6">{{ __('cms.roles_and_permissions') }}</h2>
 
     @if(session('success'))
-        <div style="background-color: #d1fae5; color: #065f46; padding: 0.75rem 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #6ee7b7;">
+        <div class="alert-success mb-6">
             {{ session('success') }}
         </div>
     @endif
 
     <!-- Tabs -->
-    <div style="border-bottom: 2px solid #e5e7eb; margin-bottom: 2rem;">
-        <div style="display: flex; gap: 1rem;">
-            <button onclick="showTab('roles')" id="roles-tab" class="tab-button active" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 1rem;">
+    <div class="border-b-2 border-gray-200 mb-8">
+        <div class="flex gap-4">
+            <button onclick="showTab('roles')" id="roles-tab" class="tab-button active p-3 bg-none border-0 border-b-3 border-primary-blue text-primary-blue font-semibold cursor-pointer text-base">
                 {{ __('cms.roles') }}
             </button>
-            <button onclick="showTab('permissions')" id="permissions-tab" class="tab-button" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 1rem;">
+            <button onclick="showTab('permissions')" id="permissions-tab" class="tab-button p-3 bg-none border-0 border-b-3 border-b-transparent text-tertiary font-semibold cursor-pointer text-base">
                 {{ __('cms.permissions') }}
             </button>
-            <button onclick="showTab('assign')" id="assign-tab" class="tab-button" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 1rem;">
+            <button onclick="showTab('assign')" id="assign-tab" class="tab-button p-3 bg-none border-0 border-b-3 border-b-transparent text-tertiary font-semibold cursor-pointer text-base">
                 {{ __('cms.assign_permissions') }}
             </button>
         </div>
     </div>
 
     <!-- Roles Tab -->
-    <div id="roles-content" class="tab-content" style="display: block;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1.5rem; font-weight: 600;">{{ __('cms.roles') }}</h3>
+    <div id="roles-content" class="tab-content active">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="section-heading">{{ __('cms.roles') }}</h3>
             <button onclick="showRoleForm()" class="btn btn-primary">{{ __('cms.add_new') }}</button>
         </div>
 
         <!-- Add/Edit Role Form -->
-        <div id="role-form-container" class="form-container" style="display: none; margin-bottom: 2rem; padding: 1.5rem; border-radius: 0.5rem;">
+        <div id="role-form-container" class="form-container d-none mb-8 p-6 rounded-md">
             <form id="role-form" method="POST" action="{{ route('roles-permissions.storeRole') }}">
                 @csrf
                 <input type="hidden" name="_method" id="role-method" value="POST">
                 <input type="hidden" name="role_id" id="role-id">
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="grid grid-auto-200 gap-4 mb-4">
                     <div class="form-group">
-                        <label for="role-name" class="form-label">{{ __('cms.role_name') }} <span style="color: #ef4444;">*</span></label>
+                        <label for="role-name" class="form-label">{{ __('cms.role_name') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="role-name" name="name" required class="form-input" placeholder="{{ __('cms.role_name_placeholder') }}">
                     </div>
                     <div class="form-group">
-                        <label for="role-slug" class="form-label">{{ __('cms.slug') }} <span style="color: #ef4444;">*</span></label>
+                        <label for="role-slug" class="form-label">{{ __('cms.slug') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="role-slug" name="slug" required class="form-input" placeholder="{{ __('cms.slug_placeholder') }}">
                     </div>
                 </div>
@@ -55,44 +55,44 @@
                     <label for="role-description" class="form-label">{{ __('cms.description') }}</label>
                     <textarea id="role-description" name="description" rows="3" class="form-input" placeholder="{{ __('cms.role_description_placeholder') }}"></textarea>
                 </div>
-                <div style="display: flex; gap: 1rem;">
+                <div class="flex gap-4">
                     <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
-                    <button type="button" onclick="hideRoleForm()" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</button>
+                    <button type="button" onclick="hideRoleForm()" class="btn bg-gray-600 text-white">{{ __('cms.cancel') }}</button>
                 </div>
             </form>
         </div>
 
         <!-- Roles Table -->
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
                 <thead>
                     <tr class="table-header-row">
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.name') }}</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.slug') }}</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.description') }}</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.permissions') }}</th>
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.actions') }}</th>
+                        <th class="table-cell-header">{{ __('cms.name') }}</th>
+                        <th class="table-cell-header">{{ __('cms.slug') }}</th>
+                        <th class="table-cell-header">{{ __('cms.description') }}</th>
+                        <th class="table-cell-header">{{ __('cms.permissions') }}</th>
+                        <th class="table-cell-header">{{ __('cms.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($roles as $role)
-                    <tr style="border-bottom: 1px solid #e5e7eb;">
-                        <td style="padding: 0.75rem; font-weight: 500;">{{ $role->name }}</td>
-                        <td style="padding: 0.75rem; color: #6b7280; font-family: monospace;">{{ $role->slug }}</td>
-                        <td style="padding: 0.75rem; color: #6b7280;">{{ $role->description ?? 'N/A' }}</td>
-                        <td style="padding: 0.75rem;">
-                            <span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.875rem; background-color: #dbeafe; color: #1e40af;">
+                    <tr class="table-row-border">
+                        <td class="table-cell-padding font-medium">{{ $role->name }}</td>
+                        <td class="table-cell-padding text-tertiary font-mono">{{ $role->slug }}</td>
+                        <td class="table-cell-padding text-tertiary">{{ $role->description ?? 'N/A' }}</td>
+                        <td class="table-cell-padding">
+                            <span class="badge badge-blue">
                                 {{ __('cms.permissions_count', ['count' => $role->permissions->count()]) }}
                             </span>
                         </td>
-                        <td style="padding: 0.75rem;">
-                            <div style="display: flex; gap: 0.5rem;">
+                        <td class="table-cell-padding">
+                            <div class="flex gap-2">
                                 <button onclick="editRole({{ $role->id }}, '{{ addslashes($role->name) }}', '{{ addslashes($role->slug) }}', '{{ addslashes($role->description ?? '') }}')" class="action-btn action-btn-edit" title="{{ __('cms.edit') }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                <form action="{{ route('roles-permissions.destroyRole', $role) }}" method="POST" style="display: inline;" onsubmit="return confirm('{{ __('cms.confirm_delete_role') }}');">
+                                <form action="{{ route('roles-permissions.destroyRole', $role) }}" method="POST" class="d-inline" data-confirm="{{ __('cms.confirm_delete_role') }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="action-btn action-btn-delete" title="{{ __('cms.delete') }}">
@@ -106,7 +106,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" style="padding: 2rem; text-align: center; color: #6b7280;">{{ __('cms.no_roles_found') }}</td>
+                        <td colspan="5" class="p-8 text-center text-tertiary">{{ __('cms.no_roles_found') }}</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -115,26 +115,26 @@
     </div>
 
     <!-- Permissions Tab -->
-    <div id="permissions-content" class="tab-content" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1.5rem; font-weight: 600;">{{ __('cms.permissions') }}</h3>
+    <div id="permissions-content" class="tab-content d-none">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="section-heading">{{ __('cms.permissions') }}</h3>
             <button onclick="showPermissionForm()" class="btn btn-primary">{{ __('cms.add_new') }}</button>
         </div>
 
         <!-- Add/Edit Permission Form -->
-        <div id="permission-form-container" class="form-container" style="display: none; margin-bottom: 2rem; padding: 1.5rem; border-radius: 0.5rem;">
+        <div id="permission-form-container" class="form-container d-none mb-8 p-6 rounded-md">
             <form id="permission-form" method="POST" action="{{ route('roles-permissions.storePermission') }}">
                 @csrf
                 <input type="hidden" name="_method" id="permission-method" value="POST">
                 <input type="hidden" name="permission_id" id="permission-id">
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="grid grid-auto-200 gap-4 mb-4">
                     <div class="form-group">
-                        <label for="permission-name" class="form-label">{{ __('cms.permission_name') }} <span style="color: #ef4444;">*</span></label>
+                        <label for="permission-name" class="form-label">{{ __('cms.permission_name') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="permission-name" name="name" required class="form-input" placeholder="{{ __('cms.permission_name_placeholder') }}">
                     </div>
                     <div class="form-group">
-                        <label for="permission-slug" class="form-label">{{ __('cms.slug') }} <span style="color: #ef4444;">*</span></label>
+                        <label for="permission-slug" class="form-label">{{ __('cms.slug') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="permission-slug" name="slug" required class="form-input" placeholder="{{ __('cms.slug_placeholder') }}">
                     </div>
                     <div class="form-group">
@@ -146,41 +146,41 @@
                     <label for="permission-description" class="form-label">{{ __('cms.description') }}</label>
                     <textarea id="permission-description" name="description" rows="3" class="form-input" placeholder="{{ __('cms.permission_description_placeholder') }}"></textarea>
                 </div>
-                <div style="display: flex; gap: 1rem;">
+                <div class="flex gap-4">
                     <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
-                    <button type="button" onclick="hidePermissionForm()" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</button>
+                    <button type="button" onclick="hidePermissionForm()" class="btn bg-gray-600 text-white">{{ __('cms.cancel') }}</button>
                 </div>
             </form>
         </div>
 
         <!-- Permissions by Group -->
         @foreach($permissions as $group => $groupPermissions)
-        <div style="margin-bottom: 2rem;">
-            <h4 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #374151;">{{ $group ?? __('cms.other') }}</h4>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
+        <div class="mb-8">
+            <h4 class="text-xl font-semibold mb-4 text-secondary">{{ $group ?? __('cms.other') }}</h4>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
                     <thead>
                         <tr class="table-header-row">
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.name') }}</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.slug') }}</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.description') }}</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.actions') }}</th>
+                            <th class="table-cell-header">{{ __('cms.name') }}</th>
+                            <th class="table-cell-header">{{ __('cms.slug') }}</th>
+                            <th class="table-cell-header">{{ __('cms.description') }}</th>
+                            <th class="table-cell-header">{{ __('cms.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($groupPermissions as $permission)
-                        <tr style="border-bottom: 1px solid #e5e7eb;">
-                            <td style="padding: 0.75rem; font-weight: 500;">{{ __('cms.permission_' . str_replace(['.', '-'], ['_', '_'], $permission->slug)) ?: $permission->name }}</td>
-                            <td style="padding: 0.75rem; color: #6b7280; font-family: monospace;">{{ $permission->slug }}</td>
-                            <td style="padding: 0.75rem; color: #6b7280;">{{ $permission->description ?? 'N/A' }}</td>
-                            <td style="padding: 0.75rem;">
-                                <div style="display: flex; gap: 0.5rem;">
+                        <tr class="table-row-border">
+                            <td class="table-cell-padding font-medium">{{ __('cms.permission_' . str_replace(['.', '-'], ['_', '_'], $permission->slug)) ?: $permission->name }}</td>
+                            <td class="table-cell-padding text-tertiary font-mono">{{ $permission->slug }}</td>
+                            <td class="table-cell-padding text-tertiary">{{ $permission->description ?? 'N/A' }}</td>
+                            <td class="table-cell-padding">
+                                <div class="flex gap-2">
                                     <button onclick="editPermission({{ $permission->id }}, '{{ $permission->name }}', '{{ $permission->slug }}', '{{ $permission->description ?? '' }}', '{{ $permission->group ?? '' }}')" class="action-btn action-btn-edit" title="{{ __('cms.edit') }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </button>
-                                    <form action="{{ route('roles-permissions.destroyPermission', $permission) }}" method="POST" style="display: inline;" onsubmit="return confirm('{{ __('cms.confirm_delete_permission') }}');">
+                                    <form action="{{ route('roles-permissions.destroyPermission', $permission) }}" method="POST" class="d-inline" data-confirm="{{ __('cms.confirm_delete_permission') }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="action-btn action-btn-delete" title="{{ __('cms.delete') }}">
@@ -201,30 +201,30 @@
     </div>
 
     <!-- Assign Permissions Tab -->
-    <div id="assign-content" class="tab-content" style="display: none;">
-        <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem;">{{ __('cms.assign_permissions_to_roles') }}</h3>
+    <div id="assign-content" class="tab-content d-none">
+        <h3 class="section-heading mb-6">{{ __('cms.assign_permissions_to_roles') }}</h3>
         
         @foreach($roles as $role)
-        <div class="role-permissions-card" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 0.5rem;">
+        <div class="role-permissions-card mb-8 p-6 rounded-md">
             <form method="POST" action="{{ route('roles-permissions.updateRolePermissions', $role) }}">
                 @csrf
                 @method('PUT')
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h4 class="role-name-heading" style="font-size: 1.125rem; font-weight: 600;">{{ $role->name }}</h4>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <button type="button" onclick="toggleAllPermissions({{ $role->id }})" class="btn" style="background-color: #6b7280; color: white; padding: 0.5rem 1rem; font-size: 0.875rem;" id="toggle-btn-{{ $role->id }}">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="role-name-heading text-lg font-semibold">{{ $role->name }}</h4>
+                    <div class="flex gap-2 items-center">
+                        <button type="button" onclick="toggleAllPermissions({{ $role->id }})" class="btn bg-gray-600 text-white px-4 py-2 text-sm" id="toggle-btn-{{ $role->id }}">
                             {{ __('cms.toggle_all') }}
                         </button>
-                        <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.875rem;">{{ __('cms.save') }}</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2 text-sm">{{ __('cms.save') }}</button>
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.75rem;" id="permissions-container-{{ $role->id }}">
+                <div class="grid grid-auto-250 gap-3" id="permissions-container-{{ $role->id }}">
                     @foreach($permissions->flatten() as $permission)
-                    <label class="permission-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;">
+                    <label class="permission-label flex items-center gap-2 p-2 rounded cursor-pointer">
                         <input type="checkbox" name="permissions[]" value="{{ $permission->id }}" {{ $role->permissions->contains($permission->id) ? 'checked' : '' }} class="permission-checkbox-{{ $role->id }}">
-                        <span style="font-size: 0.875rem;">{{ __('cms.permission_' . str_replace(['.', '-'], ['_', '_'], $permission->slug)) ?: $permission->name }}</span>
+                        <span class="text-sm">{{ __('cms.permission_' . str_replace(['.', '-'], ['_', '_'], $permission->slug)) ?: $permission->name }}</span>
                     </label>
                     @endforeach
                 </div>
@@ -238,22 +238,26 @@
 function showTab(tab) {
     // Hide all tabs
     document.querySelectorAll('.tab-content').forEach(content => {
-        content.style.display = 'none';
+        content.classList.add('d-none');
+        content.classList.remove('active');
     });
     document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.style.borderBottomColor = 'transparent';
-        btn.style.color = '#6b7280';
+        btn.classList.remove('active');
+        btn.classList.add('border-b-transparent', 'text-tertiary');
+        btn.classList.remove('border-primary-blue', 'text-primary-blue');
     });
     
     // Show selected tab
-    document.getElementById(tab + '-content').style.display = 'block';
+    const tabContent = document.getElementById(tab + '-content');
+    tabContent.classList.remove('d-none');
+    tabContent.classList.add('active');
     const tabBtn = document.getElementById(tab + '-tab');
-    tabBtn.style.borderBottomColor = 'var(--primary-blue)';
-    tabBtn.style.color = 'var(--primary-blue)';
+    tabBtn.classList.add('active', 'border-primary-blue', 'text-primary-blue');
+    tabBtn.classList.remove('border-b-transparent', 'text-tertiary');
 }
 
 function showRoleForm() {
-    document.getElementById('role-form-container').style.display = 'block';
+    document.getElementById('role-form-container').classList.remove('d-none');
     document.getElementById('role-form').action = '{{ route("roles-permissions.storeRole") }}';
     document.getElementById('role-method').value = 'POST';
     document.getElementById('role-id').value = '';
@@ -263,11 +267,11 @@ function showRoleForm() {
 }
 
 function hideRoleForm() {
-    document.getElementById('role-form-container').style.display = 'none';
+    document.getElementById('role-form-container').classList.add('d-none');
 }
 
 function editRole(id, name, slug, description) {
-    document.getElementById('role-form-container').style.display = 'block';
+    document.getElementById('role-form-container').classList.remove('d-none');
     document.getElementById('role-form').action = '{{ route("roles-permissions.updateRole", ":id") }}'.replace(':id', id);
     document.getElementById('role-method').value = 'PUT';
     document.getElementById('role-id').value = id;
@@ -277,7 +281,7 @@ function editRole(id, name, slug, description) {
 }
 
 function showPermissionForm() {
-    document.getElementById('permission-form-container').style.display = 'block';
+    document.getElementById('permission-form-container').classList.remove('d-none');
     document.getElementById('permission-form').action = '{{ route("roles-permissions.storePermission") }}';
     document.getElementById('permission-method').value = 'POST';
     document.getElementById('permission-id').value = '';
@@ -288,11 +292,11 @@ function showPermissionForm() {
 }
 
 function hidePermissionForm() {
-    document.getElementById('permission-form-container').style.display = 'none';
+    document.getElementById('permission-form-container').classList.add('d-none');
 }
 
 function editPermission(id, name, slug, description, group) {
-    document.getElementById('permission-form-container').style.display = 'block';
+    document.getElementById('permission-form-container').classList.remove('d-none');
     document.getElementById('permission-form').action = '{{ route("roles-permissions.updatePermission", ":id") }}'.replace(':id', id);
     document.getElementById('permission-method').value = 'PUT';
     document.getElementById('permission-id').value = id;

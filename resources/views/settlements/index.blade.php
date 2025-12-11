@@ -12,18 +12,15 @@
     <div class="border-b-2 border-gray-200 mb-6">
         <div class="flex gap-2 flex-wrap">
             <a href="{{ route('settlements.history') }}" 
-               class="tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium {{ request()->routeIs('settlements.history') ? 'active' : '' }}"
-               style="padding: 0.75rem 1.5rem; transition: all 0.2s;">
+               class="tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium p-3 transition-all {{ request()->routeIs('settlements.history') ? 'active' : '' }}">
                 {{ __('cms.settlement_history') }}
             </a>
             <a href="{{ route('settlements.request') }}" 
-               class="tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium {{ request()->routeIs('settlements.request') ? 'active' : '' }}"
-               style="padding: 0.75rem 1.5rem; transition: all 0.2s;">
+               class="tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium p-3 transition-all {{ request()->routeIs('settlements.request') ? 'active' : '' }}">
                 {{ __('cms.settlement_request') }}
             </a>
             <a href="{{ route('settlements.discrepancy-reports') }}" 
-               class="tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium {{ request()->routeIs('settlements.discrepancy-reports') || request()->routeIs('settlements.payout-summary') || request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}"
-               style="padding: 0.75rem 1.5rem; transition: all 0.2s;">
+               class="tab-link no-underline text-tertiary border-b-2 border-b-transparent font-medium p-3 transition-all {{ request()->routeIs('settlements.discrepancy-reports') || request()->routeIs('settlements.payout-summary') || request()->routeIs('settlements.commission-calculator') ? 'active' : '' }}">
                 {{ __('cms.other') }}
             </a>
         </div>
@@ -38,8 +35,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const activeTab = document.querySelector('.tab-link.active');
         if (activeTab) {
-            activeTab.style.color = '#099ecb';
-            activeTab.style.borderBottomColor = '#099ecb';
+            activeTab.classList.add('text-primary-blue', 'border-primary-blue');
         }
     });
 </script>

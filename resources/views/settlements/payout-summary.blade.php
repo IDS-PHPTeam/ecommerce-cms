@@ -2,10 +2,10 @@
 
 @section('other-content')
 <!-- Filters -->
-<div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
+<div class="card mb-6 p-4">
     <form method="GET" action="{{ route('settlements.payout-summary') }}">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
-            <div style="flex: 1; min-width: 200px;">
+        <div class="flex gap-4 flex-wrap items-end">
+            <div class="flex-1-min-200">
                 <label for="date_from" class="form-label">From Date</label>
                 <input 
                     type="date" 
@@ -15,7 +15,7 @@
                     class="form-input"
                 >
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <label for="date_to" class="form-label">To Date</label>
                 <input 
                     type="date" 
@@ -25,7 +25,7 @@
                     class="form-input"
                 >
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <label for="driver" class="form-label">Driver</label>
                 <select id="driver" name="driver" class="form-input">
                     <option value="">All Drivers</option>
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{{ route('settlements.payout-summary') }}" class="btn" style="background-color: #6b7280; color: white; margin-left: 0.5rem;">Reset</a>
+                <a href="{{ route('settlements.payout-summary') }}" class="btn bg-gray-600 text-white ml-2">Reset</a>
             </div>
         </div>
     </form>
@@ -46,35 +46,35 @@
 
 <!-- Payout Summary Table -->
 <div class="card">
-    <div style="padding: 1rem; border-bottom: 1px solid #e5e7eb;">
-        <h3 style="font-size: 1.25rem; font-weight: 600;">Payout Summary</h3>
+    <div class="card-section-header">
+        <h3 class="card-section-title">Payout Summary</h3>
     </div>
 
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+    <div class="overflow-x-auto">
+        <table class="w-full" style="border-collapse: collapse;">
             <thead>
                 <tr class="table-header-row">
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Driver</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Total Settlements</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Total Value</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Requested</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Paid</th>
+                    <th class="table-cell-header">Driver</th>
+                    <th class="table-cell-header">Total Settlements</th>
+                    <th class="table-cell-header">Total Value</th>
+                    <th class="table-cell-header">Requested</th>
+                    <th class="table-cell-header">Paid</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($summary as $driverId => $data)
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 0.75rem;">
+                <tr class="table-row-border">
+                    <td class="table-cell-padding">
                         {{ $data['driver']->first_name && $data['driver']->last_name ? $data['driver']->first_name . ' ' . $data['driver']->last_name : $data['driver']->name }}
                     </td>
-                    <td style="padding: 0.75rem;">{{ $data['total_settlements'] }}</td>
-                    <td style="padding: 0.75rem; font-weight: 600;">${{ number_format($data['total_value'], 2) }}</td>
-                    <td style="padding: 0.75rem; color: #f59e0b;">${{ number_format($data['requested'], 2) }}</td>
-                    <td style="padding: 0.75rem; color: #059669;">${{ number_format($data['paid'], 2) }}</td>
+                    <td class="table-cell-padding">{{ $data['total_settlements'] }}</td>
+                    <td class="table-cell-padding font-semibold">${{ number_format($data['total_value'], 2) }}</td>
+                    <td class="table-cell-padding text-yellow-500">${{ number_format($data['requested'], 2) }}</td>
+                    <td class="table-cell-padding stat-value-green">${{ number_format($data['paid'], 2) }}</td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="padding: 2rem; text-align: center; color: #6b7280;">No payout data found.</td>
+                    <td colspan="5" class="p-8 text-center text-tertiary">No payout data found.</td>
                 </tr>
                 @endforelse
             </tbody>

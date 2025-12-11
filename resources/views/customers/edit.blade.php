@@ -333,11 +333,11 @@
             addressItem.style.cssText = 'border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.5rem; background-color: #f9fafb;';
             
             addressItem.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: #1f2937;">Address ${addressIndex + 1}</h4>
-                    <button type="button" class="remove-address-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Remove</button>
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-base font-semibold text-secondary">Address ${addressIndex + 1}</h4>
+                    <button type="button" class="remove-address-btn btn-danger-sm">Remove</button>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="grid grid-auto-200 gap-4">
                     <div class="form-group">
                         <label class="form-label">Label (e.g., Home, Work)</label>
                         <input type="text" name="addresses[${addressIndex}][label]" class="form-input" placeholder="Home">
@@ -483,7 +483,7 @@
                     mediaGrid.innerHTML = '';
                     
                     if (data.length === 0) {
-                        mediaGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">No images found.</div>';
+                        mediaGrid.innerHTML = '<div class="text-center p-8 text-tertiary grid-col-full">No images found.</div>';
                         return;
                     }
 
@@ -495,7 +495,7 @@
                         div.style.overflow = 'hidden';
                         div.style.transition = 'all 0.2s';
                         
-                        div.innerHTML = `<img src="${media.url}" alt="${media.name}" style="width: 100%; height: 150px; object-fit: cover; display: block;">`;
+                        div.innerHTML = `<img src="${media.url}" alt="${media.name}" class="w-full h-150 object-cover d-block">`;
                         
                         div.addEventListener('click', function() {
                             selectedMediaPath.value = media.path;

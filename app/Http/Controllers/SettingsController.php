@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\Currency;
 use App\Models\CurrencyExchangeRate;
 use App\Models\Country;
+use App\Models\ShippingZone;
 use App\Traits\LogsAudit;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -22,14 +23,6 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        // Get delivery countries and decode JSON if needed
-        $deliveryCountriesSetting = Setting::get('delivery_countries', 'LB');
-        $deliveryCountries = is_string($deliveryCountriesSetting) ? json_decode($deliveryCountriesSetting, true) : $deliveryCountriesSetting;
-        if (!is_array($deliveryCountries)) {
-            // Handle legacy single country value
-            $deliveryCountries = [$deliveryCountriesSetting];
-        }
-
         $settings = [
             'timezone' => Setting::get('timezone', 'UTC'),
             'multilingual' => Setting::get('multilingual', '0'),
@@ -38,7 +31,6 @@ class SettingsController extends Controller
             'notify_by_email' => Setting::get('notify_by_email', '1'),
             'notify_by_push' => Setting::get('notify_by_push', '0'),
             'theme_mode' => Setting::get('theme_mode', 'light'),
-            'delivery_countries' => $deliveryCountries,
         ];
 
         $currencies = Currency::orderBy('is_default', 'desc')
@@ -54,8 +46,20 @@ class SettingsController extends Controller
         }
 
         $countries = Country::orderBy('country_name_en')->get();
+        
+        $shippingZones = ShippingZone::with('country')
+            ->orderBy('country_code')
+            ->get();
+        
+        $defaultCurrency = Currency::getDefault();
+        
+        // Get default currency ID from settings if multi-currency is disabled
+        $defaultCurrencyId = null;
+        if (($settings['multi_currency'] ?? '0') === '0' && $defaultCurrency) {
+            $defaultCurrencyId = $defaultCurrency->id;
+        }
 
-        return view('settings.index', compact('settings', 'currencies', 'rateMatrix', 'countries'));
+        return view('settings.index', compact('settings', 'currencies', 'rateMatrix', 'countries', 'shippingZones', 'defaultCurrency', 'defaultCurrencyId'));
     }
 
     /**
@@ -71,11 +75,10 @@ class SettingsController extends Controller
             'multilingual' => 'required|in:0,1',
             'default_language' => 'required|in:en,ar',
             'multi_currency' => 'required|in:0,1',
+            'default_currency_id' => 'required_if:multi_currency,0|nullable|exists:currencies,id',
             'notify_by_email' => 'nullable|in:0,1',
             'notify_by_push' => 'nullable|in:0,1',
             'theme_mode' => 'required|in:light,dark',
-            'delivery_countries' => 'nullable|array',
-            'delivery_countries.*' => 'required|string|exists:countries,country_code',
         ]);
 
         $oldTimezone = Setting::get('timezone', 'UTC');
@@ -85,11 +88,6 @@ class SettingsController extends Controller
         $oldNotifyByEmail = Setting::get('notify_by_email', '1');
         $oldNotifyByPush = Setting::get('notify_by_push', '0');
         $oldThemeMode = Setting::get('theme_mode', 'light');
-        $oldDeliveryCountriesSetting = Setting::get('delivery_countries', 'LB');
-        $oldDeliveryCountries = is_string($oldDeliveryCountriesSetting) ? json_decode($oldDeliveryCountriesSetting, true) : $oldDeliveryCountriesSetting;
-        if (!is_array($oldDeliveryCountries)) {
-            $oldDeliveryCountries = [$oldDeliveryCountriesSetting];
-        }
 
         Setting::set('timezone', $validated['timezone']);
         Setting::set('multilingual', $validated['multilingual']);
@@ -98,9 +96,20 @@ class SettingsController extends Controller
         Setting::set('notify_by_email', $validated['notify_by_email'] ?? '0');
         Setting::set('notify_by_push', $validated['notify_by_push'] ?? '0');
         Setting::set('theme_mode', $validated['theme_mode']);
-        // Store delivery countries as JSON array
-        $deliveryCountries = $validated['delivery_countries'] ?? ['LB'];
-        Setting::set('delivery_countries', json_encode($deliveryCountries));
+        
+        // If multi-currency is disabled, set the selected currency as default
+        if ($validated['multi_currency'] === '0' && isset($validated['default_currency_id'])) {
+            // Unset all other defaults
+            Currency::where('is_default', true)->update(['is_default' => false]);
+            // Set the selected currency as default
+            $currency = Currency::find($validated['default_currency_id']);
+            if ($currency) {
+                $currency->is_default = true;
+                $currency->is_active = true;
+                $currency->updated_by = Auth::id();
+                $currency->save();
+            }
+        }
 
         $oldValues = [
             'timezone' => $oldTimezone,
@@ -110,7 +119,6 @@ class SettingsController extends Controller
             'notify_by_email' => $oldNotifyByEmail,
             'notify_by_push' => $oldNotifyByPush,
             'theme_mode' => $oldThemeMode,
-            'delivery_countries' => $oldDeliveryCountries,
         ];
         $newValues = [
             'timezone' => $validated['timezone'],
@@ -120,7 +128,6 @@ class SettingsController extends Controller
             'notify_by_email' => $validated['notify_by_email'] ?? '0',
             'notify_by_push' => $validated['notify_by_push'] ?? '0',
             'theme_mode' => $validated['theme_mode'],
-            'delivery_countries' => $deliveryCountries,
         ];
 
         $this->logAudit('updated', null, 'General settings updated', $oldValues, $newValues);
@@ -295,6 +302,75 @@ class SettingsController extends Controller
             'success' => true,
             'theme_mode' => $validated['theme_mode']
         ]);
+    }
+
+    /**
+     * Store a new shipping zone.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function storeShippingZone(Request $request)
+    {
+        $validated = $request->validate([
+            'country_code' => 'required|string|max:3|exists:countries,country_code|unique:shipping_zones,country_code',
+            'shipping_charge' => 'required|numeric|min:0',
+        ]);
+
+        $validated['created_by'] = Auth::id();
+        $validated['updated_by'] = Auth::id();
+
+        $shippingZone = ShippingZone::create($validated);
+        $country = Country::where('country_code', $validated['country_code'])->first();
+
+        $this->logAudit('created', $shippingZone, "Shipping zone created: {$country->country_name_en} - {$validated['shipping_charge']}");
+
+        return redirect()->route('settings.index', ['#zones'])
+            ->with('success', __('cms.shipping_zone_added_successfully'));
+    }
+
+    /**
+     * Update a shipping zone.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\ShippingZone  $shippingZone
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateShippingZone(Request $request, ShippingZone $shippingZone)
+    {
+        $validated = $request->validate([
+            'country_code' => 'required|string|max:3|exists:countries,country_code|unique:shipping_zones,country_code,' . $shippingZone->id,
+            'shipping_charge' => 'required|numeric|min:0',
+        ]);
+
+        $oldValues = $shippingZone->toArray();
+        $validated['updated_by'] = Auth::id();
+
+        $shippingZone->update($validated);
+        $country = Country::where('country_code', $validated['country_code'])->first();
+
+        $this->logAudit('updated', $shippingZone, "Shipping zone updated: {$country->country_name_en} - {$validated['shipping_charge']}", $oldValues, $shippingZone->toArray());
+
+        return redirect()->route('settings.index', ['#zones'])
+            ->with('success', __('cms.shipping_zone_updated_successfully'));
+    }
+
+    /**
+     * Delete a shipping zone.
+     *
+     * @param  \App\Models\ShippingZone  $shippingZone
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteShippingZone(ShippingZone $shippingZone)
+    {
+        $country = $shippingZone->country;
+        $countryName = $country ? $country->country_name_en : $shippingZone->country_code;
+        $shippingZone->delete();
+
+        $this->logAudit('deleted', null, "Shipping zone deleted: {$countryName}");
+
+        return redirect()->route('settings.index', ['#zones'])
+            ->with('success', __('cms.shipping_zone_deleted_successfully'));
     }
 }
 

@@ -83,6 +83,7 @@ return [
     
     // Orders
     'order' => 'Order',
+    'orders' => 'Orders',
     'order_id' => 'Order ID',
     'customer_name' => 'Customer Name',
     'customer_email' => 'Customer Email',
@@ -91,6 +92,17 @@ return [
     'subtotal' => 'Subtotal',
     'delivery_price' => 'Delivery Price',
     'order_date' => 'Order Date',
+    'date_from' => 'Date From',
+    'date_to' => 'Date To',
+    'location' => 'Location',
+    'search_by_location' => 'Search by location...',
+    'search_by_customer' => 'Search by customer...',
+    'pending' => 'Pending',
+    'assigned' => 'Assigned',
+    'completed' => 'Completed',
+    'not_assigned' => 'Not Assigned',
+    'no_orders_found' => 'No orders found.',
+    'view' => 'View',
     
     // Drivers
     'driver' => 'Driver',
@@ -98,7 +110,19 @@ return [
     
     // Customers
     'customer' => 'Customer',
+    'customers' => 'Customers',
+    'all_customers' => 'All Customers',
     'customer_name' => 'Customer Name',
+    'account_status' => 'Account Status',
+    'active_not_verified' => 'Active (Not Verified)',
+    'active_verified' => 'Active (Verified)',
+    'deactivated' => 'Deactivated',
+    'suspended' => 'Suspended',
+    'search_by_name_email_phone' => 'Search by name, email, or phone...',
+    'no_customers_found' => 'No customers found.',
+    'confirm_delete_customer' => 'Are you sure you want to delete this customer?',
+    'name' => 'Name',
+    'phone' => 'Phone',
     
     // Settings
     'timezone' => 'Timezone',
@@ -188,6 +212,8 @@ return [
     'currency_name' => 'Currency Name',
     'currency_name_placeholder' => 'United States Dollar',
     'set_as_default_currency' => 'Set as default currency',
+    'default_currency' => 'Default Currency',
+    'select_default_currency' => 'Select Default Currency',
     'edit_currency' => 'Edit Currency',
     'update_currency' => 'Update Currency',
     'currency_added_successfully' => 'Currency added successfully.',
@@ -197,6 +223,22 @@ return [
     'cannot_delete_default_currency' => 'Cannot delete the default currency. Please set another currency as default first.',
     'exchange_rates_updated_successfully' => 'Exchange rates updated successfully.',
     'failed_to_update_exchange_rates' => 'Failed to update exchange rates',
+    
+    // Shipping Zones
+    'zones_areas_management' => 'Zones / Areas Management',
+    'shipping_zones' => 'Shipping Zones',
+    'add_shipping_zone' => 'Add Shipping Zone',
+    'edit_shipping_zone' => 'Edit Shipping Zone',
+    'update_shipping_zone' => 'Update Shipping Zone',
+    'shipping_charge' => 'Shipping Charge',
+    'shipping_zone_added_successfully' => 'Shipping zone added successfully.',
+    'shipping_zone_updated_successfully' => 'Shipping zone updated successfully.',
+    'shipping_zone_deleted_successfully' => 'Shipping zone deleted successfully.',
+    'confirm_delete_shipping_zone' => 'Are you sure you want to delete this shipping zone?',
+    'no_shipping_zones_found' => 'No shipping zones found.',
+    'select_country' => 'Select Country',
+    'country' => 'Country',
+    'shipping_charges_in_currency' => 'Shipping charges are in :currency',
     
     // Audit Logs
     'export_csv' => 'Export CSV',
@@ -451,5 +493,43 @@ return [
     'no_values' => 'No values',
     'no_attributes_found' => 'No attributes found.',
     'confirm_delete_attribute' => 'Are you sure you want to delete this attribute?',
+    
+    // Product Show Page
+    'product_details' => 'Product Details',
+    'back_to_list' => 'Back to List',
+    'no_description_provided' => 'No description provided.',
+    'delete_product' => 'Delete Product',
+    
+    // Driver Show Page
+    'driver_details' => 'Driver Details',
+    'driver_information' => 'Driver Information',
+    'load_capacity' => 'Load Capacity',
+    'driver_performance' => 'Driver Performance',
+    'success_rate' => 'Success Rate',
+    'average_rating' => 'Average Rating',
+    'feedback_ratings' => 'Feedback & Ratings',
+    
+    // Customer Show Page
+    'customer_details' => 'Customer Details',
+    'customer_information' => 'Customer Information',
+    'addresses' => 'Addresses',
+    
+    // Order Show Page
+    'order_details' => 'Order Details',
+    'delivery_address' => 'Delivery Address',
+    'quantity' => 'Quantity',
+    'pricing_summary' => 'Pricing Summary',
+    'order_management' => 'Order Management',
+    'priority' => 'Priority',
+    'low' => 'Low',
+    'medium' => 'Medium',
+    'high' => 'High',
+    'concurrency' => 'Concurrency',
+    'rating' => 'Rating',
+    'feedback' => 'Feedback',
+    'order_history' => 'Order History',
+    'mobile' => 'Mobile',
+    'address' => 'Address',
+    'product' => 'Product',
 ];
 

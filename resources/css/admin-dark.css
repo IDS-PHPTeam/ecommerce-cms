@@ -919,3 +919,11 @@
     height: 20px;
 }
 
+[data-theme="dark"] .product-regular-price {
+    color: #6b7280;
+}
+
+[data-theme="dark"] .product-sale-price {
+    color: #ef4444;
+}
+

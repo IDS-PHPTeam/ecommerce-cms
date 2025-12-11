@@ -25,9 +25,9 @@
 </div>
 
 <!-- Request Info -->
-<div class="card mb-6 p-4" style="background-color: #eff6ff; border-left: 4px solid #3b82f6;">
+<div class="card mb-6 p-4 bg-blue-50 border-l-4 border-blue-500">
     <div class="flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: #3b82f6;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" class="text-blue-500">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <strong>Request for all pending orders with current date time: {{ now()->format('Y-m-d H:i:s') }}</strong>
@@ -37,7 +37,7 @@
 <!-- Export Buttons -->
 <div class="flex justify-end gap-2 mb-4">
     <a href="{{ route('settlements.export-request', ['format' => 'excel']) . '?' . http_build_query(request()->all()) }}" 
-       class="btn text-white" style="background-color: #059669;">
+       class="btn bg-green-600 text-white">
         Export Excel
     </a>
     <a href="{{ route('settlements.export-request', ['format' => 'pdf']) . '?' . http_build_query(request()->all()) }}" 
@@ -64,7 +64,7 @@
     </div>
     
     <div class="overflow-x-auto">
-        <table class="w-full" style="border-collapse: collapse;">
+        <table class="w-full border-collapse">
             <thead>
                 <tr class="table-header-row">
                     <th class="table-cell-header">Order Number</th>
@@ -87,9 +87,9 @@
                     <td class="table-cell-padding">${{ number_format($data['total_commission'], 2) }}</td>
                     <td class="table-cell-padding">${{ number_format($data['total_pending'], 2) }}</td>
                 </tr>
-                <tr class="font-bold" style="background-color: #eff6ff;">
+                <tr class="font-bold bg-blue-50">
                     <td class="table-cell-padding" colspan="2">Settlement Value (rounded)</td>
-                    <td class="table-cell-padding" style="color: {{ $data['settlement_value'] >= 0 ? '#059669' : '#dc2626' }}">
+                    <td class="table-cell-padding {{ $data['settlement_value'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
                         ${{ number_format($data['settlement_value'], 2) }}
                     </td>
                 </tr>

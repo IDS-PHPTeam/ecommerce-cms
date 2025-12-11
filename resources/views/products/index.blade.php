@@ -4,15 +4,15 @@
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">{{ __('cms.products') }}</h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="section-heading-lg">{{ __('cms.products') }}</h2>
         <a href="{{ route('products.create') }}" class="btn btn-primary">{{ __('cms.add_new') }}</a>
     </div>
 
     <!-- Filters -->
-    <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
-        <form method="GET" action="{{ route('products.index') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
-            <div style="flex: 1; min-width: 200px;">
+    <div class="card mb-6 p-4">
+        <form method="GET" action="{{ route('products.index') }}" class="flex gap-4 flex-wrap items-end">
+            <div class="flex-1-min-200">
                 <input 
                     type="text" 
                     id="name" 
@@ -22,14 +22,14 @@
                     placeholder="{{ __('cms.search_by_name') }}"
                 >
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <select id="status" name="status" class="form-input">
                     <option value="">{{ __('cms.all_status') }}</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ __('cms.active') }}</option>
                     <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>{{ __('cms.inactive') }}</option>
                 </select>
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <select id="category" name="category" class="form-input">
                     <option value="">{{ __('cms.all_categories') }}</option>
                     @foreach($categories as $category)
@@ -37,14 +37,14 @@
                     @endforeach
                 </select>
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <select id="in_stock" name="in_stock" class="form-input">
                     <option value="">{{ __('cms.all_stock') }}</option>
                     <option value="1" {{ request('in_stock') == '1' ? 'selected' : '' }}>{{ __('cms.in_stock') }}</option>
                     <option value="0" {{ request('in_stock') == '0' ? 'selected' : '' }}>{{ __('cms.out_of_stock') }}</option>
                 </select>
             </div>
-            <div style="flex: 1; min-width: 200px;">
+            <div class="flex-1-min-200">
                 <select id="on_sale" name="on_sale" class="form-input">
                     <option value="">{{ __('cms.all_products') }}</option>
                     <option value="1" {{ request('on_sale') == '1' ? 'selected' : '' }}>{{ __('cms.on_sale') }}</option>
@@ -53,46 +53,46 @@
             </div>
             <div>
                 <button type="submit" class="btn btn-primary">{{ __('cms.filter') }}</button>
-                <a href="{{ route('products.index') }}" class="btn" style="background-color: #6b7280; color: white; margin-left: 0.5rem;">{{ __('cms.reset') }}</a>
+                <a href="{{ route('products.index') }}" class="btn bg-gray-600 text-white ml-2">{{ __('cms.reset') }}</a>
             </div>
         </form>
     </div>
 
     <!-- Products Table -->
-    <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse;">
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
             <thead>
                 <tr class="table-header-row">
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.id') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.image') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.name') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.price') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.stock') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.status') }}</th>
-                    <th style="padding: 0.75rem; text-align: left; font-weight: 600;">{{ __('cms.actions') }}</th>
+                    <th class="table-cell-header">{{ __('cms.id') }}</th>
+                    <th class="table-cell-header">{{ __('cms.image') }}</th>
+                    <th class="table-cell-header">{{ __('cms.name') }}</th>
+                    <th class="table-cell-header">{{ __('cms.price') }}</th>
+                    <th class="table-cell-header">{{ __('cms.stock') }}</th>
+                    <th class="table-cell-header">{{ __('cms.status') }}</th>
+                    <th class="table-cell-header">{{ __('cms.actions') }}</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($products as $product)
-                <tr style="border-bottom: 1px solid #e5e7eb;">
-                    <td style="padding: 0.75rem;">{{ $product->id }}</td>
-                    <td style="padding: 0.75rem;">
+                <tr class="table-row-border">
+                    <td class="table-cell-padding">{{ $product->id }}</td>
+                    <td class="table-cell-padding">
                         @if($product->featured_image)
-                            <img src="{{ asset('storage/' . $product->featured_image) }}" alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 0.25rem;">
+                            <img src="{{ asset('storage/' . $product->featured_image) }}" alt="{{ $product->name }}" class="product-table-image" width="60" height="60">
                         @else
-                            <div style="width: 50px; height: 50px; background-color: #e5e7eb; border-radius: 0.25rem; display: flex; align-items: center; justify-content: center; color: #9ca3af;">{{ __('cms.no_image') }}</div>
+                            <div class="product-table-image bg-gray-200 flex-center text-gray-400 text-xs">{{ __('cms.no_image') }}</div>
                         @endif
                     </td>
-                    <td style="padding: 0.75rem;">{{ $product->name }}</td>
-                    <td style="padding: 0.75rem;">
+                    <td class="table-cell-padding">{{ $product->name }}</td>
+                    <td class="table-cell-padding">
                         @if($product->sale_price)
-                            <span style="text-decoration: line-through; color: #9ca3af;">${{ number_format($product->price, 2) }}</span>
-                            <span style="color: #ef4444; font-weight: 600; margin-left: 0.5rem;">${{ number_format($product->sale_price, 2) }}</span>
+                            <span class="product-regular-price">${{ number_format($product->price, 2) }}</span>
+                            <span class="product-sale-price">${{ number_format($product->sale_price, 2) }}</span>
                         @else
-                            ${{ number_format($product->price, 2) }}
+                            <span>${{ number_format($product->price, 2) }}</span>
                         @endif
                     </td>
-                    <td style="padding: 0.75rem;">
+                    <td class="table-cell-padding">
                         @php
                             // Determine stock status based on track_stock setting
                             $isInStock = false;
@@ -107,24 +107,25 @@
                                 $isInStock = $product->stock_status === 'in_stock';
                                 $stockLabel = $product->stock_status === 'in_stock' ? __('cms.in_stock') : ($product->stock_status === 'on_backorder' ? __('cms.on_backorder') : __('cms.out_of_stock'));
                             }
+                            $stockBadgeClass = $isInStock ? 'badge-green' : ($product->stock_status === 'on_backorder' ? 'badge-yellow' : 'badge-red');
                         @endphp
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $isInStock ? 'background-color: #d1fae5; color: #065f46;' : ($product->stock_status === 'on_backorder' ? 'background-color: #fef3c7; color: #92400e;' : 'background-color: #fee2e2; color: #991b1b;') }}">
+                        <span class="badge {{ $stockBadgeClass }}">
                             {{ $stockLabel }}
                         </span>
                     </td>
-                    <td style="padding: 0.75rem;">
-                        <span style="padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; {{ $product->status == 'active' ? 'background-color: #d1fae5; color: #065f46;' : 'background-color: #fee2e2; color: #991b1b;' }}">
+                    <td class="table-cell-padding">
+                        <span class="badge {{ $product->status == 'active' ? 'badge-green' : 'badge-red' }}">
                             {{ ucfirst($product->status) }}
                         </span>
                     </td>
-                    <td style="padding: 0.75rem;">
-                        <div style="display: flex; gap: 0.5rem;">
+                    <td class="table-cell-padding">
+                        <div class="flex gap-2">
                             <a href="{{ route('products.edit', $product) }}" class="action-btn action-btn-edit" title="{{ __('cms.edit') }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </a>
-                            <form action="{{ route('products.destroy', $product) }}" method="POST" style="display: inline;" data-confirm="{{ __('cms.confirm_delete_product') }}">
+                            <form action="{{ route('products.destroy', $product) }}" method="POST" class="d-inline" data-confirm="{{ __('cms.confirm_delete_product') }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="action-btn action-btn-delete" title="{{ __('cms.delete') }}">
@@ -138,7 +139,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" style="padding: 2rem; text-align: center; color: #6b7280;">{{ __('cms.no_products_found') }}</td>
+                    <td colspan="7" class="p-8 text-center text-tertiary">{{ __('cms.no_products_found') }}</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -146,7 +147,7 @@
     </div>
 
     <!-- Pagination -->
-    <div style="margin-top: 1.5rem;">
+    <div class="mt-6">
         {{ $products->links() }}
     </div>
 </div>

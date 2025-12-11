@@ -3,26 +3,26 @@
 @section('title', __('cms.add_product'))
 
 @section('content')
-<div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.add_new_product') }}</h2>
+<div class="card pb-90 mb-0">
+    <h2 class="section-heading-lg mb-6">{{ __('cms.add_new_product') }}</h2>
 
     <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" id="productForm">
         @csrf
 
         <!-- Tabs Navigation -->
-        <div class="tabs-nav" style="display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 1.5rem; overflow-x: auto;">
-            <button type="button" class="tab-btn active" data-tab="general" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.general_information') }}</button>
-            <button type="button" class="tab-btn" data-tab="media" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap;">{{ __('cms.media') }}</button>
-            <button type="button" class="tab-btn" data-tab="simple-fields" id="simpleFieldsTabBtn" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type', 'simple') == 'simple' ? 'block' : 'none' }};">{{ __('cms.stock_pricing') }}</button>
-            <button type="button" class="tab-btn" data-tab="attributes" id="attributesTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">{{ __('cms.attributes') }}</button>
-            <button type="button" class="tab-btn" data-tab="variations" id="variationsTab" style="padding: 0.75rem 1.5rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer; font-size: 0.9375rem; white-space: nowrap; display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">{{ __('cms.variations') }}</button>
+        <div class="tabs-nav">
+            <button type="button" class="tab-btn active" data-tab="general">{{ __('cms.general_information') }}</button>
+            <button type="button" class="tab-btn" data-tab="media">{{ __('cms.media') }}</button>
+            <button type="button" class="tab-btn {{ old('product_type', 'simple') == 'simple' ? 'd-block' : 'd-none' }}" data-tab="simple-fields" id="simpleFieldsTabBtn">{{ __('cms.stock_pricing') }}</button>
+            <button type="button" class="tab-btn {{ old('product_type') == 'variable' ? 'd-block' : 'd-none' }}" data-tab="attributes" id="attributesTab">{{ __('cms.attributes') }}</button>
+            <button type="button" class="tab-btn {{ old('product_type') == 'variable' ? 'd-block' : 'd-none' }}" data-tab="variations" id="variationsTab">{{ __('cms.variations') }}</button>
         </div>
 
         <!-- Tab 1: General Information -->
-        <div id="generalTab" class="tab-content active" style="display: block;">
+        <div id="generalTab" class="tab-content active">
             <div class="form-group">
-                <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <label class="form-label">{{ __('cms.name') }} <span class="required-asterisk">*</span></label>
+                <div class="grid grid-2 gap-4">
                     <div>
                         <input type="text" id="name_en" name="name_en" value="{{ old('name_en') }}" class="form-input" placeholder="{{ __('cms.product_name_english') }}">
                         @error('name_en')
@@ -44,7 +44,7 @@
 
             <div class="form-group">
                 <label class="form-label">{{ __('cms.description') }}</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="grid grid-2 gap-4">
                     <div>
                         <textarea id="description_en" name="description_en" rows="4" class="form-input" placeholder="{{ __('cms.product_description_english') }}">{{ old('description_en') }}</textarea>
                         @error('description_en')
@@ -64,9 +64,9 @@
                 @enderror
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div class="grid grid-auto-250 gap-4">
                 <div class="form-group">
-                    <label for="product_type" class="form-label">{{ __('cms.product_type') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="product_type" class="form-label">{{ __('cms.product_type') }} <span class="required-asterisk">*</span></label>
                     <select id="product_type" name="product_type" required class="form-input">
                         <option value="simple" {{ old('product_type', 'simple') == 'simple' ? 'selected' : '' }}>{{ __('cms.simple') }}</option>
                         <option value="variable" {{ old('product_type') == 'variable' ? 'selected' : '' }}>{{ __('cms.variable') }}</option>
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="status" class="form-label">{{ __('cms.status') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="status" class="form-label">{{ __('cms.status') }} <span class="required-asterisk">*</span></label>
                     <select id="status" name="status" required class="form-input">
                         <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>{{ __('cms.active') }}</option>
                         <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>{{ __('cms.inactive') }}</option>
@@ -89,33 +89,33 @@
             </div>
 
             <!-- Categories (Multi-select) -->
-            <div class="form-group" style="margin-top: 1rem;">
+            <div class="form-group mt-4">
                 <label for="categories" class="form-label">{{ __('cms.categories') }}</label>
-                <div class="custom-multiselect" style="position: relative;">
-                    <div class="multiselect-trigger" id="categoriesTrigger" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background-color: white; cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 42px;">
-                        <div class="multiselect-selected" style="color: #374151; flex: 1; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                            <span class="placeholder-text" style="color: #9ca3af;">{{ __('cms.select_categories') }}</span>
-                            <div class="selected-categories-tags" style="display: none; flex-wrap: wrap; gap: 0.5rem;">
+                <div class="custom-multiselect relative">
+                    <div class="multiselect-trigger multiselect-trigger-full" id="categoriesTrigger">
+                        <div class="multiselect-selected">
+                            <span class="placeholder-text text-quaternary">{{ __('cms.select_categories') }}</span>
+                            <div class="selected-categories-tags d-none flex-wrap gap-2">
                                 <!-- Selected category tags will be added here -->
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <button type="button" class="clear-all-categories-btn" style="display: none; background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem; font-size: 0.875rem;" title="{{ __('cms.clear_all') }}">{{ __('cms.clear_all') }}</button>
-                            <svg class="multiselect-arrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20" style="color: #6b7280; transition: transform 0.2s;">
+                        <div class="flex items-center gap-2">
+                            <button type="button" class="clear-all-categories-btn d-none bg-none border-0 text-red cursor-pointer p-1 text-sm" title="{{ __('cms.clear_all') }}">{{ __('cms.clear_all') }}</button>
+                            <svg class="multiselect-arrow text-tertiary transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </div>
                     </div>
-                    <div class="multiselect-dropdown" id="categoriesDropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 0.375rem; margin-top: 0.25rem; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+                    <div class="multiselect-dropdown multiselect-dropdown-full" id="categoriesDropdown">
                         @foreach($categories as $category)
-                            <label class="multiselect-option" style="display: flex; align-items: center; padding: 0.75rem; cursor: pointer; border-bottom: 1px solid #f3f4f6; transition: background-color 0.15s;">
-                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" class="category-checkbox" data-category-name="{{ $category->name }}" {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }} style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
-                                <span style="color: #374151; user-select: none;">{{ $category->name }}</span>
+                            <label class="multiselect-option multiselect-option-item">
+                                <input type="checkbox" name="categories[]" value="{{ $category->id }}" class="category-checkbox checkbox-custom" data-category-name="{{ $category->name }}" {{ in_array($category->id, old('categories', [])) ? 'checked' : '' }}>
+                                <span class="text-secondary user-select-none">{{ $category->name }}</span>
                             </label>
                         @endforeach
                     </div>
                 </div>
-                <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ __('cms.select_one_or_more_categories') }}</small>
+                <small class="text-tertiary text-sm mt-1 d-block">{{ __('cms.select_one_or_more_categories') }}</small>
                 @error('categories')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
@@ -123,20 +123,20 @@
         </div>
 
         <!-- Tab 2: Media -->
-        <div id="mediaTab" class="tab-content" style="display: none;">
+        <div id="mediaTab" class="tab-content d-none">
             <!-- Featured Image -->
             <div class="form-group">
                 <label for="featured_image" class="form-label">{{ __('cms.featured_image') }}</label>
                 <button type="button" id="chooseFileBtn" class="btn btn-primary" data-media-url="{{ route('media.json') }}">{{ __('cms.choose_file') }}</button>
-                <input type="file" id="featured_image" name="featured_image" accept="image/*" style="display: none;">
+                <input type="file" id="featured_image" name="featured_image" accept="image/*" class="d-none">
                 <input type="hidden" id="selected_media_path" name="selected_media_path" value="">
                 @error('featured_image')
                     <span class="form-error">{{ $message }}</span>
                 @enderror
-                <div id="imagePreview" style="margin-top: 1rem; display: none;">
-                    <div style="position: relative; display: inline-block;">
-                        <img id="previewImg" src="" alt="Preview" style="max-width: 300px; max-height: 300px; border-radius: 0.5rem; border: 1px solid #e5e7eb; object-fit: cover; display: block;">
-                        <button type="button" id="removeImageBtn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove image">
+                <div id="imagePreview" class="mt-4 d-none">
+                    <div class="relative d-inline-block">
+                        <img id="previewImg" src="" alt="Preview" class="preview-image-large">
+                        <button type="button" id="removeImageBtn" class="remove-image-btn absolute top-2 right-2 bg-red-500 text-white border-none rounded-full w-8 h-8 cursor-pointer flex items-center justify-center shadow-md z-10" title="Remove image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -149,7 +149,7 @@
             <div class="form-group">
                 <label class="form-label">{{ __('cms.gallery') }} ({{ __('cms.images') }} + {{ __('cms.videos') }})</label>
                 <button type="button" id="addGalleryItemBtn" class="btn btn-primary">{{ __('cms.add_to_gallery') }}</button>
-                <div id="galleryContainer" style="margin-top: 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                <div id="galleryContainer" class="mt-4 grid grid-auto-150">
                     <!-- Gallery items will be added here dynamically -->
                 </div>
                 @error('gallery')
@@ -159,11 +159,11 @@
         </div>
 
         <!-- Tab 3: Stock & Pricing (Simple Products Only) -->
-        <div id="simpleFieldsTab" class="tab-content" style="display: none;">
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937;">{{ __('cms.pricing') }}</h3>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div id="simpleFieldsTab" class="tab-content d-none">
+            <h3 class="text-xl font-semibold mb-4 text-secondary">{{ __('cms.pricing') }}</h3>
+            <div class="grid grid-auto-200 gap-4">
                 <div class="form-group">
-                    <label for="price" class="form-label">{{ __('cms.price') }} <span style="color: #ef4444;">*</span></label>
+                    <label for="price" class="form-label">{{ __('cms.price') }} <span class="text-red-500">*</span></label>
                     <input type="number" id="price" name="price" value="{{ old('price') }}" step="0.01" min="0" class="form-input" placeholder="0.00">
                     @error('price')
                         <span class="form-error">{{ $message }}</span>
@@ -179,7 +179,7 @@
                 </div>
             </div>
 
-            <h3 style="font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 1rem 0; color: #1f2937;">{{ __('cms.stock_management') }}</h3>
+            <h3 class="text-xl font-semibold my-6 text-secondary">{{ __('cms.stock_management') }}</h3>
             <div class="form-group">
                 <label for="track_stock" class="form-label">{{ __('cms.track_stock') }}</label>
                 <select id="track_stock" name="track_stock" class="form-input">
@@ -188,7 +188,7 @@
                 </select>
             </div>
 
-            <div id="stockQuantityField" style="display: {{ old('track_stock', '1') == '1' ? 'block' : 'none' }};">
+            <div id="stockQuantityField" class="{{ old('track_stock', '1') == '1' ? '' : 'd-none' }}">
                 <div class="form-group">
                     <label for="stock_quantity" class="form-label">{{ __('cms.stock_quantity') }}</label>
                     <input type="number" id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity') }}" min="0" class="form-input" placeholder="0">
@@ -198,7 +198,7 @@
                 </div>
             </div>
 
-            <div id="stockStatusField" style="display: {{ old('track_stock', '1') == '0' ? 'block' : 'none' }};">
+            <div id="stockStatusField" class="{{ old('track_stock', '1') == '0' ? '' : 'd-none' }}">
                 <div class="form-group">
                     <label for="stock_status" class="form-label">{{ __('cms.stock_status') }}</label>
                     <select id="stock_status" name="stock_status" class="form-input">
@@ -214,34 +214,34 @@
         </div>
 
         <!-- Tab 4: Attributes (Variable Products Only) -->
-        <div id="attributesTab" class="tab-content" style="display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">
+        <div id="attributesTab" class="tab-content {{ old('product_type') == 'variable' ? '' : 'd-none' }}">
             <div class="form-group">
                 <label class="form-label">{{ __('cms.select_attributes_for_variants') }}</label>
-                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">{{ __('cms.select_attributes_for_variants_description') }}</p>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                <p class="text-tertiary text-sm mb-4">{{ __('cms.select_attributes_for_variants_description') }}</p>
+                <div class="grid grid-auto-200 gap-4">
                     @foreach($attributes as $attribute)
-                        <label style="display: flex; align-items: center; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; cursor: pointer; transition: all 0.2s;">
-                            <input type="checkbox" class="variant-attribute-checkbox" value="{{ $attribute->id }}" data-attribute-name="{{ $attribute->name }}" data-attribute-values="{{ json_encode($attribute->values->pluck('value', 'id')->toArray()) }}" style="margin-right: 0.5rem; width: 1rem; height: 1rem; cursor: pointer;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: #374151;">{{ $attribute->name }}</div>
-                                <div style="font-size: 0.875rem; color: #6b7280;">{{ $attribute->values->count() }} {{ __('cms.values') }}</div>
+                        <label class="variant-attribute-label flex items-center p-3 border border-gray-300 rounded-md cursor-pointer transition-all">
+                            <input type="checkbox" class="variant-attribute-checkbox checkbox-custom-sm" value="{{ $attribute->id }}" data-attribute-name="{{ $attribute->name }}" data-attribute-values="{{ json_encode($attribute->values->pluck('value', 'id')->toArray()) }}">
+                            <div class="flex-1">
+                                <div class="font-semibold text-secondary">{{ $attribute->name }}</div>
+                                <div class="text-sm text-tertiary">{{ $attribute->values->count() }} {{ __('cms.values') }}</div>
                             </div>
                         </label>
                     @endforeach
                 </div>
                 @if($attributes->isEmpty())
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">{{ __('cms.no_attributes_available') }}</p>
+                    <p class="text-tertiary text-sm mt-2">{{ __('cms.no_attributes_available') }}</p>
                 @endif
             </div>
         </div>
 
         <!-- Tab 5: Variations (Variable Products Only) -->
-        <div id="variationsTab" class="tab-content" style="display: {{ old('product_type') == 'variable' ? 'block' : 'none' }};">
+        <div id="variationsTab" class="tab-content {{ old('product_type') == 'variable' ? '' : 'd-none' }}">
             <div id="variantsContainer">
                 <div id="variantsList">
                     <!-- Variants will be added here -->
                 </div>
-                <button type="button" id="addVariantBtn" class="btn btn-primary" style="margin-top: 1rem;">{{ __('cms.add_variant') }}</button>
+                <button type="button" id="addVariantBtn" class="btn btn-primary mt-4">{{ __('cms.add_variant') }}</button>
             </div>
             
             @error('variants')
@@ -261,18 +261,18 @@
             }))
         </script>
 
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <div class="flex gap-4 mt-6">
             <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
-            <a href="{{ route('products.index') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</a>
+            <a href="{{ route('products.index') }}" class="btn bg-gray-600 text-white">{{ __('cms.cancel') }}</a>
         </div>
     </form>
 </div>
 
 <!-- Image Selection Modal -->
-<div id="imageSelectionModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 90vw; max-height: 90vh; padding: 0;">
+<div id="imageSelectionModal" class="modal-overlay d-none">
+    <div class="modal-content modal-content-large">
         <div class="modal-header">
-            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937;">{{ __('cms.choose_media') }}</h3>
+            <h3 class="text-xl font-bold text-secondary">{{ __('cms.choose_media') }}</h3>
             <button type="button" class="modal-close" id="closeImageSelectionModal">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -280,28 +280,28 @@
             </button>
         </div>
         
-        <div style="display: flex; border-bottom: 1px solid #e5e7eb;">
-            <button type="button" class="image-tab-btn active" data-tab="media" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 2px solid var(--primary-blue); color: var(--primary-blue); font-weight: 600; cursor: pointer;">{{ __('cms.select_from_media') }}</button>
-            <button type="button" class="image-tab-btn" data-tab="upload" style="flex: 1; padding: 1rem; background: none; border: none; border-bottom: 2px solid transparent; color: #6b7280; font-weight: 600; cursor: pointer;">{{ __('cms.select_from_pc') }}</button>
+        <div class="flex border-b border-gray-200">
+            <button type="button" class="image-tab-btn active flex-1 p-4 bg-none border-none border-b-2 border-primary-blue text-primary-blue font-semibold cursor-pointer" data-tab="media">{{ __('cms.select_from_media') }}</button>
+            <button type="button" class="image-tab-btn flex-1 p-4 bg-none border-none border-b-2 border-b-transparent text-tertiary font-semibold cursor-pointer" data-tab="upload">{{ __('cms.select_from_pc') }}</button>
         </div>
 
-        <div class="modal-body" style="max-height: calc(90vh - 180px); overflow-y: auto; padding: 1.5rem;">
-            <div id="modalMediaTab" class="tab-content" style="display: block;">
-                <div id="mediaGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
-                    <div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">Loading images...</div>
+        <div class="modal-body modal-body-large">
+            <div id="modalMediaTab" class="tab-content active">
+                <div id="mediaGrid" class="grid grid-auto-150">
+                    <div class="text-center p-8 text-tertiary grid-col-full">Loading images...</div>
                 </div>
             </div>
 
-            <div id="modalUploadTab" class="tab-content" style="display: none;">
-                <div style="text-align: center; padding: 2rem;">
-                    <input type="file" id="modalFileInput" accept="image/*,video/*" class="form-input" style="max-width: 400px; margin: 0 auto;">
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-top: 1rem;">{{ __('cms.select_file_from_computer') }}</p>
+            <div id="modalUploadTab" class="tab-content d-none">
+                <div class="text-center p-8">
+                    <input type="file" id="modalFileInput" accept="image/*,video/*" class="form-input max-w-400 mx-auto">
+                    <p class="text-tertiary text-sm mt-4">{{ __('cms.select_file_from_computer') }}</p>
                 </div>
             </div>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="btn" id="cancelImageSelection" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</button>
+            <button type="button" class="btn bg-gray-600 text-white" id="cancelImageSelection">{{ __('cms.cancel') }}</button>
         </div>
     </div>
 </div>
@@ -614,20 +614,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadMediaGrid() {
         if (!mediaGrid) return;
         
-        mediaGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">Loading images...</div>';
+        mediaGrid.innerHTML = '<div class="text-center p-8 text-tertiary grid-col-full">Loading images...</div>';
         
         fetch('{{ route("media.json") }}')
             .then(response => response.json())
             .then(data => {
                 mediaGrid.innerHTML = '';
                 if (data.length === 0) {
-                    mediaGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">No media files found</div>';
+                    mediaGrid.innerHTML = '<div class="text-center p-8 text-tertiary grid-col-full">No media files found</div>';
                     return;
                 }
                 
                 data.forEach(media => {
                     const mediaItem = document.createElement('div');
-                    mediaItem.style.cssText = 'position: relative; padding-top: 100%; background: #f3f4f6; border-radius: 0.5rem; overflow: hidden; cursor: pointer; border: 2px solid transparent; transition: all 0.2s;';
                     mediaItem.className = 'media-select-item';
                     mediaItem.dataset.mediaPath = media.path;
                     mediaItem.dataset.mediaType = media.type;
@@ -635,11 +634,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (media.type === 'video') {
                         mediaItem.innerHTML = `
-                            <video src="${media.url}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></video>
+                            <video src="${media.url}"></video>
                         `;
                     } else {
                         mediaItem.innerHTML = `
-                            <img src="${media.url}" alt="${media.name}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                            <img src="${media.url}" alt="${media.name}">
                         `;
                     }
                     
@@ -665,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error loading media:', error);
-                mediaGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #ef4444; grid-column: 1 / -1;">Error loading media files</div>';
+                mediaGrid.innerHTML = '<div class="text-center p-8 text-red-500 grid-col-full">Error loading media files</div>';
             });
     }
 
@@ -673,20 +672,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function addToGallery(mediaPath, mediaType, mediaUrl) {
         const galleryItem = document.createElement('div');
         galleryItem.className = 'gallery-item';
-        galleryItem.style.cssText = 'position: relative; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; background: white;';
         
         galleryItem.innerHTML = `
             <input type="hidden" name="gallery[${galleryIndex}][media_path]" value="${mediaPath}">
             <input type="hidden" name="gallery[${galleryIndex}][media_type]" value="${mediaType}">
             ${mediaType === 'video' ? `
-                <div style="position: relative; padding-top: 100%; background: #000;">
-                    <video src="${mediaUrl}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;"></video>
-                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">×</button>
+                <div class="gallery-item-video-wrapper">
+                    <video src="${mediaUrl}"></video>
+                    <button type="button" class="remove-gallery-item-btn">×</button>
                 </div>
             ` : `
-                <div style="position: relative; padding-top: 100%; background: #f3f4f6;">
-                    <img src="${mediaUrl}" alt="Gallery item" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
-                    <button type="button" class="remove-gallery-item-btn" style="position: absolute; top: 0.5rem; right: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;">×</button>
+                <div class="gallery-item-image-wrapper">
+                    <img src="${mediaUrl}" alt="Gallery item">
+                    <button type="button" class="remove-gallery-item-btn">×</button>
                 </div>
             `}
         `;

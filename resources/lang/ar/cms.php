@@ -83,6 +83,7 @@ return [
     
     // Orders
     'order' => 'طلب',
+    'orders' => 'الطلبات',
     'order_id' => 'رقم الطلب',
     'customer_name' => 'اسم العميل',
     'customer_email' => 'بريد العميل الإلكتروني',
@@ -91,6 +92,17 @@ return [
     'subtotal' => 'المجموع الفرعي',
     'delivery_price' => 'سعر التوصيل',
     'order_date' => 'تاريخ الطلب',
+    'date_from' => 'من تاريخ',
+    'date_to' => 'إلى تاريخ',
+    'location' => 'الموقع',
+    'search_by_location' => 'البحث حسب الموقع...',
+    'search_by_customer' => 'البحث حسب العميل...',
+    'pending' => 'قيد الانتظار',
+    'assigned' => 'مُسند',
+    'completed' => 'مكتمل',
+    'not_assigned' => 'غير مُسند',
+    'no_orders_found' => 'لم يتم العثور على طلبات.',
+    'view' => 'عرض',
     
     // Drivers
     'driver' => 'سائق',
@@ -98,7 +110,19 @@ return [
     
     // Customers
     'customer' => 'عميل',
+    'customers' => 'العملاء',
+    'all_customers' => 'جميع العملاء',
     'customer_name' => 'اسم العميل',
+    'account_status' => 'حالة الحساب',
+    'active_not_verified' => 'نشط (غير مُتحقق)',
+    'active_verified' => 'نشط (مُتحقق)',
+    'deactivated' => 'معطل',
+    'suspended' => 'معلق',
+    'search_by_name_email_phone' => 'البحث بالاسم أو البريد الإلكتروني أو الهاتف...',
+    'no_customers_found' => 'لم يتم العثور على عملاء.',
+    'confirm_delete_customer' => 'هل أنت متأكد من حذف هذا العميل؟',
+    'name' => 'الاسم',
+    'phone' => 'الهاتف',
     
     // Settings
     'timezone' => 'المنطقة الزمنية',
@@ -188,6 +212,8 @@ return [
     'currency_name' => 'اسم العملة',
     'currency_name_placeholder' => 'الدولار الأمريكي',
     'set_as_default_currency' => 'تعيين كعملة افتراضية',
+    'default_currency' => 'العملة الافتراضية',
+    'select_default_currency' => 'اختر العملة الافتراضية',
     'edit_currency' => 'تعديل العملة',
     'update_currency' => 'تحديث العملة',
     'currency_added_successfully' => 'تم إضافة العملة بنجاح.',
@@ -197,6 +223,22 @@ return [
     'cannot_delete_default_currency' => 'لا يمكن حذف العملة الافتراضية. يرجى تعيين عملة أخرى كافتراضية أولاً.',
     'exchange_rates_updated_successfully' => 'تم تحديث أسعار الصرف بنجاح.',
     'failed_to_update_exchange_rates' => 'فشل تحديث أسعار الصرف',
+    
+    // Shipping Zones
+    'zones_areas_management' => 'إدارة المناطق / المناطق',
+    'shipping_zones' => 'مناطق الشحن',
+    'add_shipping_zone' => 'إضافة منطقة شحن',
+    'edit_shipping_zone' => 'تعديل منطقة الشحن',
+    'update_shipping_zone' => 'تحديث منطقة الشحن',
+    'shipping_charge' => 'رسوم الشحن',
+    'shipping_zone_added_successfully' => 'تم إضافة منطقة الشحن بنجاح.',
+    'shipping_zone_updated_successfully' => 'تم تحديث منطقة الشحن بنجاح.',
+    'shipping_zone_deleted_successfully' => 'تم حذف منطقة الشحن بنجاح.',
+    'confirm_delete_shipping_zone' => 'هل أنت متأكد من حذف منطقة الشحن هذه؟',
+    'no_shipping_zones_found' => 'لم يتم العثور على مناطق شحن.',
+    'select_country' => 'اختر البلد',
+    'country' => 'البلد',
+    'shipping_charges_in_currency' => 'رسوم الشحن بالعملة :currency',
     
     // Audit Logs
     'export_csv' => 'تصدير CSV',
@@ -451,5 +493,43 @@ return [
     'no_values' => 'لا توجد قيم',
     'no_attributes_found' => 'لم يتم العثور على خصائص.',
     'confirm_delete_attribute' => 'هل أنت متأكد من حذف هذه الخاصية؟',
+    
+    // Product Show Page
+    'product_details' => 'تفاصيل المنتج',
+    'back_to_list' => 'العودة إلى القائمة',
+    'no_description_provided' => 'لا يوجد وصف.',
+    'delete_product' => 'حذف المنتج',
+    
+    // Driver Show Page
+    'driver_details' => 'تفاصيل السائق',
+    'driver_information' => 'معلومات السائق',
+    'load_capacity' => 'القدرة على التحميل',
+    'driver_performance' => 'أداء السائق',
+    'success_rate' => 'معدل النجاح',
+    'average_rating' => 'التقييم المتوسط',
+    'feedback_ratings' => 'التعليقات والتقييمات',
+    
+    // Customer Show Page
+    'customer_details' => 'تفاصيل العميل',
+    'customer_information' => 'معلومات العميل',
+    'addresses' => 'العناوين',
+    
+    // Order Show Page
+    'order_details' => 'تفاصيل الطلب',
+    'delivery_address' => 'عنوان التوصيل',
+    'quantity' => 'الكمية',
+    'pricing_summary' => 'ملخص التسعير',
+    'order_management' => 'إدارة الطلب',
+    'priority' => 'الأولوية',
+    'low' => 'منخفضة',
+    'medium' => 'متوسطة',
+    'high' => 'عالية',
+    'concurrency' => 'التزامن',
+    'rating' => 'التقييم',
+    'feedback' => 'التعليقات',
+    'order_history' => 'تاريخ الطلبات',
+    'mobile' => 'الجوال',
+    'address' => 'العنوان',
+    'product' => 'المنتج',
 ];
 

@@ -76,8 +76,8 @@
             @enderror
             <div id="imagePreview" class="mt-4 d-none">
                 <div class="relative d-inline-block">
-                    <img id="previewImg" src="" alt="Preview" class="rounded-full border-2 border-gray-200 d-block" style="max-width: 200px; max-height: 200px; object-fit: cover;">
-                    <button type="button" id="removeImageBtn" class="absolute bg-red-500 text-white border-0 rounded-full cursor-pointer flex items-center justify-center" style="top: 0.5rem; right: 0.5rem; width: 32px; height: 32px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;" title="Remove image">
+                    <img id="previewImg" src="" alt="Preview" class="rounded-full border-2 border-gray-200 d-block preview-image">
+                    <button type="button" id="removeImageBtn" class="absolute bg-red-500 text-white border-0 rounded-full cursor-pointer flex items-center justify-center remove-image-btn" title="Remove image">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
@@ -103,7 +103,7 @@
 
         <!-- Image Selection Modal -->
         <div id="imageSelectionModal" class="modal-overlay modal-overlay-hidden">
-            <div class="modal-content" style="max-width: 90vw; max-height: 90vh; padding: 0;">
+            <div class="modal-content modal-content-large">
                 <div class="modal-header">
                     <h3 class="text-xl font-bold text-primary">Choose Image</h3>
                     <button type="button" class="modal-close" id="closeImageSelectionModal">
@@ -120,11 +120,11 @@
                 </div>
 
                 <!-- Tab Content -->
-                <div class="modal-body overflow-y-auto p-6" style="max-height: calc(90vh - 180px);">
+                <div class="modal-body overflow-y-auto p-6 modal-body-large">
                     <!-- Media Tab -->
                     <div id="mediaTab" class="tab-content active">
                         <div id="mediaGrid" class="grid grid-auto-150 gap-4">
-                            <div class="text-center p-8 text-tertiary" style="grid-column: 1 / -1;">Loading images...</div>
+                            <div class="text-center p-8 text-tertiary grid-col-full">Loading images...</div>
                         </div>
                     </div>
 
@@ -265,11 +265,11 @@
             addressItem.style.cssText = 'border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.5rem; background-color: #f9fafb;';
             
             addressItem.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h4 style="font-size: 1rem; font-weight: 600; color: #1f2937;">Address ${addressIndex + 1}</h4>
-                    <button type="button" class="remove-address-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; font-size: 0.875rem;">Remove</button>
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-base font-semibold text-secondary">Address ${addressIndex + 1}</h4>
+                    <button type="button" class="remove-address-btn btn-danger-sm">Remove</button>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="grid grid-auto-200 gap-4">
                     <div class="form-group">
                         <label class="form-label">Label (e.g., Home, Work)</label>
                         <input type="text" name="addresses[${addressIndex}][label]" class="form-input" placeholder="Home">
@@ -415,7 +415,7 @@
                     mediaGrid.innerHTML = '';
                     
                     if (data.length === 0) {
-                        mediaGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #6b7280; grid-column: 1 / -1;">No images found.</div>';
+                        mediaGrid.innerHTML = '<div class="text-center p-8 text-tertiary grid-col-full">No images found.</div>';
                         return;
                     }
 
@@ -427,7 +427,7 @@
                         div.style.overflow = 'hidden';
                         div.style.transition = 'all 0.2s';
                         
-                        div.innerHTML = `<img src="${media.url}" alt="${media.name}" style="width: 100%; height: 150px; object-fit: cover; display: block;">`;
+                        div.innerHTML = `<img src="${media.url}" alt="${media.name}" class="w-full h-150 object-cover d-block">`;
                         
                         div.addEventListener('click', function() {
                             selectedMediaPath.value = media.path;

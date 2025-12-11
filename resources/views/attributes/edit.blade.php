@@ -4,15 +4,15 @@
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 1.5rem; font-size: 1.875rem; font-weight: 700;">{{ __('cms.edit_attribute') }}</h2>
+    <h2 class="section-heading-lg mb-6">{{ __('cms.edit_attribute') }}</h2>
 
     <form method="POST" action="{{ route('attributes.update', $attribute) }}" id="attributeForm">
         @csrf
         @method('PUT')
 
         <div class="form-group">
-            <label class="form-label">{{ __('cms.name') }} <span style="color: #ef4444;">*</span></label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <label class="form-label">{{ __('cms.name') }} <span class="text-red-500">*</span></label>
+            <div class="grid grid-2 gap-4">
                 <div>
                     <input type="text" id="name_en" name="name_en" value="{{ old('name_en', $attribute->name_en ?: $attribute->name) }}" class="form-input" placeholder="{{ __('cms.attribute_name_english') }}">
                     @error('name_en')
@@ -34,7 +34,7 @@
 
         <div class="form-group">
             <label class="form-label">{{ __('cms.description') }}</label>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="grid grid-2 gap-4">
                 <div>
                     <textarea id="description_en" name="description_en" rows="3" class="form-input" placeholder="{{ __('cms.attribute_description_english') }}">{{ old('description_en', $attribute->description_en ?: $attribute->description) }}</textarea>
                     @error('description_en')
@@ -56,19 +56,19 @@
 
         <div class="form-group">
             <label class="form-label">{{ __('cms.values') }}</label>
-            <div id="valuesContainer" style="margin-bottom: 0.5rem;">
+            <div id="valuesContainer" class="mb-2">
                 @foreach($attribute->values->sortBy('sort_order') as $index => $value)
                     <div class="value-item" data-value-id="{{ $value->id }}">
-                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-                            <span class="drag-handle" style="cursor: grab; color: #6b7280; display: flex; align-items: center; padding: 0.25rem;">
+                        <div class="flex gap-2 items-center mb-2">
+                            <span class="drag-handle cursor-grab text-tertiary flex items-center p-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
                                 </svg>
                             </span>
-                            <span class="value-number-label" style="font-size: 0.875rem; color: #6b7280; font-weight: 500;">{{ __('cms.value') }} {{ $index + 1 }}</span>
+                            <span class="value-number-label text-sm text-tertiary font-medium">{{ __('cms.value') }} {{ $index + 1 }}</span>
                         </div>
                         <input type="hidden" name="value_ids[]" value="{{ $value->id }}">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="grid grid-2 gap-4 mb-2">
                             <div>
                                 <input type="text" name="values_en[]" value="{{ old("values_en.{$index}", $value->value_en ?: $value->value) }}" class="form-input value-en-input" placeholder="{{ __('cms.enter_value_english') }}">
                             </div>
@@ -77,21 +77,21 @@
                             </div>
                         </div>
                         <input type="hidden" name="values[]" class="value-hidden-input" value="{{ old("values.{$index}", $value->value) }}">
-                        <button type="button" class="remove-value-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin-top: 0.5rem; {{ $attribute->values->count() == 1 ? 'display: none;' : '' }}">{{ __('cms.remove') }}</button>
+                        <button type="button" class="remove-value-btn btn btn-danger-sm {{ $attribute->values->count() == 1 ? 'd-none' : '' }}">{{ __('cms.remove') }}</button>
                     </div>
                 @endforeach
                 @if($attribute->values->isEmpty())
                     <div class="value-item">
-                        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-                            <span class="drag-handle" style="cursor: grab; color: #6b7280; display: flex; align-items: center; padding: 0.25rem;">
+                        <div class="flex gap-2 items-center mb-2">
+                            <span class="drag-handle cursor-grab text-tertiary flex items-center p-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
                                 </svg>
                             </span>
-                            <span class="value-number-label" style="font-size: 0.875rem; color: #6b7280; font-weight: 500;">{{ __('cms.value') }} 1</span>
+                            <span class="value-number-label text-sm text-tertiary font-medium">{{ __('cms.value') }} 1</span>
                         </div>
                         <input type="hidden" name="value_ids[]" value="">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="grid grid-2 gap-4 mb-2">
                             <div>
                                 <input type="text" name="values_en[]" class="form-input value-en-input" placeholder="{{ __('cms.enter_value_english') }}">
                             </div>
@@ -100,19 +100,19 @@
                             </div>
                         </div>
                         <input type="hidden" name="values[]" class="value-hidden-input">
-                        <button type="button" class="remove-value-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin-top: 0.5rem; display: none;">{{ __('cms.remove') }}</button>
+                        <button type="button" class="remove-value-btn btn btn-danger-sm d-none">{{ __('cms.remove') }}</button>
                     </div>
                 @endif
             </div>
-            <button type="button" id="addValueBtn" class="btn" style="margin-top: 0.5rem; background-color: #6b7280; color: white;">{{ __('cms.add_value') }}</button>
-            <small style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ __('cms.add_attribute_values_description') }}</small>
+            <button type="button" id="addValueBtn" class="btn bg-gray-600 text-white mt-2">{{ __('cms.add_value') }}</button>
+            <small class="text-tertiary text-sm mt-1 d-block">{{ __('cms.add_attribute_values_description') }}</small>
             @error('values')
                 <span class="form-error">{{ $message }}</span>
             @enderror
         </div>
 
         <div class="form-group">
-            <label for="status" class="form-label">{{ __('cms.status') }} <span style="color: #ef4444;">*</span></label>
+            <label for="status" class="form-label">{{ __('cms.status') }} <span class="text-red-500">*</span></label>
             <select id="status" name="status" required class="form-input">
                 <option value="active" {{ old('status', $attribute->status) == 'active' ? 'selected' : '' }}>{{ __('cms.active') }}</option>
                 <option value="inactive" {{ old('status', $attribute->status) == 'inactive' ? 'selected' : '' }}>{{ __('cms.inactive') }}</option>
@@ -122,9 +122,9 @@
             @enderror
         </div>
 
-        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <div class="flex gap-4 mt-6">
             <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
-            <a href="{{ route('attributes.index') }}" class="btn" style="background-color: #6b7280; color: white;">{{ __('cms.cancel') }}</a>
+            <a href="{{ route('attributes.index') }}" class="btn bg-gray-600 text-white">{{ __('cms.cancel') }}</a>
         </div>
     </form>
 </div>
@@ -164,16 +164,16 @@ document.addEventListener('DOMContentLoaded', function() {
         valueItem.className = 'value-item';
         // valueItem styles are now handled by CSS class
         valueItem.innerHTML = `
-            <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-                <span class="drag-handle" style="cursor: grab; color: #6b7280; display: flex; align-items: center; padding: 0.25rem;">
+            <div class="flex gap-2 items-center mb-2">
+                <span class="drag-handle cursor-grab text-tertiary flex items-center p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16" />
                     </svg>
                 </span>
-                <span class="value-number-label" style="font-size: 0.875rem; color: #6b7280; font-weight: 500;">{{ __('cms.value') }} ${valueIndex}</span>
+                <span class="value-number-label text-sm text-tertiary font-medium">{{ __('cms.value') }} ${valueIndex}</span>
             </div>
             <input type="hidden" name="value_ids[]" value="">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="grid grid-2 gap-4 mb-2">
                 <div>
                     <input type="text" name="values_en[]" class="form-input value-en-input" placeholder="{{ __('cms.enter_value_english') }}">
                 </div>
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             <input type="hidden" name="values[]" class="value-hidden-input">
-            <button type="button" class="remove-value-btn" style="background-color: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin-top: 0.5rem; display: none;">{{ __('cms.remove') }}</button>
+            <button type="button" class="remove-value-btn btn btn-danger-sm d-none">{{ __('cms.remove') }}</button>
         `;
         valuesContainer.appendChild(valueItem);
 

@@ -69,21 +69,21 @@
     <!-- Main Metrics - Key KPIs -->
     <div class="dashboard-grid-metrics">
         <!-- Total Orders -->
-        <div class="card metric-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="card metric-card metric-card-purple">
             <div class="metric-label">Total Orders</div>
             <div class="metric-value">{{ number_format($totalOrders) }}</div>
             <div class="metric-subtext">Period: {{ $dateFrom }} to {{ $dateTo }}</div>
         </div>
 
         <!-- Total Value -->
-        <div class="card metric-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="card metric-card metric-card-blue">
             <div class="metric-label">Total Value</div>
             <div class="metric-value">${{ number_format($totalValue, 2) }}</div>
             <div class="metric-subtext">Commission: ${{ number_format($totalCommission, 2) }}</div>
         </div>
 
         <!-- Success Rate -->
-        <div class="card metric-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+        <div class="card metric-card metric-card-green">
             <div class="metric-label">Success Rate</div>
             <div class="metric-value">
                 @if($totalOrders > 0)
@@ -134,7 +134,7 @@
                 <div class="dashboard-grid-inner">
                     <div>
                         <div class="stat-label">Assigned Orders</div>
-                        <div class="stat-value-lg" style="color: #2563eb;">{{ number_format($assignedOrders) }}</div>
+                        <div class="stat-value-lg text-blue-600">{{ number_format($assignedOrders) }}</div>
                     </div>
                     <div>
                         <div class="stat-label">Unassigned Orders</div>
@@ -178,7 +178,7 @@
             <h3 class="card-section-title">Live Map</h3>
         </div>
         <div class="card-section-body">
-            <div id="map" class="w-full bg-gray-100 rounded-md flex items-center justify-center text-tertiary" style="height: 500px;">
+            <div id="map" class="w-full bg-gray-100 rounded-md flex items-center justify-center text-tertiary h-500">
                 <div class="text-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="48" height="48" class="m-auto mb-4 text-quaternary">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -192,19 +192,19 @@
             <!-- Map Legend -->
             <div class="flex gap-8 mt-6 pt-6 border-t border-gray-200 flex-wrap">
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 rounded-full" style="background-color: #3b82f6;"></div>
+                    <div class="w-4 h-4 rounded-full bg-blue-500"></div>
                     <span class="text-sm text-secondary">Driver Locations ({{ $mapDrivers->count() }})</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 rounded-full" style="background-color: #10b981;"></div>
+                    <div class="w-4 h-4 rounded-full bg-green-500"></div>
                     <span class="text-sm text-secondary">Assigned Orders ({{ $mapOrders->where('status', 'assigned')->count() }})</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 rounded-full" style="background-color: #f59e0b;"></div>
+                    <div class="w-4 h-4 rounded-full bg-yellow-500"></div>
                     <span class="text-sm text-secondary">Unassigned Orders ({{ $mapOrders->where('status', 'pending')->count() }})</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 rounded-full" style="background-color: #ef4444;"></div>
+                    <div class="w-4 h-4 rounded-full bg-red-500"></div>
                     <span class="text-sm text-secondary">Failed/Delays ({{ $mapOrders->where('status', 'failed')->count() }})</span>
                 </div>
             </div>

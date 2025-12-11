@@ -2,14 +2,14 @@
 
 @section('other-content')
 <div class="card">
-    <div style="padding: 1rem; border-bottom: 1px solid #e5e7eb;">
-        <h3 style="font-size: 1.25rem; font-weight: 600;">Commission Calculator</h3>
-        <p style="color: #6b7280; margin-top: 0.5rem;">Calculate commission for orders</p>
+    <div class="card-section-header">
+        <h3 class="card-section-title">Commission Calculator</h3>
+        <p class="text-tertiary mt-2">Calculate commission for orders</p>
     </div>
 
-    <div style="padding: 1.5rem;">
-        <form method="GET" action="{{ route('settlements.commission-calculator') }}" style="max-width: 600px;">
-            <div style="margin-bottom: 1rem;">
+    <div class="card-section-body">
+        <form method="GET" action="{{ route('settlements.commission-calculator') }}" class="max-w-600">
+            <div class="form-group">
                 <label for="order_id" class="form-label">Select Order (Optional)</label>
                 <select id="order_id" name="order_id" class="form-input">
                     <option value="">-- Select an order --</option>
@@ -21,7 +21,7 @@
                 </select>
             </div>
 
-            <div style="margin-bottom: 1rem;">
+            <div class="form-group">
                 <label for="order_total" class="form-label">Order Total (if not selecting order)</label>
                 <input 
                     type="number" 
@@ -35,7 +35,7 @@
                 >
             </div>
 
-            <div style="margin-bottom: 1rem;">
+            <div class="form-group">
                 <label for="commission_percentage" class="form-label">Commission Percentage (%)</label>
                 <input 
                     type="number" 
@@ -53,26 +53,26 @@
         </form>
 
         @if($result)
-        <div class="card" style="margin-top: 1.5rem; padding: 1.5rem; background-color: #eff6ff; border-left: 4px solid #3b82f6;">
-            <h4 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Calculation Result</h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div class="card mt-6 p-6" style="background-color: #eff6ff; border-left: 4px solid #3b82f6;">
+            <h4 class="text-xl font-semibold mb-4">Calculation Result</h4>
+            <div class="grid grid-auto-200 gap-4">
                 @if(isset($result['order_id']))
                 <div>
-                    <div style="font-size: 0.875rem; color: #6b7280;">Order ID</div>
-                    <div style="font-size: 1.25rem; font-weight: 600;">#{{ $result['order_id'] }}</div>
+                    <div class="stat-label">Order ID</div>
+                    <div class="stat-value-lg text-primary">#{{ $result['order_id'] }}</div>
                 </div>
                 @endif
                 <div>
-                    <div style="font-size: 0.875rem; color: #6b7280;">Order Total</div>
-                    <div style="font-size: 1.25rem; font-weight: 600;">${{ number_format($result['order_total'], 2) }}</div>
+                    <div class="stat-label">Order Total</div>
+                    <div class="stat-value-lg text-primary">${{ number_format($result['order_total'], 2) }}</div>
                 </div>
                 <div>
-                    <div style="font-size: 0.875rem; color: #6b7280;">Commission Percentage</div>
-                    <div style="font-size: 1.25rem; font-weight: 600;">{{ number_format($result['commission_percentage'], 2) }}%</div>
+                    <div class="stat-label">Commission Percentage</div>
+                    <div class="stat-value-lg text-primary">{{ number_format($result['commission_percentage'], 2) }}%</div>
                 </div>
                 <div>
-                    <div style="font-size: 0.875rem; color: #6b7280;">Commission</div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #059669;">${{ number_format($result['commission'], 2) }}</div>
+                    <div class="stat-label">Commission</div>
+                    <div class="stat-value-lg stat-value-green">${{ number_format($result['commission'], 2) }}</div>
                 </div>
             </div>
         </div>

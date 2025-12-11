@@ -16,6 +16,9 @@
             {{ __('cms.multi_currency') }}
         </button>
         @endif
+        <button class="settings-tab" data-tab="zones" onclick="switchTab('zones')">
+            {{ __('cms.zones_areas_management') }}
+        </button>
     </div>
 
     <!-- General Settings Tab -->
@@ -109,15 +112,30 @@
                         <label class="form-label">{{ __('cms.multi_currency') }}</label>
                         <div class="flex-center gap-3 mt-2">
                             <label class="radio-label">
-                                <input type="radio" name="multi_currency" value="1" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '1' ? 'checked' : '' }} required>
+                                <input type="radio" name="multi_currency" value="1" id="multi_currency_yes" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '1' ? 'checked' : '' }} required onchange="toggleDefaultCurrencySelector()">
                                 <span>{{ __('cms.yes') }}</span>
                             </label>
                             <label class="radio-label">
-                                <input type="radio" name="multi_currency" value="0" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '0' ? 'checked' : '' }} required>
+                                <input type="radio" name="multi_currency" value="0" id="multi_currency_no" {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '0' ? 'checked' : '' }} required onchange="toggleDefaultCurrencySelector()">
                                 <span>{{ __('cms.no') }}</span>
                             </label>
                         </div>
                         @error('multi_currency')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group" id="default_currency_selector" style="display: {{ old('multi_currency', $settings['multi_currency'] ?? '0') == '0' ? 'block' : 'none' }};">
+                        <label for="default_currency_id" class="form-label">{{ __('cms.default_currency') }} <span class="required-asterisk">*</span></label>
+                        <select id="default_currency_id" name="default_currency_id" class="form-input">
+                            <option value="">{{ __('cms.select_default_currency') }}</option>
+                            @foreach($currencies as $currency)
+                                <option value="{{ $currency->id }}" {{ old('default_currency_id', $defaultCurrencyId ?? ($defaultCurrency ? $defaultCurrency->id : null)) == $currency->id ? 'selected' : '' }}>
+                                    {{ $currency->code }} - {{ $currency->name }} ({{ $currency->symbol }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('default_currency_id')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
@@ -144,51 +162,6 @@
                 </div>
             </div>
 
-            <!-- Full Width: Delivery Countries -->
-            <div class="form-group mb-8">
-                <label for="delivery_countries" class="form-label">{{ __('cms.delivery_shipping_to_countries') }}</label>
-                <div class="custom-multiselect relative" style="max-width: 500px;">
-                    <div class="multiselect-trigger multiselect-trigger-full" id="countriesTrigger">
-                        <div class="multiselect-selected">
-                            <span class="placeholder-text text-quaternary">{{ __('cms.select_countries') }}</span>
-                            <div class="selected-countries-tags d-none flex-wrap gap-2">
-                                <!-- Selected country tags will be added here -->
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button type="button" class="clear-all-countries-btn d-none bg-none border-0 text-red cursor-pointer p-1 text-sm" title="{{ __('cms.clear_all') }}">{{ __('cms.clear_all') }}</button>
-                            <svg class="multiselect-arrow text-tertiary" style="transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="multiselect-dropdown multiselect-dropdown-full" id="countriesDropdown">
-                        @php
-                            $currentLocale = app()->getLocale();
-                            $selectedCountries = old('delivery_countries', $settings['delivery_countries'] ?? ['LB']);
-                            if (is_string($selectedCountries)) {
-                                // Handle legacy single country or JSON string
-                                $decoded = json_decode($selectedCountries, true);
-                                $selectedCountries = is_array($decoded) ? $decoded : [$selectedCountries];
-                            }
-                        @endphp
-                        @foreach($countries as $country)
-                            <label class="multiselect-option multiselect-option-item">
-                                <input type="checkbox" name="delivery_countries[]" value="{{ $country->country_code }}" class="country-checkbox" data-country-name="{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }}" {{ in_array($country->country_code, $selectedCountries) ? 'checked' : '' }} style="margin-right: 0.75rem; width: 1rem; height: 1rem; cursor: pointer;">
-                                <span class="text-secondary user-select-none">{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                </div>
-                <small class="text-tertiary text-sm mt-1 d-block">{{ __('cms.select_one_or_more_countries') }}</small>
-                @error('delivery_countries')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-                @error('delivery_countries.*')
-                    <span class="form-error">{{ $message }}</span>
-                @enderror
-            </div>
-
             <!-- Action Buttons -->
             <div class="flex gap-4 mt-8 pt-6 border-top-2">
                 <button type="submit" class="btn btn-primary">{{ __('cms.save') }}</button>
@@ -208,7 +181,7 @@
     <div class="mb-8">
         <h3 class="text-lg font-semibold mb-4">{{ __('cms.currencies') }}</h3>
         <div class="overflow-x-auto">
-            <table class="w-full" style="border-collapse: collapse;">
+            <table class="w-full table-border-collapse">
                 <thead>
                     <tr class="table-header-row">
                         <th class="table-cell font-semibold">{{ __('cms.code') }}</th>
@@ -270,7 +243,7 @@
                 @csrf
                 @method('PUT')
                 <div class="overflow-x-auto">
-                    <table class="w-full" style="border-collapse: collapse; min-width: 600px;">
+                    <table class="w-full table-border-collapse table-min-width-600">
                         <thead>
                             <tr class="table-header-row">
                                 <th class="table-cell-header">{{ __('cms.from_to') }}</th>
@@ -319,8 +292,7 @@
                                                     value="{{ $rateValue }}"
                                                     step="{{ $step }}"
                                                     min="0"
-                                                    class="exchange-rate-input rounded border border-gray-300 text-center"
-                                                    style="width: 100px; padding: 0.375rem;"
+                                                    class="exchange-rate-input rounded border border-gray-300 text-center exchange-rate-input-width"
                                                     placeholder="{{ $placeholder }}"
                                                     data-currency-code="{{ $toCurrency->code }}"
                                                     class="exchange-rate-input"
@@ -340,11 +312,70 @@
         </div>
     @endif
     </div>
+
+    <!-- Zones / Areas Management Tab -->
+    <div id="zones-tab" class="settings-tab-content d-none">
+        <div class="flex-between mb-6">
+            <button type="button" class="btn btn-primary" onclick="openAddShippingZoneModal()">{{ __('cms.add_shipping_zone') }}</button>
+        </div>
+
+        <!-- Shipping Zones List -->
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4">{{ __('cms.shipping_zones') }}</h3>
+            @if($defaultCurrency)
+                <p class="text-tertiary text-sm mb-4">{{ __('cms.shipping_charges_in_currency', ['currency' => $defaultCurrency->code . ' (' . $defaultCurrency->symbol . ')']) }}</p>
+            @endif
+            <div class="overflow-x-auto">
+                <table class="w-full table-border-collapse">
+                    <thead>
+                        <tr class="table-header-row">
+                            <th class="table-cell font-semibold">{{ __('cms.country') }}</th>
+                            <th class="table-cell font-semibold text-right">{{ __('cms.shipping_charge') }}</th>
+                            <th class="table-cell font-semibold text-right">{{ __('cms.actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($shippingZones as $zone)
+                            <tr class="border-bottom">
+                                <td class="table-cell">
+                                    @php
+                                        $currentLocale = app()->getLocale();
+                                        $countryName = $currentLocale === 'ar' ? ($zone->country->country_name_ar ?? $zone->country_code) : ($zone->country->country_name_en ?? $zone->country_code);
+                                    @endphp
+                                    <strong>{{ $countryName }}</strong>
+                                    <span class="text-tertiary text-sm ml-2">({{ $zone->country_code }})</span>
+                                </td>
+                                <td class="table-cell text-right">
+                                    @if($defaultCurrency)
+                                        <strong>{{ number_format($zone->shipping_charge, 2) }} {{ $defaultCurrency->symbol }}</strong>
+                                    @else
+                                        <strong>{{ number_format($zone->shipping_charge, 2) }}</strong>
+                                    @endif
+                                </td>
+                                <td class="table-cell text-right">
+                                    <button type="button" class="btn btn-primary btn-small mr-2" onclick="openEditShippingZoneModal({{ $zone->id }}, '{{ addslashes($zone->country_code) }}', {{ $zone->shipping_charge }})">{{ __('cms.edit') }}</button>
+                                    <form method="POST" action="{{ route('settings.shipping-zones.delete', $zone) }}" class="inline-form" onsubmit="return confirm('{{ __('cms.confirm_delete_shipping_zone') }}');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-small bg-red-500 text-white">{{ __('cms.delete') }}</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="p-6 text-center text-gray">{{ __('cms.no_shipping_zones_found') }}</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Add Currency Modal -->
 <div id="addCurrencyModal" class="modal-overlay modal-overlay-hidden">
-    <div class="modal-content" style="max-width: 500px;">
+    <div class="modal-content modal-content-max-width">
         <div class="modal-header">
             <h3 class="text-xl font-bold text-primary">{{ __('cms.add_currency') }}</h3>
             <button type="button" class="modal-close" onclick="closeAddCurrencyModal()">
@@ -398,9 +429,113 @@
     </div>
 </div>
 
+<!-- Add Shipping Zone Modal -->
+<div id="addShippingZoneModal" class="modal-overlay modal-overlay-hidden">
+    <div class="modal-content modal-content-max-width">
+        <div class="modal-header">
+            <h3 class="text-xl font-bold text-primary">{{ __('cms.add_shipping_zone') }}</h3>
+            <button type="button" class="modal-close" onclick="closeAddShippingZoneModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <form method="POST" action="{{ route('settings.shipping-zones.store') }}" id="addShippingZoneForm">
+            @csrf
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="shipping_zone_country" class="form-label">{{ __('cms.country') }} <span class="required-asterisk">*</span></label>
+                    <select id="shipping_zone_country" name="country_code" required class="form-input">
+                        <option value="">{{ __('cms.select_country') }}</option>
+                        @php
+                            $currentLocale = app()->getLocale();
+                            $usedCountryCodes = $shippingZones->pluck('country_code')->toArray();
+                        @endphp
+                        @foreach($countries as $country)
+                            @if(!in_array($country->country_code, $usedCountryCodes))
+                                <option value="{{ $country->country_code }}">{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }} ({{ $country->country_code }})</option>
+                            @endif
+                        @endforeach
+                    </select>
+                    @error('country_code')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label for="shipping_zone_charge" class="form-label">{{ __('cms.shipping_charge') }} <span class="required-asterisk">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="shipping_zone_charge" name="shipping_charge" required step="0.01" min="0" class="form-input" placeholder="0.00">
+                        @if($defaultCurrency)
+                            <span class="text-secondary">{{ $defaultCurrency->code }} ({{ $defaultCurrency->symbol }})</span>
+                        @endif
+                    </div>
+                    @error('shipping_charge')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-600 text-white" onclick="closeAddShippingZoneModal()">{{ __('cms.cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('cms.add_shipping_zone') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Shipping Zone Modal -->
+<div id="editShippingZoneModal" class="modal-overlay modal-overlay-hidden">
+    <div class="modal-content modal-content-max-width">
+        <div class="modal-header">
+            <h3 class="text-xl font-bold text-primary">{{ __('cms.edit_shipping_zone') }}</h3>
+            <button type="button" class="modal-close" onclick="closeEditShippingZoneModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <form method="POST" id="editShippingZoneForm" action="">
+            @csrf
+            @method('PUT')
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="edit_shipping_zone_country" class="form-label">{{ __('cms.country') }} <span class="required-asterisk">*</span></label>
+                    <select id="edit_shipping_zone_country" name="country_code" required class="form-input">
+                        <option value="">{{ __('cms.select_country') }}</option>
+                        @php
+                            $currentLocale = app()->getLocale();
+                        @endphp
+                        @foreach($countries as $country)
+                            <option value="{{ $country->country_code }}">{{ $currentLocale === 'ar' ? $country->country_name_ar : $country->country_name_en }} ({{ $country->country_code }})</option>
+                        @endforeach
+                    </select>
+                    @error('country_code')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <label for="edit_shipping_zone_charge" class="form-label">{{ __('cms.shipping_charge') }} <span class="required-asterisk">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="edit_shipping_zone_charge" name="shipping_charge" required step="0.01" min="0" class="form-input" placeholder="0.00">
+                        @if($defaultCurrency)
+                            <span class="text-secondary">{{ $defaultCurrency->code }} ({{ $defaultCurrency->symbol }})</span>
+                        @endif
+                    </div>
+                    @error('shipping_charge')
+                        <span class="form-error">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gray-600 text-white" onclick="closeEditShippingZoneModal()">{{ __('cms.cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('cms.update_shipping_zone') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Edit Currency Modal -->
 <div id="editCurrencyModal" class="modal-overlay modal-overlay-hidden">
-    <div class="modal-content" style="max-width: 500px;">
+    <div class="modal-content modal-content-max-width">
         <div class="modal-header">
             <h3 class="text-xl font-bold text-primary">{{ __('cms.edit_currency') }}</h3>
             <button type="button" class="modal-close" onclick="closeEditCurrencyModal()">
@@ -488,12 +623,12 @@
         font-weight: 600;
     }
 
-    .settings-tab-content {
-        display: none;
+    .settings-tab-content.d-none {
+        display: none !important;
     }
 
     .settings-tab-content.active {
-        display: block;
+        display: block !important;
     }
 
     .multiselect-trigger:hover {
@@ -519,7 +654,7 @@
         // Hide all tab contents
         document.querySelectorAll('.settings-tab-content').forEach(content => {
             content.classList.remove('active');
-            content.style.display = 'none';
+            content.classList.add('d-none');
         });
 
         // Remove active class from all tabs
@@ -530,8 +665,8 @@
         // Show selected tab content
         const selectedContent = document.getElementById(tabName + '-tab');
         if (selectedContent) {
+            selectedContent.classList.remove('d-none');
             selectedContent.classList.add('active');
-            selectedContent.style.display = 'block';
         }
 
         // Add active class to selected tab
@@ -546,12 +681,36 @@
         }
     }
 
+    // Toggle default currency selector based on multi-currency setting
+    function toggleDefaultCurrencySelector() {
+        const multiCurrencyNo = document.getElementById('multi_currency_no');
+        const defaultCurrencySelector = document.getElementById('default_currency_selector');
+        const defaultCurrencySelect = document.getElementById('default_currency_id');
+        
+        if (multiCurrencyNo && defaultCurrencySelector) {
+            if (multiCurrencyNo.checked) {
+                defaultCurrencySelector.style.display = 'block';
+                if (defaultCurrencySelect) {
+                    defaultCurrencySelect.setAttribute('required', 'required');
+                }
+            } else {
+                defaultCurrencySelector.style.display = 'none';
+                if (defaultCurrencySelect) {
+                    defaultCurrencySelect.removeAttribute('required');
+                }
+            }
+        }
+    }
+
     // Check URL hash on page load
     document.addEventListener('DOMContentLoaded', function() {
         const hash = window.location.hash.substring(1);
-        if (hash === 'currency' || hash === 'general') {
+        if (hash === 'currency' || hash === 'general' || hash === 'zones') {
             switchTab(hash);
         }
+        
+        // Initialize default currency selector visibility
+        toggleDefaultCurrencySelector();
     });
 
     function openAddCurrencyModal() {
@@ -577,15 +736,43 @@
         document.getElementById('editCurrencyModal').style.display = 'none';
     }
 
+    function openAddShippingZoneModal() {
+        document.getElementById('addShippingZoneModal').style.display = 'flex';
+        document.getElementById('addShippingZoneForm').reset();
+    }
+
+    function closeAddShippingZoneModal() {
+        document.getElementById('addShippingZoneModal').style.display = 'none';
+    }
+
+    function openEditShippingZoneModal(id, countryCode, shippingCharge) {
+        document.getElementById('editShippingZoneModal').style.display = 'flex';
+        document.getElementById('editShippingZoneForm').action = '{{ route("settings.shipping-zones.update", ":id") }}'.replace(':id', id);
+        document.getElementById('edit_shipping_zone_country').value = countryCode;
+        document.getElementById('edit_shipping_zone_charge').value = shippingCharge;
+    }
+
+    function closeEditShippingZoneModal() {
+        document.getElementById('editShippingZoneModal').style.display = 'none';
+    }
+
     // Close modals when clicking outside
     window.onclick = function(event) {
-        const addModal = document.getElementById('addCurrencyModal');
-        const editModal = document.getElementById('editCurrencyModal');
-        if (event.target == addModal) {
+        const addCurrencyModal = document.getElementById('addCurrencyModal');
+        const editCurrencyModal = document.getElementById('editCurrencyModal');
+        const addShippingZoneModal = document.getElementById('addShippingZoneModal');
+        const editShippingZoneModal = document.getElementById('editShippingZoneModal');
+        if (event.target == addCurrencyModal) {
             closeAddCurrencyModal();
         }
-        if (event.target == editModal) {
+        if (event.target == editCurrencyModal) {
             closeEditCurrencyModal();
+        }
+        if (event.target == addShippingZoneModal) {
+            closeAddShippingZoneModal();
+        }
+        if (event.target == editShippingZoneModal) {
+            closeEditShippingZoneModal();
         }
     }
 
@@ -619,124 +806,6 @@
                 }
             });
         });
-
-        // Countries multi-select with tags
-        const countriesTrigger = document.getElementById('countriesTrigger');
-        const countriesDropdown = document.getElementById('countriesDropdown');
-        const countryCheckboxes = document.querySelectorAll('.country-checkbox');
-        const placeholderText = countriesTrigger ? countriesTrigger.querySelector('.placeholder-text') : null;
-        const selectedTagsContainer = countriesTrigger ? countriesTrigger.querySelector('.selected-countries-tags') : null;
-        const clearAllBtn = countriesTrigger ? countriesTrigger.querySelector('.clear-all-countries-btn') : null;
-        const multiselectArrow = countriesTrigger ? countriesTrigger.querySelector('.multiselect-arrow') : null;
-
-        if (countriesTrigger && countriesDropdown) {
-            // Toggle dropdown
-            countriesTrigger.addEventListener('click', function(e) {
-                // Don't toggle if clicking on tags or clear button
-                if (e.target.closest('.country-tag') || e.target.closest('.clear-all-countries-btn')) {
-                    return;
-                }
-                e.stopPropagation();
-                const isOpen = countriesDropdown.style.display === 'block';
-                countriesDropdown.style.display = isOpen ? 'none' : 'block';
-                if (multiselectArrow) {
-                    multiselectArrow.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
-                }
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!countriesTrigger.contains(e.target) && !countriesDropdown.contains(e.target)) {
-                    countriesDropdown.style.display = 'none';
-                    if (multiselectArrow) {
-                        multiselectArrow.style.transform = 'rotate(0deg)';
-                    }
-                }
-            });
-
-            // Update selected countries display
-            function updateSelectedCountries() {
-                const checked = Array.from(countryCheckboxes).filter(cb => cb.checked);
-                
-                // Clear existing tags
-                if (selectedTagsContainer) {
-                    selectedTagsContainer.innerHTML = '';
-                }
-                
-                if (checked.length > 0) {
-                    if (placeholderText) placeholderText.style.display = 'none';
-                    if (selectedTagsContainer) selectedTagsContainer.style.display = 'flex';
-                    if (clearAllBtn) clearAllBtn.style.display = 'block';
-                    
-                    // Create tags for each selected country
-                    checked.forEach(checkbox => {
-                        const countryCode = checkbox.value;
-                        const countryName = checkbox.getAttribute('data-country-name');
-                        
-                        const tag = document.createElement('div');
-                        tag.className = 'country-tag';
-                        tag.style.cssText = 'display: inline-flex; align-items: center; gap: 0.5rem; background-color: var(--primary-blue); color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;';
-                        tag.innerHTML = `
-                            <span>${countryName}</span>
-                            <button type="button" class="remove-country-tag" data-country-code="${countryCode}" style="background: none; border: none; color: white; cursor: pointer; padding: 0; display: flex; align-items: center; font-size: 1rem; line-height: 1;" title="Remove">×</button>
-                        `;
-                        
-                        // Handle remove tag button
-                        tag.querySelector('.remove-country-tag').addEventListener('click', function(e) {
-                            e.stopPropagation();
-                            const code = this.getAttribute('data-country-code');
-                            const checkbox = document.querySelector(`.country-checkbox[value="${code}"]`);
-                            if (checkbox) {
-                                checkbox.checked = false;
-                                updateSelectedCountries();
-                            }
-                        });
-                        
-                        if (selectedTagsContainer) {
-                            selectedTagsContainer.appendChild(tag);
-                        }
-                    });
-                } else {
-                    if (placeholderText) placeholderText.style.display = 'inline';
-                    if (selectedTagsContainer) selectedTagsContainer.style.display = 'none';
-                    if (clearAllBtn) clearAllBtn.style.display = 'none';
-                }
-            }
-
-            // Clear all countries
-            if (clearAllBtn) {
-                clearAllBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    countryCheckboxes.forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-                    updateSelectedCountries();
-                });
-            }
-
-            // Handle checkbox changes
-            countryCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateSelectedCountries);
-            });
-
-            // Prevent dropdown from closing when clicking inside
-            countriesDropdown.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-
-            // Initialize selected countries display
-            updateSelectedCountries();
-
-            // Add hover effect
-            document.querySelectorAll('#countriesDropdown .multiselect-option').forEach(option => {
-                option.addEventListener('mouseenter', function() {
-                    this.style.backgroundColor = '#f3f4f6';
-                });
-                option.addEventListener('mouseleave', function() {
-                    this.style.backgroundColor = 'white';
-                });
-            });
-        }
     });
 </script>
 @endpush

@@ -4,15 +4,15 @@
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.875rem; font-weight: 700;">Media Library</h2>
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="section-heading-lg">Media Library</h2>
     </div>
 
     <!-- Filters -->
-    <div class="card" style="margin-bottom: 1.5rem; padding: 1rem;">
+    <div class="card mb-6 p-4">
         <form method="GET" action="{{ route('media.index') }}">
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
-                <div style="flex: 1; min-width: 200px;">
+            <div class="flex gap-4 flex-wrap items-end">
+                <div class="flex-1-min-200">
                     <input 
                         type="text" 
                         id="search_name" 
@@ -22,7 +22,7 @@
                         placeholder="Search by name..."
                     >
                 </div>
-                <div style="flex: 1; min-width: 200px;">
+                <div class="flex-1-min-200">
                     <label for="date_from" class="form-label">Date From</label>
                     <input 
                         type="date" 
@@ -32,7 +32,7 @@
                         class="form-input"
                     >
                 </div>
-                <div style="flex: 1; min-width: 200px;">
+                <div class="flex-1-min-200">
                     <label for="date_to" class="form-label">Date To</label>
                     <input 
                         type="date" 
@@ -44,64 +44,64 @@
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ route('media.index') }}" class="btn" style="background-color: #6b7280; color: white; margin-left: 0.5rem;">Reset</a>
+                    <a href="{{ route('media.index') }}" class="btn bg-gray-600 text-white ml-2">Reset</a>
                 </div>
             </div>
         </form>
     </div>
 
     @if($images->count() > 0)
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+        <div class="grid-auto-200 gap-6">
             @foreach($images as $image)
-            <div class="media-item" data-image-url="{{ $image['url'] }}" data-image-name="{{ $image['name'] }}" data-media-type="{{ $image['type'] ?? 'image' }}" style="position: relative; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;">
-                <div style="position: relative; width: 100%; padding-top: 100%; background-color: #f3f4f6;">
+            <div class="media-item relative bg-white border border-gray-200 rounded-md overflow-hidden transition-all" data-image-url="{{ $image['url'] }}" data-image-name="{{ $image['name'] }}" data-media-type="{{ $image['type'] ?? 'image' }}">
+                <div class="relative w-full aspect-square bg-gray-100">
                     @if(isset($image['type']) && $image['type'] === 'video')
-                        <video src="{{ $image['url'] }}" class="media-video" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer;" muted></video>
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 5;">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="48" height="48" style="opacity: 0.8;">
+                        <video src="{{ $image['url'] }}" class="media-video absolute top-0 left-0 w-full h-full object-cover cursor-pointer" muted></video>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="48" height="48" class="opacity-80">
                                 <path d="M8 5v14l11-7z"/>
                             </svg>
                         </div>
                     @else
-                        <img src="{{ $image['url'] }}" alt="{{ $image['name'] }}" class="media-image" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer;">
+                        <img src="{{ $image['url'] }}" alt="{{ $image['name'] }}" class="media-image absolute top-0 left-0 w-full h-full object-cover cursor-pointer">
                     @endif
-                    <form action="{{ route('media.destroy') }}" method="POST" style="position: absolute; top: 0.5rem; right: 0.5rem; z-index: 10;" data-confirm="Are you sure you want to delete this {{ isset($image['type']) && $image['type'] === 'video' ? 'video' : 'image' }}?">
+                    <form action="{{ route('media.destroy') }}" method="POST" class="absolute top-2 right-2 z-10" data-confirm="Are you sure you want to delete this {{ isset($image['type']) && $image['type'] === 'video' ? 'video' : 'image' }}?">
                         @csrf
                         @method('DELETE')
                         <input type="hidden" name="path" value="{{ $image['path'] }}">
-                        <button type="submit" class="action-btn action-btn-delete" title="Delete {{ isset($image['type']) && $image['type'] === 'video' ? 'video' : 'image' }}" style="width: 28px; height: 28px;">
+                        <button type="submit" class="action-btn action-btn-delete w-7 h-7" title="Delete {{ isset($image['type']) && $image['type'] === 'video' ? 'video' : 'image' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </button>
                     </form>
                 </div>
-                <div style="padding: 0.75rem;">
-                    <p style="font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $image['name'] }}">{{ $image['name'] }}</p>
-                    <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">{{ number_format($image['size'] / 1024, 2) }} KB</p>
-                    <p style="font-size: 0.75rem; color: #6b7280;">{{ isset($image['date']) ? date('M d, Y', strtotime($image['date'])) : date('M d, Y', $image['modified']) }}</p>
+                <div class="p-3">
+                    <p class="text-sm font-semibold text-primary mb-1 whitespace-nowrap overflow-hidden text-ellipsis" title="{{ $image['name'] }}">{{ $image['name'] }}</p>
+                    <p class="text-xs text-tertiary mb-1">{{ number_format($image['size'] / 1024, 2) }} KB</p>
+                    <p class="text-xs text-tertiary">{{ isset($image['date']) ? date('M d, Y', strtotime($image['date'])) : date('M d, Y', $image['modified']) }}</p>
                 </div>
             </div>
             @endforeach
         </div>
 
         <!-- Pagination -->
-        <div style="margin-top: 2rem;">
+        <div class="mt-8">
             {{ $images->links() }}
         </div>
     @else
-        <div style="text-align: center; padding: 3rem; color: #6b7280;">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="64" height="64" style="margin: 0 auto 1rem; color: #9ca3af;">
+        <div class="text-center p-12 text-tertiary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="64" height="64" class="mx-auto mb-4 text-gray-400">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <p style="font-size: 1.125rem; font-weight: 600;">No images found</p>
-            <p style="font-size: 0.875rem; margin-top: 0.5rem;">Upload images through products to see them here.</p>
+            <p class="text-lg font-semibold">No images found</p>
+            <p class="text-sm mt-2">Upload images through products to see them here.</p>
         </div>
     @endif
 </div>
 
 <!-- Media Modal -->
-<div id="imageModal" class="image-modal-overlay" style="display: none;" onclick="closeImageModal()">
+<div id="imageModal" class="image-modal-overlay d-none" onclick="closeImageModal()">
     <div class="image-modal-content" onclick="event.stopPropagation();">
         <button type="button" class="image-modal-close" id="closeImageModal">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
@@ -109,8 +109,8 @@
             </svg>
         </button>
         <div class="image-modal-body">
-            <img id="modalImage" src="" alt="" class="image-modal-img" style="display: none;">
-            <video id="modalVideo" src="" controls class="image-modal-img" style="display: none; max-width: 100%; max-height: 80vh;"></video>
+            <img id="modalImage" src="" alt="" class="image-modal-img d-none">
+            <video id="modalVideo" src="" controls class="image-modal-img d-none max-w-full max-h-80vh"></video>
         </div>
         <div class="image-modal-footer">
             <p id="modalImageName"></p>
